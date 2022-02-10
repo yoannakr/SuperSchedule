@@ -13,23 +13,22 @@ namespace SuperSchedule.Startup.Controllers
     };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly SuperScheduleDbContext _superScheduleDbContext;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(SuperScheduleDbContext superScheduleDbContext, ILogger<WeatherForecastController> logger)
         {
+            _superScheduleDbContext = superScheduleDbContext;
             _logger = logger;
         }
 
         [HttpGet]
         public IEnumerable<Database.Models.Location> Get()
         {
-            using (var context = new SuperScheduleDbContext())
-            {
-                context.Database.EnsureCreated();
+            _superScheduleDbContext.Database.EnsureCreated();
 
-                context.Locations.Add(new Database.Models.Location { Name = "Test", Abbreviation = "Test" });
-                context.SaveChanges();
-                return context.Locations.ToList();
-            }
+            _superScheduleDbContext.Locations.Add(new Database.Models.Location { Name = "Test", Abbreviation = "Test" });
+            _superScheduleDbContext.SaveChanges();
+            return _superScheduleDbContext.Locations.ToList();
         }
     }
 }

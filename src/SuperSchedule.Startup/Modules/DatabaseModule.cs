@@ -7,7 +7,7 @@ namespace SuperSchedule.Startup.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<SuperScheduleDbContext>().AsSelf().InstancePerRequest();
+            builder.RegisterType<SuperScheduleDbContext>().AsSelf().InstancePerLifetimeScope();
         }
     }
 }

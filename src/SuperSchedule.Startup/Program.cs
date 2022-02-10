@@ -8,7 +8,7 @@ builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 // Register services directly with Autofac here. Don't
 // call builder.Populate(), that happens in AutofacServiceProviderFactory.
 
-builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterAssemblyModules(typeof(Module).Assembly));
+builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterAssemblyModules(typeof(Program).Assembly));
 
 // Add services to the container.
 
