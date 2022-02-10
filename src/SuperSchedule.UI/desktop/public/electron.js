@@ -1,3 +1,4 @@
+const startServer = require("./server.js");
 const electron = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
@@ -31,3 +32,5 @@ app.on("activate", () => {
     createWindow();
   }
 });
+
+startServer();
