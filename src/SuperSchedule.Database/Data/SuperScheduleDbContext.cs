@@ -9,12 +9,12 @@ namespace SuperSchedule.Database.Data
     {
         public SuperScheduleDbContext()
         {
+            var folder = Environment.SpecialFolder.LocalApplicationData;
+            var path = Environment.GetFolderPath(folder);
+            DbPath = Path.Join(path, "superSchedule.db");
         }
 
-        public SuperScheduleDbContext(DbContextOptions<SuperScheduleDbContext> options)
-            : base(options)
-        {
-        }
+        public string DbPath { get; }
 
         public DbSet<ShiftType> ShiftTypes { get; set; }
 
@@ -28,7 +28,7 @@ namespace SuperSchedule.Database.Data
         {
             if (!builder.IsConfigured)
             {
-                builder.UseSqlServer(DataSettings.Connection);
+                builder.UseSqlite($"Data Source={DbPath}");
             }
         }
 

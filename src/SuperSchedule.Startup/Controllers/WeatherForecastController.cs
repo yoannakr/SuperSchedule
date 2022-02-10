@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SuperSchedule.Database.Data;
 
 namespace SuperSchedule.Startup.Controllers
 {
@@ -19,15 +20,16 @@ namespace SuperSchedule.Startup.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<Database.Models.Location> Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            using (var context = new SuperScheduleDbContext())
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+                context.Database.EnsureCreated();
+
+                context.Locations.Add(new Database.Models.Location { Name = "Test", Abbreviation = "Test" });
+                context.SaveChanges();
+                return context.Locations.ToList();
+            }
         }
     }
 }
