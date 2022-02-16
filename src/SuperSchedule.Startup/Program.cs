@@ -1,5 +1,6 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using SuperSchedule.Database.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+var superScheduleDbContext = app.Services.GetService(typeof(SuperScheduleDbContext)) as SuperScheduleDbContext;
+superScheduleDbContext?.Database.EnsureCreated();
 
 // Configure the HTTP request pipeline.
 

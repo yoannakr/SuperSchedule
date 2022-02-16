@@ -1,4 +1,6 @@
-﻿namespace SuperSchedule.Database.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SuperSchedule.Database.Models
 {
     public class ShiftType
     {
@@ -11,6 +13,9 @@
         public TimeOnly StartTime { get; set; }
 
         public TimeOnly EndTime { get; set; }
+
+        [NotMapped]
+        public int TotalHours => EndTime.Hour - StartTime.Hour;
 
         public int RotationDays { get; set; }
 

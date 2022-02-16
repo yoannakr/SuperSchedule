@@ -1,30 +1,10 @@
-import logo from "./logo.svg";
 import "./App.css";
-import axios from "axios";
+import CreateLocation from "./components/Location/CreateLocation";
 
 function App() {
-  axios
-    .get("http://localhost:5000/weatherforecast")
-    .catch((err) => console.log("Opss..", err))
-    .then((resp) => {
-      console.log("Test: ", resp.data);
-    });
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <CreateLocation />
     </div>
   );
 }

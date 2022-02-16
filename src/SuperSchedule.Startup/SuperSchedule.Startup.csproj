@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SuperSchedule.Database\SuperSchedule.Database.csproj" />
+    <ProjectReference Include="..\SuperSchedule.Services\SuperSchedule.Services.csproj" />
   </ItemGroup>
 
 </Project>
