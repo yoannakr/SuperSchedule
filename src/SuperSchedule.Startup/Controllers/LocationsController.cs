@@ -6,7 +6,7 @@ using SuperSchedule.Startup.InputModels;
 namespace SuperSchedule.Startup.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class LocationsController : ControllerBase
     {
         private readonly ILocationService _locationService;
