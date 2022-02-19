@@ -13,11 +13,11 @@ builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterAss
 
 // Add services to the container.
 
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var MyPolicy = "MyPolicy";
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
+    options.AddPolicy(name: MyPolicy,
                       builder =>
                       {
                           builder.AllowAnyOrigin()
@@ -35,7 +35,7 @@ superScheduleDbContext?.Database.EnsureCreated();
 
 // Configure the HTTP request pipeline.
 
-app.UseCors(MyAllowSpecificOrigins);
+app.UseCors(MyPolicy);
 
 app.UseAuthorization();
 
