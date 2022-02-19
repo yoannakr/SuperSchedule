@@ -21,5 +21,10 @@ namespace SuperSchedule.Services.Locations
         {
             return _locationRepository.GetAllLocations();
         }
+
+        public Location GetLocationById(int id)
+        {
+            return _locationRepository.GetLocationById(id);
+        }
     }
 }

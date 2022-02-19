@@ -7,5 +7,7 @@ namespace SuperSchedule.Services.Locations
         Task CrateLocation(Location location);
 
         IEnumerable<Location> GetAllLocations();
+
+        Location GetLocationById(int id);
     }
 }
