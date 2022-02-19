@@ -1,19 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SuperSchedule.Database.Models;
+using SuperSchedule.Services.Locations;
 using SuperSchedule.Services.ShiftTypes;
 using SuperSchedule.Startup.InputModels;
 
 namespace SuperSchedule.Startup.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class ShiftTypeController : ControllerBase
+    public class ShiftTypesController : ApiController
     {
         private readonly IShiftTypeService _shiftTypeService;
+        private readonly ILocationService _locationService;
 
-        public ShiftTypeController(IShiftTypeService shiftTypeService)
+        public ShiftTypesController(IShiftTypeService shiftTypeService, ILocationService locationService)
         {
             _shiftTypeService = shiftTypeService;
+            _locationService = locationService;
         }
 
         [HttpGet]
@@ -32,7 +33,7 @@ namespace SuperSchedule.Startup.Controllers
                 StartTime = shiftTypeInputModel.StartTime,
                 EndTime = shiftTypeInputModel.EndTime,
                 RotationDays = shiftTypeInputModel.RotationDays,
-                Location = shiftTypeInputModel.Location
+                Location = _locationService.GetLocationById(shiftTypeInputModel.LocationId)
             });
         }
     }
