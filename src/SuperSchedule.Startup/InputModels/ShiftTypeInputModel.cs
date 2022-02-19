@@ -14,6 +14,6 @@ namespace SuperSchedule.Startup.InputModels
 
         public int RotationDays { get; set; }
 
-        public Location Location { get; set; }
+        public int LocationId { get; set; }
     }
 }
