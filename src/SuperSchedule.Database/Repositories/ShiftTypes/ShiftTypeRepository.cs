@@ -1,4 +1,5 @@
-﻿using SuperSchedule.Database.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SuperSchedule.Database.Data;
 using SuperSchedule.Database.Models;
 
 namespace SuperSchedule.Database.Repositories.ShiftTypes
@@ -21,7 +22,7 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
 
         public IEnumerable<ShiftType> GetAllShiftTypes()
         {
-            return _superScheduleDbContext.ShiftTypes.ToList();
+            return _superScheduleDbContext.ShiftTypes.Include(s => s.Location).ToList();
         }
     }
 }
