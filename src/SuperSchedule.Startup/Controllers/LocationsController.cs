@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SuperSchedule.Database.Models;
 using SuperSchedule.Services.Locations;
-using SuperSchedule.Startup.InputModels;
+using SuperSchedule.Startup.Models;
 
 namespace SuperSchedule.Startup.Controllers
 {
@@ -21,7 +21,7 @@ namespace SuperSchedule.Startup.Controllers
         }
 
         [HttpPost]
-        public async Task CreateLocation([FromBody] LocationInputModel locationInputModel)
+        public async Task CreateLocation([FromBody] LocationModel locationInputModel)
         {
             await _locationService.CrateLocation(new Location
             {

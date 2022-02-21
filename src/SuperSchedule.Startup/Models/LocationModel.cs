@@ -1,6 +1,6 @@
-﻿namespace SuperSchedule.Startup.InputModels
+﻿namespace SuperSchedule.Startup.Models
 {
-    public class LocationInputModel
+    public class LocationModel
     {
         public string Name { get; set; }
 
