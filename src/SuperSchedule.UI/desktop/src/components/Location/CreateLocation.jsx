@@ -22,7 +22,7 @@ const CreateLocation = () => {
     };
 
     axios
-      .post("http://localhost:5000/locations", location)
+      .post("http://localhost:5000/locations/CreateLocation", location)
       .catch((err) => console.log("Opss..", err));
   };
   return (
