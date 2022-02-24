@@ -1,44 +1,72 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using SuperSchedule.Database.Data;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+Log.Information("Starting up");
 
-// Register services directly with Autofac here. Don't
-// call builder.Populate(), that happens in AutofacServiceProviderFactory.
-
-builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterAssemblyModules(typeof(Program).Assembly));
-
-// Add services to the container.
-
-var MyPolicy = "MyPolicy";
-
-builder.Services.AddCors(options =>
+try
 {
-    options.AddPolicy(name: MyPolicy,
-                      builder =>
-                      {
-                          builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                          .AllowAnyHeader();
-                      });
-});
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+    builder.Host.UseSerilog((ctx, lc) => lc
+        .WriteTo.Console()
+        .WriteTo.File("./logs/log-.txt", rollingInterval: RollingInterval.Day)
+        .ReadFrom.Configuration(ctx.Configuration));
 
-var app = builder.Build();
+    builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
-var superScheduleDbContext = app.Services.GetService(typeof(SuperScheduleDbContext)) as SuperScheduleDbContext;
-superScheduleDbContext?.Database.EnsureCreated();
+    // Register services directly with Autofac here. Don't
+    // call builder.Populate(), that happens in AutofacServiceProviderFactory.
 
-// Configure the HTTP request pipeline.
+    builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterAssemblyModules(typeof(Program).Assembly));
 
-app.UseCors(MyPolicy);
+    // Add services to the container.
 
-app.UseAuthorization();
+    var MyPolicy = "MyPolicy";
 
-app.MapControllers();
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(name: MyPolicy,
+                          builder =>
+                          {
+                              builder.AllowAnyOrigin()
+                               .AllowAnyMethod()
+                              .AllowAnyHeader();
+                          });
+    });
 
-app.Run();
+    builder.Services.AddControllers();
+
+    var app = builder.Build();
+
+    var superScheduleDbContext = app.Services.GetService(typeof(SuperScheduleDbContext)) as SuperScheduleDbContext;
+    superScheduleDbContext?.Database.EnsureCreated();
+
+    app.Logger.LogInformation("Database created");
+
+    // Configure the HTTP request pipeline.
+
+    app.UseSerilogRequestLogging();
+
+    app.UseCors(MyPolicy);
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Exception in program.cs");
+}
+finally
+{
+    Log.Information("Shut down complete");
+    Log.CloseAndFlush();
+}
