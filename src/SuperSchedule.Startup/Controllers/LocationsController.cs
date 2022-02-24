@@ -7,23 +7,23 @@ namespace SuperSchedule.Startup.Controllers
 {
     public class LocationsController : ApiController
     {
-        private readonly ILocationService _locationService;
+        private readonly ILocationService locationService;
 
         public LocationsController(ILocationService locationService)
         {
-            _locationService = locationService;
+            this.locationService = locationService;
         }
 
         [HttpGet]
         public IEnumerable<Location> GetAllLocations()
         {
-            return _locationService.GetAllLocations();
+            return locationService.GetAllLocations();
         }
 
         [HttpPost]
         public async Task CreateLocation([FromBody] LocationModel locationInputModel)
         {
-            await _locationService.CrateLocation(new Location
+            await locationService.CrateLocation(new Location
             {
                 Name = locationInputModel.Name,
                 Abbreviation = locationInputModel.Abbreviation

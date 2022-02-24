@@ -8,19 +8,19 @@ namespace SuperSchedule.Startup.Controllers
 {
     public class ShiftTypesController : ApiController
     {
-        private readonly IShiftTypeService _shiftTypeService;
-        private readonly ILocationService _locationService;
+        private readonly IShiftTypeService shiftTypeService;
+        private readonly ILocationService locationService;
 
         public ShiftTypesController(IShiftTypeService shiftTypeService, ILocationService locationService)
         {
-            _shiftTypeService = shiftTypeService;
-            _locationService = locationService;
+            this.shiftTypeService = shiftTypeService;
+            this.locationService = locationService;
         }
 
         [HttpGet]
         public IEnumerable<ShiftTypeModel> GetAllShiftTypes()
         {
-            return _shiftTypeService.GetAllShiftTypes().Select(sh =>
+            return shiftTypeService.GetAllShiftTypes().Select(sh =>
                 new ShiftTypeModel
                 {
                     Name = sh.Name,
@@ -34,14 +34,14 @@ namespace SuperSchedule.Startup.Controllers
         [HttpPost]
         public async Task CreateShiftType([FromBody] ShiftTypeModel shiftTypeInputModel)
         {
-            await _shiftTypeService.CrateShiftType(new ShiftType
+            await shiftTypeService.CrateShiftType(new ShiftType
             {
                 Name = shiftTypeInputModel.Name,
                 Abbreviation = shiftTypeInputModel.Abbreviation,
                 StartTime = TimeOnly.FromDateTime(shiftTypeInputModel.StartTime),
                 EndTime = TimeOnly.FromDateTime(shiftTypeInputModel.EndTime),
                 RotationDays = shiftTypeInputModel.RotationDays,
-                Location = _locationService.GetLocationById(shiftTypeInputModel.LocationId)
+                Location = locationService.GetLocationById(shiftTypeInputModel.LocationId)
             });
         }
     }

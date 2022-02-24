@@ -6,23 +6,23 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
 {
     public class ShiftTypeRepository : IShiftTypeRepository
     {
-        private readonly SuperScheduleDbContext _superScheduleDbContext;
+        private readonly SuperScheduleDbContext superScheduleDbContext;
 
         public ShiftTypeRepository(SuperScheduleDbContext superScheduleDbContext)
         {
-            _superScheduleDbContext = superScheduleDbContext;
+            this.superScheduleDbContext = superScheduleDbContext;
         }
 
         public async Task CrateShiftType(ShiftType shiftType)
         {
-            _superScheduleDbContext.ShiftTypes.Add(shiftType);
+            superScheduleDbContext.ShiftTypes.Add(shiftType);
 
-            await _superScheduleDbContext.SaveChangesAsync();
+            await superScheduleDbContext.SaveChangesAsync();
         }
 
         public IEnumerable<ShiftType> GetAllShiftTypes()
         {
-            return _superScheduleDbContext.ShiftTypes.Include(s => s.Location).ToList();
+            return superScheduleDbContext.ShiftTypes.Include(s => s.Location).ToList();
         }
     }
 }

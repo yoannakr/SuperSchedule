@@ -5,28 +5,28 @@ namespace SuperSchedule.Database.Repositories.Locations
 {
     public class LocationRepository : ILocationRepository
     {
-        private readonly SuperScheduleDbContext _superScheduleDbContext;
+        private readonly SuperScheduleDbContext superScheduleDbContext;
 
         public LocationRepository(SuperScheduleDbContext superScheduleDbContext)
         {
-            _superScheduleDbContext = superScheduleDbContext;
+            this.superScheduleDbContext = superScheduleDbContext;
         }
 
         public async Task CrateLocation(Location location)
         {
-            _superScheduleDbContext.Locations.Add(location);
+            superScheduleDbContext.Locations.Add(location);
 
-            await _superScheduleDbContext.SaveChangesAsync();
+            await superScheduleDbContext.SaveChangesAsync();
         }
 
         public IEnumerable<Location> GetAllLocations()
         {
-            return _superScheduleDbContext.Locations.ToList();
+            return superScheduleDbContext.Locations.ToList();
         }
 
         public Location GetLocationById(int id)
         {
-            return _superScheduleDbContext.Locations.First(location => location.Id == id);
+            return superScheduleDbContext.Locations.First(location => location.Id == id);
         }
     }
 }

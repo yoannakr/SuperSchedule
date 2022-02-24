@@ -5,26 +5,26 @@ namespace SuperSchedule.Services.Locations
 {
     public class LocationService : ILocationService
     {
-        private readonly ILocationRepository _locationRepository;
+        private readonly ILocationRepository locationRepository;
 
         public LocationService(ILocationRepository locationRepository)
         {
-            _locationRepository = locationRepository;
+            this.locationRepository = locationRepository;
         }
 
         public async Task CrateLocation(Location location)
         {
-            await _locationRepository.CrateLocation(location);
+            await locationRepository.CrateLocation(location);
         }
 
         public IEnumerable<Location> GetAllLocations()
         {
-            return _locationRepository.GetAllLocations();
+            return locationRepository.GetAllLocations();
         }
 
         public Location GetLocationById(int id)
         {
-            return _locationRepository.GetLocationById(id);
+            return locationRepository.GetLocationById(id);
         }
     }
 }
