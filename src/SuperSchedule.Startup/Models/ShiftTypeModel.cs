@@ -15,5 +15,7 @@ namespace SuperSchedule.Startup.Models
         public int RotationDays { get; set; }
 
         public int LocationId { get; set; }
+
+        public IEnumerable<int> DaysIds { get; set; }
     }
 }

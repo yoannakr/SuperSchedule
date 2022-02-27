@@ -48,5 +48,20 @@ namespace SuperSchedule.Database.Data
                     .HasConversion<TimeOnlyConverter, TimeOnlyComparer>();
             });
         }
+
+        public void FillDatabase()
+        {
+            Days.AddRange(
+                new Day { Name = "Понеделник" },
+                new Day { Name = "Вторник" },
+                new Day { Name = "Сряда" },
+                new Day { Name = "Четвъртък" },
+                new Day { Name = "Петък" },
+                new Day { Name = "Събота" },
+                new Day { Name = "Неделя" }
+                );
+
+            SaveChanges();
+        }
     }
 }

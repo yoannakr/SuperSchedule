@@ -45,9 +45,13 @@ try
     var app = builder.Build();
 
     var superScheduleDbContext = app.Services.GetService(typeof(SuperScheduleDbContext)) as SuperScheduleDbContext;
-    superScheduleDbContext?.Database.EnsureCreated();
-
-    app.Logger.LogInformation("Database created");
+    var isDatabaseCreated = superScheduleDbContext?.Database.EnsureCreated() ?? false;
+    if (isDatabaseCreated)
+    {
+        app.Logger.LogInformation("Database created");
+        superScheduleDbContext?.FillDatabase();
+        app.Logger.LogInformation("Database filled");
+    }
 
     // Configure the HTTP request pipeline.
 

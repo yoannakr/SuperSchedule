@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Form, Row, Col, Button, ToastContainer, Toast } from "react-bootstrap";
+import { Form, Row, Col, Button } from "react-bootstrap";
 import styles from "../ShiftType/CreateShiftType.module.scss";
 import axios from "axios";
 import moment from "moment";
 
 const CreateShiftType = () => {
-  const timeFormat = "hh:mm";
+  const timeFormat = "kk:mm";
 
   const [name, setName] = useState("");
   const [abbreviation, setAbbreviation] = useState("");
@@ -13,17 +13,31 @@ const CreateShiftType = () => {
   const [endTime, setEndTime] = useState(moment().format(timeFormat));
   const [rotationDays, setRotationDays] = useState(1);
   const [locations, setLocations] = useState([]);
+  const [days, setDays] = useState([]);
   const [selectedLocationId, setSelectedLocationId] = useState();
+  const [selectedDaysIds, setSelectedDaysId] = useState([]);
 
   useEffect(() => {
     const getLocations = () => {
       axios
         .get("http://localhost:5000/locations/GetAllLocations")
         .then((resp) => setLocations(resp.data))
-        .catch((err) => console.log(err));
+        .catch((err) =>
+          console.log(`GetAllLocations not successful because: ${err}`)
+        );
+    };
+
+    const getDays = () => {
+      axios
+        .get("http://localhost:5000/days/GetAllDays")
+        .then((resp) => setDays(resp.data))
+        .catch((err) =>
+          console.log(`GetAllDays not successful because: ${err}`)
+        );
     };
 
     getLocations();
+    getDays();
   }, []);
 
   const onNameChange = (name) => {
@@ -51,8 +65,17 @@ const CreateShiftType = () => {
     setSelectedLocationId(selectedLocationId);
   };
 
+  const onDayChecked = (dayId) => {
+    const isDayAdded = selectedDaysIds.includes(dayId);
+
+    if (!isDayAdded) {
+      setSelectedDaysId([...selectedDaysIds, dayId]);
+    } else {
+      setSelectedDaysId(selectedDaysIds.filter((id) => id !== dayId));
+    }
+  };
+
   const save = () => {
-    console.log("Save");
     const shiftType = {
       name,
       abbreviation,
@@ -60,30 +83,19 @@ const CreateShiftType = () => {
       endTime: moment(endTime, timeFormat),
       rotationDays,
       locationId: selectedLocationId,
+      daysIds: selectedDaysIds,
     };
 
     console.log(shiftType);
 
     axios
       .post("http://localhost:5000/shiftTypes/CreateShiftType", shiftType)
-      .catch((err) => console.log("Opss..", err));
+      .catch((err) =>
+        console.log(`CreateShiftType not successful because: ${err}`)
+      );
   };
   return (
     <div>
-      <ToastContainer className="p-3" position="top-center">
-        <Toast>
-          <Toast.Header closeButton={true}>
-            <img
-              src="holder.js/20x20?text=%20"
-              className="rounded me-2"
-              alt=""
-            />
-            <strong className="me-auto">Bootstrap</strong>
-            <small>11 mins ago</small>
-          </Toast.Header>
-          <Toast.Body>Hello, world! This is a toast message.</Toast.Body>
-        </Toast>
-      </ToastContainer>
       <Form className={styles.Form}>
         <Row>
           <Form.Group as={Col}>
@@ -145,12 +157,15 @@ const CreateShiftType = () => {
           <Form.Group as={Col}>
             <Form.Label>Обект</Form.Label>
             <Form.Select
+              defaultValue="default"
               value={selectedLocationId}
               onChange={(e) =>
                 onSelectedLocationIdChange(e.currentTarget.value)
               }
             >
-              <option>Изберете обект</option>
+              <option value="default" disabled>
+                Изберете обект
+              </option>
               {locations.map((location) => (
                 <option key={location.id} value={location.id}>
                   {location.name}
@@ -158,6 +173,19 @@ const CreateShiftType = () => {
               ))}
             </Form.Select>
           </Form.Group>
+        </Row>
+
+        <Row className={styles.DaysCheckbox}>
+          {days.map((day) => (
+            <Form.Check
+              className={styles.DaysCheckbox}
+              key={day.id}
+              label={day.name}
+              value={day.id}
+              type="checkbox"
+              onChange={(e) => onDayChecked(e.currentTarget.value)}
+            />
+          ))}
         </Row>
 
         <Button className="mt-4" variant="primary" onClick={save}>
