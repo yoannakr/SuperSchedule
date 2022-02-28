@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
-import styles from "../Location/CreateLocation.module.scss";
+import styles from "../Position/CreatePosition.module.scss";
 import axios from "axios";
+import moment from "moment";
 
-const CreateLocation = () => {
+const CreatePosition = () => {
   const [name, setName] = useState("");
   const [abbreviation, setAbbreviation] = useState("");
 
@@ -16,15 +17,15 @@ const CreateLocation = () => {
   };
 
   const save = () => {
-    const location = {
+    const position = {
       name,
       abbreviation,
     };
 
     axios
-      .post("http://localhost:5000/locations/CreateLocation", location)
+      .post("http://localhost:5000/positions/CreatePosition", position)
       .catch((err) =>
-        console.log(`CreateLocation not successful because: ${err}`)
+        console.log(`CreatePosition not successful because: ${err}`)
       );
   };
   return (
@@ -58,4 +59,4 @@ const CreateLocation = () => {
   );
 };
 
-export default CreateLocation;
+export default CreatePosition;

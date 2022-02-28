@@ -22,6 +22,8 @@ namespace SuperSchedule.Database.Data
 
         public DbSet<Location> Locations { get; set; }
 
+        public DbSet<Position> Positions { get; set; }
+
         public DbSet<Role> Roles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
