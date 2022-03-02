@@ -7,5 +7,7 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
         Task CrateShiftType(ShiftType shiftType);
 
         IEnumerable<ShiftType> GetAllShiftTypes();
+
+        ShiftType GetShiftTypeById(int id);
     }
 }

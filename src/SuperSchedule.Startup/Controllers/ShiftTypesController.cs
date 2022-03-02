@@ -32,6 +32,7 @@ namespace SuperSchedule.Startup.Controllers
                     Abbreviation = sh.Abbreviation,
                     StartTime = new DateTime(sh.StartTime.Ticks),
                     EndTime = new DateTime(sh.EndTime.Ticks),
+                    RotationDays = sh.RotationDays,
                     LocationId = sh.Location.Id,
                     DaysIds = sh.Days.Select(d => d.Id)
                 });

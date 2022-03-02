@@ -21,5 +21,10 @@ namespace SuperSchedule.Services.ShiftTypes
         {
             return shiftTypeRepository.GetAllShiftTypes().ToList();
         }
+
+        public ShiftType GetShiftTypeById(int id)
+        {
+            return shiftTypeRepository.GetShiftTypeById(id);
+        }
     }
 }

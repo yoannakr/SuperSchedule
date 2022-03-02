@@ -1,0 +1,11 @@
+﻿using SuperSchedule.Database.Models;
+
+namespace SuperSchedule.Database.Repositories.Employees
+{
+    public interface IEmployeeRepository
+    {
+        Task CreateEmployee(Employee employee);
+
+        IEnumerable<Employee> GetAllEmployees();
+    }
+}

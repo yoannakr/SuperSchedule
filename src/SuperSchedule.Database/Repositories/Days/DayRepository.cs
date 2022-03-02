@@ -19,7 +19,7 @@ namespace SuperSchedule.Database.Repositories.Days
 
         public Day GetDayById(int id)
         {
-            return superScheduleDbContext.Days.FirstOrDefault(d => d.Id == id);
+            return superScheduleDbContext.Days.First(d => d.Id == id);
         }
     }
 }

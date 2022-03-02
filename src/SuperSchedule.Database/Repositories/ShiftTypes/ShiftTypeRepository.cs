@@ -22,7 +22,16 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
 
         public IEnumerable<ShiftType> GetAllShiftTypes()
         {
-            return superScheduleDbContext.ShiftTypes.Include(s => s.Location).ToList();
+            return superScheduleDbContext
+                .ShiftTypes
+                .Include(s => s.Location)
+                .Include(s => s.Days)
+                .ToList();
+        }
+
+        public ShiftType GetShiftTypeById(int id)
+        {
+            return superScheduleDbContext.ShiftTypes.First(shiftType => shiftType.Id == id);
         }
     }
 }

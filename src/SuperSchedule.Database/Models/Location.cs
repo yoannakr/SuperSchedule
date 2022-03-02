@@ -9,5 +9,7 @@
         public string Abbreviation { get; set; }
 
         public ICollection<ShiftType> ShiftTypes { get; set; } = new HashSet<ShiftType>();
+
+        public ICollection<Employee> Employees { get; set; } = new HashSet<Employee>();
     }
 }

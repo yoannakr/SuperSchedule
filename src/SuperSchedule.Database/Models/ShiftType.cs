@@ -22,5 +22,7 @@ namespace SuperSchedule.Database.Models
         public Location Location { get; set; }
 
         public ICollection<Day> Days { get; set; } = new HashSet<Day>();
+
+        public ICollection<Employee> Employees { get; set; } = new HashSet<Employee>();
     }
 }
