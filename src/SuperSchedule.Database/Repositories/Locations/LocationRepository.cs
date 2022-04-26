@@ -1,4 +1,5 @@
-﻿using SuperSchedule.Database.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SuperSchedule.Database.Data;
 using SuperSchedule.Database.Models;
 
 namespace SuperSchedule.Database.Repositories.Locations
@@ -21,7 +22,7 @@ namespace SuperSchedule.Database.Repositories.Locations
 
         public IEnumerable<Location> GetAllLocations()
         {
-            return superScheduleDbContext.Locations.ToList();
+            return superScheduleDbContext.Locations.Include(l => l.Employees).ThenInclude(e => e.Position).Include(l => l.ShiftTypes).ToList();
         }
 
         public Location GetLocationById(int id)

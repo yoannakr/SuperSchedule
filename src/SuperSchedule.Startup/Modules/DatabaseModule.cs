@@ -4,6 +4,8 @@ using SuperSchedule.Database.Repositories.Days;
 using SuperSchedule.Database.Repositories.Employees;
 using SuperSchedule.Database.Repositories.Locations;
 using SuperSchedule.Database.Repositories.Positions;
+using SuperSchedule.Database.Repositories.Schedules;
+using SuperSchedule.Database.Repositories.Settings;
 using SuperSchedule.Database.Repositories.ShiftTypes;
 
 namespace SuperSchedule.Startup.Modules
@@ -18,6 +20,8 @@ namespace SuperSchedule.Startup.Modules
             builder.RegisterType<DayRepository>().As<IDayRepository>().InstancePerLifetimeScope();
             builder.RegisterType<PositionRepository>().As<IPositionRepository>().InstancePerLifetimeScope();
             builder.RegisterType<EmployeeRepository>().As<IEmployeeRepository>().InstancePerLifetimeScope();
+            builder.RegisterType<SettingsRepository>().As<ISettingsRepository>().InstancePerLifetimeScope();
+            builder.RegisterType<ScheduleRepository>().As<IScheduleRepository>().InstancePerLifetimeScope();
         }
     }
 }

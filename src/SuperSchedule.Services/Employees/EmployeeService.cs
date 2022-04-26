@@ -21,5 +21,10 @@ namespace SuperSchedule.Services.Employees
         {
             return employeeRepository.GetAllEmployees();
         }
+
+        public Employee GetEmployeeById(int id)
+        {
+            return employeeRepository.GetEmployeeById(id);
+        }
     }
 }

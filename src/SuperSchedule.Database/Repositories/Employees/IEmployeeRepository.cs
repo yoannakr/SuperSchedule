@@ -7,5 +7,7 @@ namespace SuperSchedule.Database.Repositories.Employees
         Task CreateEmployee(Employee employee);
 
         IEnumerable<Employee> GetAllEmployees();
+
+        Employee GetEmployeeById(int id);
     }
 }

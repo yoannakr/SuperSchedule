@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Nager.Date;
 using SuperSchedule.Database.Comparers;
 using SuperSchedule.Database.Converters;
 using SuperSchedule.Database.Models;
@@ -28,6 +29,12 @@ namespace SuperSchedule.Database.Data
 
         public DbSet<Role> Roles { get; set; }
 
+        public DbSet<Schedule> Schedules { get; set; }
+
+        public DbSet<Setting> Settings { get; set; }
+
+        public DbSet<Holiday> Holidays { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
             if (!builder.IsConfigured)
@@ -40,8 +47,7 @@ namespace SuperSchedule.Database.Data
         {
             builder.Entity<Location>()
                 .HasMany(l => l.ShiftTypes)
-                .WithOne(sh => sh.Location)
-                .IsRequired();
+                .WithOne(sh => sh.Location);
 
             builder.Entity<ShiftType>(builder =>
             {
@@ -64,6 +70,28 @@ namespace SuperSchedule.Database.Data
                 new Day { Name = "Събота" },
                 new Day { Name = "Неделя" }
                 );
+
+            ShiftTypes.Add(new ShiftType
+            {
+                Name = "почивка",
+                Abbreviation = "П",
+                StartTime = new TimeOnly(0, 0),
+                EndTime = new TimeOnly(0, 0),
+                RotationDays = 0,
+                Priority = 0
+            });
+
+            var publicHolidaysDates = DateSystem.GetPublicHolidays(DateTime.UtcNow.Year, CountryCode.BG)
+                .Select(h => new Holiday { Date = h.Date });
+
+            Settings.Add(new Setting
+            {
+                NightWorkRate = 1.143,
+                MaxHoursPerWeek = 56,
+                MaxOvertimeHoursPerMonth = 30,
+                MaxOvertimeHoursPerYear = 150,
+                Holidays = new List<Holiday>(publicHolidaysDates)
+            });
 
             SaveChanges();
         }

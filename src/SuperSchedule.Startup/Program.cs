@@ -2,6 +2,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using SuperSchedule.Database.Data;
 using Serilog;
+using SuperSchedule.Database.Repositories.Settings;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -51,6 +52,14 @@ try
         app.Logger.LogInformation("Database created");
         superScheduleDbContext?.FillDatabase();
         app.Logger.LogInformation("Database filled");
+    }
+
+    var settingsRepository = app.Services.GetService(typeof(ISettingsRepository)) as SettingsRepository;
+    var isNewYear = settingsRepository?.GetLastPublicHolidayYear() != DateTime.UtcNow.Year;
+
+    if (isNewYear)
+    {
+        settingsRepository?.FillPublicHolidaysForYear(DateTime.UtcNow.Year);
     }
 
     // Configure the HTTP request pipeline.

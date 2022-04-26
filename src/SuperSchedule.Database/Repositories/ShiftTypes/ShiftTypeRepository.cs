@@ -31,7 +31,16 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
 
         public ShiftType GetShiftTypeById(int id)
         {
-            return superScheduleDbContext.ShiftTypes.First(shiftType => shiftType.Id == id);
+            return superScheduleDbContext
+                .ShiftTypes
+                .Include(s => s.Location)
+                .Include(s => s.Days)
+                .First(shiftType => shiftType.Id == id);
+        }
+
+        public ShiftType GetDefaultBreakShiftType()
+        {
+            return superScheduleDbContext.ShiftTypes.First(shiftType => shiftType.Priority == 0);
         }
     }
 }

@@ -28,6 +28,7 @@ namespace SuperSchedule.Startup.Controllers
             return shiftTypeService.GetAllShiftTypes().Select(sh =>
                 new ShiftTypeModel
                 {
+                    Id = sh.Id,
                     Name = sh.Name,
                     Abbreviation = sh.Abbreviation,
                     StartTime = new DateTime(sh.StartTime.Ticks),

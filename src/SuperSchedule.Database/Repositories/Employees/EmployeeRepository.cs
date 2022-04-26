@@ -29,5 +29,16 @@ namespace SuperSchedule.Database.Repositories.Employees
                 .Include(e => e.ShiftTypes)
                 .ToList();
         }
+
+        public Employee GetEmployeeById(int id)
+        {
+           return superScheduleDbContext
+                .Employees
+                .Include(e => e.Position)
+                .Include(e => e.Locations)
+                .Include(e => e.ShiftTypes)
+                .Where(e => e.Id == id)
+                .FirstOrDefault();
+        }
     }
 }

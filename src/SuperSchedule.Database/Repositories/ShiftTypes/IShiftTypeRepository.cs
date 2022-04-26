@@ -9,5 +9,7 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
         IEnumerable<ShiftType> GetAllShiftTypes();
 
         ShiftType GetShiftTypeById(int id);
+
+        ShiftType GetDefaultBreakShiftType();
     }
 }

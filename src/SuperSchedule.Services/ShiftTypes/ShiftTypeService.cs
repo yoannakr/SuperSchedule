@@ -26,5 +26,10 @@ namespace SuperSchedule.Services.ShiftTypes
         {
             return shiftTypeRepository.GetShiftTypeById(id);
         }
+
+        public ShiftType GetDefaultBreakShiftType()
+        {
+            return shiftTypeRepository.GetDefaultBreakShiftType();
+        }
     }
 }

@@ -7,5 +7,8 @@ namespace SuperSchedule.Services.Employees
         Task CreateEmployee(Employee employee);
 
         IEnumerable<Employee> GetAllEmployees();
+
+        Employee GetEmployeeById(int id);
+
     }
 }

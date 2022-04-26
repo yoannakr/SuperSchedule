@@ -15,11 +15,15 @@ namespace SuperSchedule.Database.Models
         public TimeOnly EndTime { get; set; }
 
         [NotMapped]
-        public int TotalHours => EndTime.Hour - StartTime.Hour;
+        public double TotalHours => Math.Abs(EndTime.Hour - StartTime.Hour) + (((NightHours * 1.143) - NightHours) ?? 0);
 
         public int RotationDays { get; set; }
 
-        public Location Location { get; set; }
+        public int? NightHours { get; set; }
+
+        public int Priority { get; set; }
+
+        public Location? Location { get; set; }
 
         public ICollection<Day> Days { get; set; } = new HashSet<Day>();
 
