@@ -21,6 +21,9 @@ namespace SuperSchedule.Database.Repositories.Settings
 
         public async Task UpdateSettings(Setting setting)
         {
+            var holidayIds = setting.Holidays.Select(h => h.Id).ToList();
+            var contextHolidays = superScheduleDbContext.Holidays.Where(h => !holidayIds.Contains(h.Id)).ToList();
+            superScheduleDbContext.Holidays.RemoveRange(contextHolidays);
             superScheduleDbContext.Update(setting);
 
             await superScheduleDbContext.SaveChangesAsync();
@@ -48,5 +51,6 @@ namespace SuperSchedule.Database.Repositories.Settings
         {
             return GetSettings().Holidays.OrderBy(h => h.Date).LastOrDefault()?.Date.Year;
         }
+
     }
 }

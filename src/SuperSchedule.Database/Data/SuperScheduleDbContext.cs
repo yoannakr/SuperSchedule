@@ -82,7 +82,7 @@ namespace SuperSchedule.Database.Data
             });
 
             var publicHolidaysDates = DateSystem.GetPublicHolidays(DateTime.UtcNow.Year, CountryCode.BG)
-                .Select(h => new Holiday { Date = h.Date });
+                .Select(h => new Holiday { Date = h.Date, Name = h.LocalName });
 
             Settings.Add(new Setting
             {
