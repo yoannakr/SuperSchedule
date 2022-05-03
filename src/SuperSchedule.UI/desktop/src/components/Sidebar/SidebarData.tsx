@@ -10,21 +10,52 @@ export const SidebarData = [
   {
     title: "График",
     icon: <EventIcon />,
-    link: "/",
+    link: "",
+    submenu: [
+      {
+        title: "Нов график",
+        link: "/schedule",
+      },
+      {
+        title: "График",
+        link: "/schedule",
+      },
+    ],
   },
   {
     title: "Служители",
     icon: <GroupIcon />,
-    link: "/employees",
+    link: "",
+    submenu: [
+      {
+        title: "Нов служител",
+        link: "/addEmployee",
+      },
+      {
+        title: "Служители",
+        link: "/employees",
+      },
+    ],
   },
   {
     title: "Смени",
     icon: <PublishedWithChangesIcon />,
-    link: "/shiftTypes",
+    link: "",
+    submenu: [
+      {
+        title: "Нова смяна",
+        link: "/addShiftType",
+      },
+      {
+        title: "Смени",
+        link: "/shiftTypes",
+      },
+    ],
   },
   {
     title: "Настройки",
     icon: <SettingIcon />,
     link: "/settings",
+    submenu: [],
   },
 ];
