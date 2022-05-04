@@ -10,5 +10,6 @@ namespace SuperSchedule.Services.Employees
 
         Employee GetEmployeeById(int id);
 
+        IEnumerable<Employee> GetEmployeeByLocation(int locationId);
     }
 }

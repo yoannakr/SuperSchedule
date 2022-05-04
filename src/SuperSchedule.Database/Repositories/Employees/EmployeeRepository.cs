@@ -40,5 +40,14 @@ namespace SuperSchedule.Database.Repositories.Employees
                 .Where(e => e.Id == id)
                 .FirstOrDefault();
         }
+
+        public IEnumerable<Employee> GetEmployeeByLocation(int locationId)
+        {
+            return superScheduleDbContext
+                .Employees
+                .Include(e => e.Locations)
+                .Include(e => e.Position)
+                .Where(e => e.Locations.Select(l => l.Id).Contains(locationId));
+        }
     }
 }

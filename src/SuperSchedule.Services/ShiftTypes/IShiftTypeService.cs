@@ -11,5 +11,7 @@ namespace SuperSchedule.Services.ShiftTypes
         ShiftType GetShiftTypeById(int id);
 
         ShiftType GetDefaultBreakShiftType();
+
+        IEnumerable<ShiftType> GetShiftTypesByLocation(int locationId);
     }
 }

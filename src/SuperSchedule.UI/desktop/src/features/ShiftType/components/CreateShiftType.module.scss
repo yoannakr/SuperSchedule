@@ -1,12 +1,8 @@
-.Form {
-  display: flex;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
 .DaysCheckbox {
   display: inline;
   margin-top: 20px;
+}
+
+.Row {
+  width: 75%;
 }

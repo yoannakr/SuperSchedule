@@ -13,6 +13,7 @@ export const CheckboxField = (props: CheckboxFieldProps) => {
   return (
     <>
       <Form.Check
+        inline
         label={label}
         value={value}
         type="checkbox"

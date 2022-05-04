@@ -7,26 +7,29 @@ type Option = {
 };
 
 type SelectFieldProps = {
-  label: string;
-  ariaLabel: string;
+  className?: string;
+  label?: string;
+  ariaLabel?: string;
   value: any;
   onChange: any;
   options: Option[];
 };
 
 export const SelectField = (props: SelectFieldProps) => {
-  const { label, ariaLabel, value, onChange, options } = props;
+  const { className, label, ariaLabel, value, onChange, options } = props;
 
   return (
     <>
-      <Form.Label>{label}</Form.Label>
+      {label != null && <Form.Label>{label}</Form.Label>}
       <Form.Select
+        className={className}
         aria-label={ariaLabel}
         value={value}
         onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
           onChange(e.currentTarget.value)
         }
       >
+        <option value="0"></option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

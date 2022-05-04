@@ -32,6 +32,7 @@ export const CreateLocation = () => {
 
   return (
     <Form className={styles.Form}>
+      <h1>Обекти</h1>
       <Row>
         <Form.Group as={Col}>
           <InputField

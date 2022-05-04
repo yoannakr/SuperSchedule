@@ -17,6 +17,6 @@ namespace SuperSchedule.Startup.Models
 
         public int LocationId { get; set; }
 
-        public IEnumerable<int> DaysIds { get; set; }
+        public IEnumerable<int>? DaysIds { get; set; }
     }
 }

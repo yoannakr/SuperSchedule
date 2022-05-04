@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import moment from "moment";
 
+import "../../../App.css";
 import styles from "./CreateShiftType.module.scss";
 import {
   InputField,
@@ -112,80 +113,81 @@ export const CreateShiftType = () => {
   };
 
   return (
-    <div>
-      <Form className={styles.Form}>
-        <Row>
-          <Form.Group as={Col}>
-            <InputField
-              type="text"
-              label="Име"
-              value={name}
-              onChange={onNameChange}
-            />
-          </Form.Group>
-        </Row>
+    <Form className="Form">
+      <h1>Нова смяна</h1>
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
+          <InputField
+            type="text"
+            label="Име"
+            value={name}
+            onChange={onNameChange}
+          />
+        </Form.Group>
+      </Row>
 
-        <Row>
-          <Form.Group as={Col}>
-            <InputField
-              type="text"
-              label="Абревиатура"
-              value={abbreviation}
-              onChange={onAbbreviationChange}
-            />
-          </Form.Group>
-        </Row>
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
+          <InputField
+            type="text"
+            label="Абревиатура"
+            value={abbreviation}
+            onChange={onAbbreviationChange}
+          />
+        </Form.Group>
+      </Row>
 
-        <Row>
-          <Form.Group as={Col}>
-            <InputField
-              type="time"
-              label="Начало"
-              value={startTime}
-              onChange={onStartTimeChange}
-            />
-          </Form.Group>
-        </Row>
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
+          <InputField
+            type="time"
+            label="Начало"
+            value={startTime}
+            onChange={onStartTimeChange}
+          />
+        </Form.Group>
+      </Row>
 
-        <Row>
-          <Form.Group as={Col}>
-            <InputField
-              type="time"
-              label="Край"
-              value={endTime}
-              onChange={onEndTimeChange}
-            />
-          </Form.Group>
-        </Row>
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
+          <InputField
+            type="time"
+            label="Край"
+            value={endTime}
+            onChange={onEndTimeChange}
+          />
+        </Form.Group>
+      </Row>
 
-        <Row>
-          <Form.Group as={Col}>
-            <InputField
-              type="number"
-              label="Брой дни на редуване"
-              min={1}
-              value={rotationDays}
-              onChange={onRotationDaysChange}
-            />
-          </Form.Group>
-        </Row>
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
+          <InputField
+            type="number"
+            label="Брой дни на редуване"
+            min={1}
+            value={rotationDays}
+            onChange={onRotationDaysChange}
+          />
+        </Form.Group>
+      </Row>
 
-        <Row>
-          <Form.Group as={Col}>
-            <SelectField
-              label="Обект"
-              ariaLabel="Изберете обект"
-              value={selectedLocationId}
-              onChange={onSelectedLocationIdChange}
-              options={locations.map((location) => ({
-                label: location.name,
-                value: location.id,
-              }))}
-            />
-          </Form.Group>
-        </Row>
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
+          <SelectField
+            label="Обект"
+            ariaLabel="Изберете обект"
+            value={selectedLocationId}
+            onChange={onSelectedLocationIdChange}
+            options={locations.map((location) => ({
+              label: location.name,
+              value: location.id,
+            }))}
+          />
+        </Form.Group>
+      </Row>
 
-        <Row className={styles.DaysCheckbox}>
+      <Row className={styles.DaysCheckbox}>
+        <Form.Group as={Col}>
           {days.map((day: Day) => (
             <CheckboxField
               key={day.id}
@@ -194,12 +196,12 @@ export const CreateShiftType = () => {
               onChange={onDayChecked}
             />
           ))}
-        </Row>
+        </Form.Group>
+      </Row>
 
-        <Button className="mt-4" variant="primary" onClick={save}>
-          Запис
-        </Button>
-      </Form>
-    </div>
+      <Button className="mt-4" variant="primary" onClick={save}>
+        Запис
+      </Button>
+    </Form>
   );
 };

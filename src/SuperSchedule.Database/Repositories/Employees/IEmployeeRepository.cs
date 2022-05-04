@@ -9,5 +9,7 @@ namespace SuperSchedule.Database.Repositories.Employees
         IEnumerable<Employee> GetAllEmployees();
 
         Employee GetEmployeeById(int id);
+
+        IEnumerable<Employee> GetEmployeeByLocation(int locationId);
     }
 }

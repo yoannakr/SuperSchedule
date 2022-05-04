@@ -1,4 +1,5 @@
-﻿using SuperSchedule.Database.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SuperSchedule.Database.Data;
 using SuperSchedule.Database.Models;
 
 namespace SuperSchedule.Database.Repositories.Schedules
@@ -16,14 +17,52 @@ namespace SuperSchedule.Database.Repositories.Schedules
         {
             superScheduleDbContext.Schedules.Add(schedule);
 
-            await superScheduleDbContext.SaveChangesAsync();    
+            await superScheduleDbContext.SaveChangesAsync();
         }
 
         public async Task CreateSchedule(IEnumerable<Schedule> schedules)
         {
-            superScheduleDbContext.Schedules.AddRange(schedules);   
+            superScheduleDbContext.Schedules.AddRange(schedules);
 
             await superScheduleDbContext.SaveChangesAsync();
+        }
+
+        public Schedule GetScheduleById(int scheduleId)
+        {
+            return superScheduleDbContext.Schedules
+                .Include(s => s.Employee)
+                .Include(s => s.ShiftType)
+                .Include(s => s.Location)
+                .FirstOrDefault(s => s.Id == scheduleId);
+        }
+
+        public async Task UpdateShiftTypeOfSchedules(Schedule schedule, int newShiftTypeId)
+        {
+            if (newShiftTypeId == 0)
+            {
+                schedule.ShiftType = null;
+            }
+            else
+            {
+                var contextShiftType = superScheduleDbContext.ShiftTypes.FirstOrDefault(s => s.Id == newShiftTypeId);
+
+                schedule.ShiftType = contextShiftType;
+            }
+
+            superScheduleDbContext.Schedules.Update(schedule);
+            await superScheduleDbContext.SaveChangesAsync();
+        }
+
+        public IEnumerable<Schedule> GetSchedulesByLocationForPeriod(int locationId, DateTime startDate, DateTime endDate)
+        {
+            return superScheduleDbContext
+                .Schedules
+                .Include(s => s.Employee)
+                .Include(s => s.ShiftType)
+                .Include(s => s.Location)
+                .Where(s => s.Location.Id == locationId && s.Date.Date >= startDate.Date && s.Date.Date <= endDate.Date)
+                .OrderBy(s => s.Date)
+                .ToList();
         }
     }
 }

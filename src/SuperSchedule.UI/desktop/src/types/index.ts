@@ -1,3 +1,5 @@
+import { ShiftTypeEditableCell } from "../features/Schedule/components/EditScheduleTableCell";
+
 export type ShiftType = {
   id: number;
   name: string;
@@ -35,4 +37,13 @@ export type Employee = {
   positionId: number;
   locationsIds: number[];
   shiftTypesIds: number[];
+};
+
+export type Schedule = {
+  id: number;
+  location: Location;
+  employee: Employee;
+  shiftType: ShiftType;
+  shiftTypeEditableCells: ShiftTypeEditableCell[];
+  date: moment.Moment;
 };

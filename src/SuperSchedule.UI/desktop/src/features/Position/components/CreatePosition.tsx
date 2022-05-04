@@ -32,6 +32,7 @@ export const CreatePosition = () => {
 
   return (
     <Form className={styles.Form}>
+      <h1>Позиции</h1>
       <Row>
         <Form.Group as={Col}>
           <InputField

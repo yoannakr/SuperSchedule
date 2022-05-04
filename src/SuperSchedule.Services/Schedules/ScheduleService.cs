@@ -39,7 +39,8 @@ namespace SuperSchedule.Services.Schedules
         {
             var schedules = new List<Schedule>();
 
-            var employeesGroupByPositionPriority = location.Employees.OrderBy(e => e.Position.Priority).GroupBy(e => e.Position.Priority).ToList();
+            var employees = employeeService.GetEmployeeByLocation(location.Id);
+            var employeesGroupByPositionPriority = employees.OrderBy(e => e.Position.Priority).GroupBy(e => e.Position.Priority).ToList();
             var employeesWithHighestPositionPriority = employeesGroupByPositionPriority.First();
             employeesGroupByPositionPriority.Remove(employeesWithHighestPositionPriority);
 
@@ -54,6 +55,36 @@ namespace SuperSchedule.Services.Schedules
 
                 RemoveUnneccessaryShifts(employee, location, schedules, countOfUnnecessaryShifts, otherEmployeesGroup);
                 CheckWorkingHoursForWeek(employee, schedules);
+            }
+
+            foreach (var employee in employees)
+            {
+                var schedulesForEmployee = schedules.Where(s => s.Employee.Id == employee.Id).ToList();
+                var countOfMonthDays = (endDate.Date - startDate.Date).TotalDays + 1;
+                var countOfFilledDays = schedulesForEmployee.Count();
+
+                if (countOfFilledDays != countOfMonthDays)
+                {
+                    var filledDays = schedulesForEmployee.Select(s => s.Date.Date).ToList();
+                    var tempDate = startDate;
+                    while (tempDate.Date <= endDate.Date)
+                    {
+                        if (filledDays.Contains(tempDate.Date))
+                        {
+                            tempDate = tempDate.AddDays(1);
+                            continue;
+                        }
+
+                        schedules.Add(new Schedule
+                        {
+                            Location = location,
+                            Employee = employee,
+                            Date = tempDate
+                        });
+
+                        tempDate = tempDate.AddDays(1);
+                    }
+                }
             }
 
             await scheduleRepository.CreateSchedule(schedules);
@@ -103,7 +134,7 @@ namespace SuperSchedule.Services.Schedules
 
         private void FillSchedule(List<Schedule> schedules, Location location, DateTime startDate, DateTime endDate, Employee employee)
         {
-            var allShiftTypes = location.ShiftTypes.ToList();
+            var allShiftTypes = shiftTypeService.GetShiftTypesByLocation(location.Id).ToList();
             var countOfShiftTypes = allShiftTypes.Count;
 
             var currentShiftTypeIndex = 0;
@@ -376,6 +407,30 @@ namespace SuperSchedule.Services.Schedules
                 }
             }
 
+        }
+
+        public IEnumerable<Schedule> GetSchedulesByLocationForPeriod(int locationId, DateTime startDate, DateTime endDate)
+        {
+            return scheduleRepository.GetSchedulesByLocationForPeriod(locationId, startDate, endDate);
+        }
+
+        public async Task UpdateShiftTypeOfSchedules(List<Schedule> schedules)
+        {
+            foreach (var schedule in schedules)
+            {
+                if (schedule.ShiftType == null)
+                {
+                    continue;
+                }
+
+                var contextSchedule = scheduleRepository.GetScheduleById(schedule.Id);
+                if (contextSchedule?.ShiftType?.Id == schedule?.ShiftType?.Id)
+                {
+                    continue;
+                }
+
+                await scheduleRepository.UpdateShiftTypeOfSchedules(contextSchedule, schedule.ShiftType.Id);
+            }
         }
     }
 }

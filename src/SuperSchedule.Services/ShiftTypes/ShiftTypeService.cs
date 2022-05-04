@@ -31,5 +31,10 @@ namespace SuperSchedule.Services.ShiftTypes
         {
             return shiftTypeRepository.GetDefaultBreakShiftType();
         }
+
+        public IEnumerable<ShiftType> GetShiftTypesByLocation(int locationId)
+        {
+            return shiftTypeRepository.GetShiftTypesByLocation(locationId);
+        }
     }
 }

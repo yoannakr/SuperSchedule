@@ -2,6 +2,8 @@
 {
     public class EmployeeModel
     {
+        public int Id { get; set; }
+
         public string FirstName { get; set; }
 
         public string MiddleName { get; set; }
@@ -12,8 +14,8 @@
 
         public int PositionId { get; set; }
 
-        public IEnumerable<int> LocationsIds { get; set; }
+        public IEnumerable<int>? LocationsIds { get; set; }
 
-        public IEnumerable<int> ShiftTypesIds { get; set; }
+        public IEnumerable<int>? ShiftTypesIds { get; set; }
     }
 }

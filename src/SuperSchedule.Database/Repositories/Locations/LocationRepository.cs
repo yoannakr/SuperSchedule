@@ -22,7 +22,7 @@ namespace SuperSchedule.Database.Repositories.Locations
 
         public IEnumerable<Location> GetAllLocations()
         {
-            return superScheduleDbContext.Locations.Include(l => l.Employees).ThenInclude(e => e.Position).Include(l => l.ShiftTypes).ToList();
+            return superScheduleDbContext.Locations.ToList();
         }
 
         public Location GetLocationById(int id)

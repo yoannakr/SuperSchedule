@@ -34,7 +34,7 @@ namespace SuperSchedule.Startup.Controllers
                     StartTime = new DateTime(sh.StartTime.Ticks),
                     EndTime = new DateTime(sh.EndTime.Ticks),
                     RotationDays = sh.RotationDays,
-                    LocationId = sh.Location.Id,
+                    LocationId = sh.Location?.Id ?? 0,
                     DaysIds = sh.Days.Select(d => d.Id)
                 });
         }
@@ -56,6 +56,23 @@ namespace SuperSchedule.Startup.Controllers
             }) ;
 
             logger.LogInformation("Created Shift Type");
+        }
+
+        [HttpGet]
+        public IEnumerable<ShiftTypeModel> GetShiftTypesByLocation(int locationId)
+        {
+            return shiftTypeService.GetShiftTypesByLocation(locationId).Select(sh =>
+                new ShiftTypeModel
+                {
+                    Id = sh.Id,
+                    Name = sh.Name,
+                    Abbreviation = sh.Abbreviation,
+                    StartTime = new DateTime(sh.StartTime.Ticks),
+                    EndTime = new DateTime(sh.EndTime.Ticks),
+                    RotationDays = sh.RotationDays,
+                    LocationId = sh.Location?.Id ?? 0,
+                    DaysIds = sh.Days.Select(d => d.Id)
+                });
         }
     }
 }

@@ -8,7 +8,7 @@
 
         public Employee Employee { get; set; }
 
-        public ShiftType ShiftType { get; set; }
+        public ShiftType? ShiftType { get; set; }
 
         public DateTime Date { get; set; }
     }

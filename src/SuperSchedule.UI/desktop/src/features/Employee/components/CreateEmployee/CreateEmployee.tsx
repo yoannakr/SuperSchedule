@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
-import axios from "axios";
 
+import "../../../../App.css";
 import styles from "./CreateEmployee.module.scss";
 import {
   DropdownMultiselectField,
@@ -109,8 +109,6 @@ export const CreateEmployee = () => {
   };
 
   const save = () => {
-    console.log(selectedLocations.map((location) => location.value));
-    console.log(selectedShiftTypes);
     const employee: Employee = {
       id: 0,
       firstName,
@@ -122,15 +120,14 @@ export const CreateEmployee = () => {
       shiftTypesIds: selectedShiftTypes.map((shiftType) => shiftType.value),
     };
 
-    console.log(employee);
-
     createEmployee({ employee }).catch((err) =>
       console.log(`CreateEmployee not successful because: ${err}`)
     );
   };
 
   return (
-    <Form className={styles.Form}>
+    <Form className="Form">
+      <h1>Служители</h1>
       <Row>
         <Form.Group as={Col}>
           <InputField

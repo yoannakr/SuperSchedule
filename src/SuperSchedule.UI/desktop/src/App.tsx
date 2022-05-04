@@ -11,6 +11,7 @@ import { NavBar } from "./components/NavBar/index";
 import { Sidebar } from "./components/Sidebar";
 import { LocationSchedule } from "./features/Schedule/components/LocationSchedule";
 import { Setting } from "./features/Setting/";
+import { Schedule } from "./features/Schedule/components/Schedule";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<LocationSchedule locationId={1} />} />
+          <Route path="/schedule" element={<Schedule />} />
           <Route path="/shiftTypes" element={<CreateShiftType />} />
           <Route path="/locations" element={<CreateLocation />} />
           <Route path="/positions" element={<CreatePosition />} />
