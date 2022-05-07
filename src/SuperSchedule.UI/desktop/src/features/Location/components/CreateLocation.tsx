@@ -1,14 +1,26 @@
 import React, { useState } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 
+import "../../../App.css";
 import styles from "./CreateLocation.module.scss";
-import { InputField } from "../../../components/Form";
+import { InputField, SelectField } from "../../../components/Form";
 import { Location } from "../../../types";
 import { createLocation } from "../api/createLocation";
 
 export const CreateLocation = () => {
+  const shiftTypesTemplate = [
+    {
+      id: 1,
+      name: "12 часов",
+    },
+    {
+      id: 2,
+      name: "1 и 2 смяна",
+    },
+  ];
   const [name, setName] = useState<string>("");
   const [abbreviation, setAbbreviation] = useState<string>("");
+  const [shiftTypesTemplateId, setShiftTypesTemplateId] = useState<number>(0);
 
   const onNameChange = (name: string) => {
     setName(name);
@@ -18,11 +30,17 @@ export const CreateLocation = () => {
     setAbbreviation(abbreviation);
   };
 
+  const onShiftTypesTemplateIdChange = (shiftTypeTemplateIdInput: string) => {
+    console.log(shiftTypeTemplateIdInput);
+    setShiftTypesTemplateId(+shiftTypeTemplateIdInput);
+  };
+
   const save = () => {
     const location: Location = {
       id: 0,
       name,
       abbreviation,
+      shiftTypesTemplate: shiftTypesTemplateId,
     };
 
     createLocation({ location }).catch((error) =>
@@ -31,7 +49,7 @@ export const CreateLocation = () => {
   };
 
   return (
-    <Form className={styles.Form}>
+    <Form className="Form">
       <h1>Обекти</h1>
       <Row>
         <Form.Group as={Col}>
@@ -51,6 +69,21 @@ export const CreateLocation = () => {
             label="Абревиатура"
             value={abbreviation}
             onChange={onAbbreviationChange}
+          />
+        </Form.Group>
+      </Row>
+
+      <Row>
+        <Form.Group as={Col}>
+          <SelectField
+            label="Тип на смените"
+            ariaLabel="Изберете тип на смените:"
+            value={shiftTypesTemplateId}
+            onChange={onShiftTypesTemplateIdChange}
+            options={shiftTypesTemplate.map((shiftTypeTemplate) => ({
+              label: shiftTypeTemplate.name,
+              value: shiftTypeTemplate.id,
+            }))}
           />
         </Form.Group>
       </Row>

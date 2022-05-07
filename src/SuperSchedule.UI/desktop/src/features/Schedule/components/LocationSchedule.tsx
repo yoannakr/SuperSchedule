@@ -17,10 +17,8 @@ import { getSchedulesByLocationForPeriod } from "../api/getSchedulesByLocationFo
 import { getArrayInRange } from "../utils/getArrayInRange";
 import IconButton from "@material-ui/core/IconButton";
 import { updateShiftTypeOfSchedules } from "../api/updateShiftTypeOfSchedules";
-import { getShiftTypes } from "../../../api/getShiftTypes";
 import TableContainer from "@material-ui/core/TableContainer";
-import { StickyNote2Sharp } from "@mui/icons-material";
-import { getShiftTypesByLocation } from "../../ShiftType/api/getShiftTypesByLocation";
+import { getShiftTypesByLocationIncludingDefaultBreak } from "../../ShiftType/api/getShiftTypesByLocationIncludingDefaultBreak";
 
 export type ScheduleRow = {
   employee: Employee;
@@ -48,8 +46,8 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
     const getDataSchedules = () => {
       getSchedulesByLocationForPeriod({
         locationId: locationId,
-        startDate: moment("01/10/2022", "DD/MM/YYYY").format("YYYY-MM-DD"),
-        endDate: moment("31/10/2022", "DD/MM/YYYY").format("YYYY-MM-DD"),
+        startDate: moment("01/03/2021", "DD/MM/YYYY").format("YYYY-MM-DD"),
+        endDate: moment("31/03/2021", "DD/MM/YYYY").format("YYYY-MM-DD"),
       })
         .then((response) => {
           const schedules: ScheduleModel[] = response.data;
@@ -71,7 +69,7 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
     };
 
     const getDataShiftTypes = () => {
-      getShiftTypesByLocation({ locationId })
+      getShiftTypesByLocationIncludingDefaultBreak({ locationId })
         .then((response) => {
           const shiftTypes: ShiftType[] = response.data;
           setShiftTypes(shiftTypes);
