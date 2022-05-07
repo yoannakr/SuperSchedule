@@ -1,4 +1,6 @@
-﻿namespace SuperSchedule.Startup.Models
+﻿using SuperSchedule.Database.Enums;
+
+namespace SuperSchedule.Startup.Models
 {
     public class LocationModel
     {
@@ -7,5 +9,7 @@
         public string Name { get; set; }
 
         public string Abbreviation { get; set; }
+
+        public int ShiftTypesTemplate { get; set; }
     }
 }

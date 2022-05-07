@@ -4,6 +4,7 @@ import EventIcon from "@mui/icons-material/Event";
 import GroupIcon from "@mui/icons-material/Group";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
+import SummarizeIcon from "@mui/icons-material/Summarize";
 import SettingIcon from "@mui/icons-material/Settings";
 
 export const SidebarData = [
@@ -14,7 +15,7 @@ export const SidebarData = [
     submenu: [
       {
         title: "Нов график",
-        link: "/schedule",
+        link: "/createSchedule",
       },
       {
         title: "График",
@@ -51,6 +52,27 @@ export const SidebarData = [
         link: "/shiftTypes",
       },
     ],
+  },
+  {
+    title: "Обекти",
+    icon: <LocationCityIcon />,
+    link: "",
+    submenu: [
+      {
+        title: "Нов обект",
+        link: "/addLocation",
+      },
+      {
+        title: "Обекти",
+        link: "/locations",
+      },
+    ],
+  },
+  {
+    title: "Отчет",
+    icon: <SummarizeIcon />,
+    link: "/report",
+    submenu: [],
   },
   {
     title: "Настройки",

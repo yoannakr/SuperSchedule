@@ -1,4 +1,6 @@
-﻿namespace SuperSchedule.Database.Models
+﻿using SuperSchedule.Database.Enums;
+
+namespace SuperSchedule.Database.Models
 {
     public class Location
     {
@@ -7,6 +9,8 @@
         public string Name { get; set; }
 
         public string Abbreviation { get; set; }
+
+        public ShiftTypesTemplate ShiftTypesTemplate { get; set; } = ShiftTypesTemplate.TwelveHours;
 
         public ICollection<ShiftType> ShiftTypes { get; set; } = new HashSet<ShiftType>();
 

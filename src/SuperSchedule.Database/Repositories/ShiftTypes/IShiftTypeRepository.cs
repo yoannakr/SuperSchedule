@@ -13,5 +13,7 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
         ShiftType GetDefaultBreakShiftType();
 
         IEnumerable<ShiftType> GetShiftTypesByLocation(int locationId);
+
+        IEnumerable<ShiftType> GetShiftTypesByLocationIncludingDefaultBreak(int locationId);
     }
 }

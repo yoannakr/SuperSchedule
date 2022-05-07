@@ -52,5 +52,19 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
                 .Include(s => s.Days)
                 .Where(s => s.Location != null && s.Location.Id == locationId);
         }
+
+        public IEnumerable<ShiftType> GetShiftTypesByLocationIncludingDefaultBreak(int locationId)
+        {
+            var shiftTypesByLocation = superScheduleDbContext
+                  .ShiftTypes
+                  .Include(s => s.Location)
+                  .Include(s => s.Days)
+                  .Where(s => s.Location != null && s.Location.Id == locationId)
+                  .ToList();
+
+            shiftTypesByLocation.Add(GetDefaultBreakShiftType());
+
+            return shiftTypesByLocation;
+        }
     }
 }

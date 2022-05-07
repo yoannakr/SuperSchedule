@@ -74,5 +74,22 @@ namespace SuperSchedule.Startup.Controllers
                     DaysIds = sh.Days.Select(d => d.Id)
                 });
         }
+
+        [HttpGet]
+        public IEnumerable<ShiftTypeModel> GetShiftTypesByLocationIncludingDefaultBreak(int locationId)
+        {
+            return shiftTypeService.GetShiftTypesByLocationIncludingDefaultBreak(locationId).Select(sh =>
+                new ShiftTypeModel
+                {
+                    Id = sh.Id,
+                    Name = sh.Name,
+                    Abbreviation = sh.Abbreviation,
+                    StartTime = new DateTime(sh.StartTime.Ticks),
+                    EndTime = new DateTime(sh.EndTime.Ticks),
+                    RotationDays = sh.RotationDays,
+                    LocationId = sh.Location?.Id ?? 0,
+                    DaysIds = sh.Days.Select(d => d.Id)
+                });
+        }
     }
 }

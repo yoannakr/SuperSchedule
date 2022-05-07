@@ -62,13 +62,13 @@ namespace SuperSchedule.Database.Data
         public void FillDatabase()
         {
             Days.AddRange(
+                new Day { Name = "Неделя" },
                 new Day { Name = "Понеделник" },
                 new Day { Name = "Вторник" },
                 new Day { Name = "Сряда" },
                 new Day { Name = "Четвъртък" },
                 new Day { Name = "Петък" },
-                new Day { Name = "Събота" },
-                new Day { Name = "Неделя" }
+                new Day { Name = "Събота" }
                 );
 
             ShiftTypes.Add(new ShiftType

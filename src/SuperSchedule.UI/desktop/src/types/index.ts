@@ -15,6 +15,7 @@ export type Location = {
   id: number;
   name: string;
   abbreviation: string;
+  shiftTypesTemplate: number;
 };
 
 export type Day = {

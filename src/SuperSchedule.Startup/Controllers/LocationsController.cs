@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SuperSchedule.Database.Enums;
 using SuperSchedule.Database.Models;
 using SuperSchedule.Services.Locations;
 using SuperSchedule.Startup.Models;
@@ -26,7 +27,8 @@ namespace SuperSchedule.Startup.Controllers
             await locationService.CrateLocation(new Location
             {
                 Name = locationInputModel.Name,
-                Abbreviation = locationInputModel.Abbreviation
+                Abbreviation = locationInputModel.Abbreviation,
+                ShiftTypesTemplate = (ShiftTypesTemplate)locationInputModel.ShiftTypesTemplate,
             });
         }
     }

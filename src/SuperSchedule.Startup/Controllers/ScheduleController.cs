@@ -17,9 +17,12 @@ namespace SuperSchedule.Startup.Controllers
         }
 
         [HttpPost]
-        public async Task FillSchedulesForMonth(DateTime startDate, DateTime endDate)
+        public async Task FillSchedulesForMonth(DateTime monthDate)
         {
-            await scheduleService.FillSchedulesForMonth(startDate, endDate);
+            var firstDayOfMonth = new DateTime(monthDate.Year, monthDate.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+            await scheduleService.FillSchedulesForMonth(firstDayOfMonth, lastDayOfMonth);
         }
 
         [HttpGet]
