@@ -8,6 +8,7 @@ export type ShiftType = {
   endTime: moment.Moment;
   rotationDays: number;
   locationId: number;
+  nightHours: number;
   daysIds: number[];
 };
 

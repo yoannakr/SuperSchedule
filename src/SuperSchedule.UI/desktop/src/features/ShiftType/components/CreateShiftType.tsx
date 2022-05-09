@@ -27,6 +27,7 @@ export const CreateShiftType = () => {
   const [locations, setLocations] = useState<Location[]>([]);
   const [days, setDays] = useState<Day[]>([]);
   const [selectedLocationId, setSelectedLocationId] = useState<number>(0);
+  const [nightHours, setNightHours] = useState<number>(0);
   const [selectedDaysIds, setSelectedDaysId] = useState<number[]>([]);
 
   useEffect(() => {
@@ -82,6 +83,11 @@ export const CreateShiftType = () => {
     setSelectedLocationId(selectedLocationId);
   };
 
+  const onNightHoursChange = (nightHoursInput: string) => {
+    const nightHours: number = +nightHoursInput;
+    setNightHours(nightHours);
+  };
+
   const onDayChecked = (selectedDayIdInput: string) => {
     const selectedDayId: number = +selectedDayIdInput;
     const isDayAdded: boolean = selectedDaysIds.includes(selectedDayId);
@@ -104,6 +110,7 @@ export const CreateShiftType = () => {
       endTime: moment(endTime, timeFormat),
       rotationDays,
       locationId: selectedLocationId,
+      nightHours,
       daysIds: selectedDaysIds,
     };
 
@@ -182,6 +189,18 @@ export const CreateShiftType = () => {
               label: location.name,
               value: location.id,
             }))}
+          />
+        </Form.Group>
+      </Row>
+
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
+          <InputField
+            type="number"
+            label="Брой нощни часове"
+            min={0}
+            value={nightHours}
+            onChange={onNightHoursChange}
           />
         </Form.Group>
       </Row>

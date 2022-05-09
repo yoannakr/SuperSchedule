@@ -17,6 +17,8 @@ namespace SuperSchedule.Startup.Models
 
         public int LocationId { get; set; }
 
+        public int? NightHours { get; set; }
+
         public IEnumerable<int>? DaysIds { get; set; }
     }
 }

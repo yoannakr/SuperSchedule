@@ -52,6 +52,7 @@ namespace SuperSchedule.Startup.Controllers
                 EndTime = TimeOnly.FromDateTime(shiftTypeInputModel.EndTime.ToLocalTime()),
                 RotationDays = shiftTypeInputModel.RotationDays,
                 Location = locationService.GetLocationById(shiftTypeInputModel.LocationId),
+                NightHours = shiftTypeInputModel.NightHours,
                 Days = shiftTypeInputModel.DaysIds.Select(id => dayService.GetDayById(id)).ToList()
             }) ;
 
