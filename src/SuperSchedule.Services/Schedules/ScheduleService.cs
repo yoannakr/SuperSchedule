@@ -321,6 +321,7 @@ namespace SuperSchedule.Services.Schedules
                 if (!CanHaveShiftTypeOnGivenDay(location, tempDate, employee, currentShiftType, schedules))
                 {
                     tempDate = tempDate.AddDays(-1);
+                    tempRotationDays++;
                     continue;
                 }
 
