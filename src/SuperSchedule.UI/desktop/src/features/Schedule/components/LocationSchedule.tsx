@@ -6,6 +6,8 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import EditIcon from "@material-ui/icons/EditOutlined";
+import DoneIcon from "@material-ui/icons/DoneAllTwoTone";
+import RevertIcon from "@material-ui/icons/NotInterestedOutlined";
 
 import styles from "./Schedule.module.scss";
 import {
@@ -20,18 +22,34 @@ import { updateShiftTypeOfSchedules } from "../api/updateShiftTypeOfSchedules";
 import TableContainer from "@material-ui/core/TableContainer";
 import { getShiftTypesByLocationIncludingDefaultBreak } from "../../ShiftType/api/getShiftTypesByLocationIncludingDefaultBreak";
 
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles({
+  tableCell: {
+    padding: "5px",
+    textAlign: "center",
+    border: "1px solid grey",
+    fontSize: "0.7em",
+  },
+  table: {
+    // width: "80vw",
+  },
+});
+
 export type ScheduleRow = {
   employee: Employee;
   shiftTypeEditableCells: ShiftTypeEditableCell[];
-  isEditMode: boolean;
 };
 
 type LocationScheduleProps = {
   locationId: number;
+  locationName: string;
+  monthDate: Date | null;
 };
 
 export const LocationSchedule = (props: LocationScheduleProps) => {
-  const { locationId } = props;
+  const classes = useStyles();
+  const { locationId, locationName, monthDate } = props;
 
   const [shiftTypes, setShiftTypes] = useState<ShiftType[]>([]);
   const [schedulesRows, setSchedulesRows] = useState<ScheduleRow[]>([]);
@@ -39,35 +57,10 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
   const [previousScheduleRow, setPreviousScheduleRow] = useState<ScheduleRow[]>(
     []
   );
-  const [countOfDays, setCountOfDays] = useState<number>(31);
+  const [countOfDays, setCountOfDays] = useState<number>(0);
   const [days, setDays] = useState<number[]>([]);
 
   useEffect(() => {
-    const getDataSchedules = () => {
-      getSchedulesByLocationForPeriod({
-        locationId: locationId,
-        startDate: moment("01/03/2021", "DD/MM/YYYY").format("YYYY-MM-DD"),
-        endDate: moment("31/03/2021", "DD/MM/YYYY").format("YYYY-MM-DD"),
-      })
-        .then((response) => {
-          const schedules: ScheduleModel[] = response.data;
-
-          const schedulesRows: ScheduleRow[] = schedules.map((schedule) =>
-            createScheduleRow(schedule)
-          );
-
-          setSchedulesRows(schedulesRows);
-          setCountOfDays(schedules.length);
-          const days: number[] = getArrayInRange(1, countOfDays);
-          setDays(days);
-        })
-        .catch((error) =>
-          console.log(
-            `GetSchedulesByLocationForPeriod not successful because: ${error}`
-          )
-        );
-    };
-
     const getDataShiftTypes = () => {
       getShiftTypesByLocationIncludingDefaultBreak({ locationId })
         .then((response) => {
@@ -79,22 +72,84 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
         );
     };
 
-    getDataSchedules();
     getDataShiftTypes();
   }, []);
+
+  useEffect(() => {
+    const getDataSchedules = () => {
+      const startDate = moment(monthDate).startOf("month").format("YYYY-MM-DD");
+      const endDate = moment(monthDate).endOf("month").format("YYYY-MM-DD");
+
+      getSchedulesByLocationForPeriod({
+        locationId: locationId,
+        startDate: startDate,
+        endDate: endDate,
+      })
+        .then((response) => {
+          const schedules: ScheduleModel[] = response.data;
+
+          const currentSchedulesRows: ScheduleRow[] = schedules.map(
+            (schedule) => createScheduleRow(schedule)
+          );
+
+          console.log(currentSchedulesRows);
+          if (currentSchedulesRows.length !== 0) {
+            const monthDays = moment(monthDate).daysInMonth();
+            setCountOfDays(monthDays);
+
+            const currentDays: number[] = getArrayInRange(1, monthDays);
+            setDays(currentDays);
+          } else {
+            setCountOfDays(0);
+            setDays([]);
+          }
+          setSchedulesRows(currentSchedulesRows);
+        })
+        .catch((error) =>
+          console.log(
+            `GetSchedulesByLocationForPeriod not successful because: ${error}`
+          )
+        );
+    };
+    if (!isEditMode) getDataSchedules();
+  }, [isEditMode, monthDate]);
 
   const createScheduleRow = (schedule: ScheduleModel): ScheduleRow => ({
     employee: schedule.employee,
     shiftTypeEditableCells: schedule.shiftTypeEditableCells,
-    isEditMode: false,
   });
 
-  const onEditModeChange = () => {
-    setIsEditMode(!isEditMode);
-    onSave();
+  const onDoneEditing = async () => {
+    await onSave();
+    setIsEditMode(false);
   };
 
-  const onSave = () => {
+  const onStartEditing = () => {
+    setIsEditMode(true);
+    const previousScheduleRow: ScheduleRow[] = schedulesRows.map(
+      (scheduleRow) => {
+        return {
+          employee: scheduleRow.employee,
+          shiftTypeEditableCells: scheduleRow.shiftTypeEditableCells.map(
+            (shiftTypeEditableCell) => {
+              return {
+                scheduleId: shiftTypeEditableCell.scheduleId,
+                shiftType: {
+                  id: shiftTypeEditableCell.shiftType.id,
+                  name: shiftTypeEditableCell.shiftType.name,
+                  abbreviation: shiftTypeEditableCell.shiftType.abbreviation,
+                },
+              };
+            }
+          ),
+        };
+      }
+    );
+    setPreviousScheduleRow(previousScheduleRow);
+    console.log(previousScheduleRow);
+  };
+
+  const onSave = async () => {
     let allShiftTypeEditableCells: ShiftTypeEditableCell[] = [];
     schedulesRows.map(
       (scheduleRow) =>
@@ -105,52 +160,70 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
 
     console.log(allShiftTypeEditableCells);
 
-    updateShiftTypeOfSchedules({
+    await updateShiftTypeOfSchedules({
       shiftTypeEditableCells: allShiftTypeEditableCells,
     });
   };
 
-  const onChange = (
-    shiftTypeId: string,
-    shiftTypeEditableCell: ShiftTypeEditableCell
-  ) => {};
+  const onRevert = () => {
+    setIsEditMode(false);
+    setSchedulesRows(previousScheduleRow);
+    console.log("Previous", previousScheduleRow);
+  };
 
   return (
-    <div
-      style={{
-        width: "100%",
-      }}
-    >
-      <IconButton aria-label="delete" onClick={onEditModeChange}>
-        <EditIcon />
-      </IconButton>
-      <TableContainer
-        style={{
-          width: "100%",
-          border: "1px solid black",
-          margin: "10px",
-        }}
-      >
+    <div className={styles.LocationSchedule}>
+      {isEditMode && (
+        <>
+          <IconButton aria-label="done" onClick={onDoneEditing}>
+            <DoneIcon />
+          </IconButton>
+          <IconButton aria-label="revert" onClick={() => onRevert()}>
+            <RevertIcon />
+          </IconButton>
+        </>
+      )}
+      {!isEditMode && (
+        <IconButton aria-label="delete" onClick={onStartEditing}>
+          <EditIcon />
+        </IconButton>
+      )}
+      <TableContainer className={`${styles.Table} ${classes.table}`}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell align="left" style={{ fontSize: 10 }}></TableCell>
-              <TableCell align="center" style={{ fontSize: 10 }}>
-                blok 1
+              <TableCell
+                className={`${styles.TableCell} ${classes.tableCell}`}
+              ></TableCell>
+              <TableCell
+                className={`${styles.FixedColumns} ${styles.TableCell} ${classes.tableCell}`}
+              >
+                {locationName}
               </TableCell>
-              <TableCell align="center" style={{ fontSize: 10 }} colSpan={31}>
+              <TableCell
+                colSpan={countOfDays}
+                className={`${styles.TableCell} ${classes.tableCell}`}
+              >
                 дати от месеца
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell align="left" style={{ fontSize: 10 }}>
+              <TableCell
+                className={`${styles.FixedColumns} ${styles.TableCell} ${classes.tableCell}`}
+              >
                 No
               </TableCell>
-              <TableCell align="left" style={{ fontSize: 10 }}>
+              <TableCell
+                className={`${styles.FixedColumns} ${styles.TableCell} ${classes.tableCell}`}
+              >
                 Име, фамилия
               </TableCell>
               {days.map((day, index) => (
-                <TableCell key={index} align="center" style={{ fontSize: 10 }}>
+                <TableCell
+                  key={index}
+                  style={{ color: "red", fontWeight: "bold" }}
+                  className={`${styles.TableCell} ${classes.tableCell}`}
+                >
                   {day}
                 </TableCell>
               ))}
@@ -160,43 +233,22 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
             {schedulesRows.map((row, index) => (
               <TableRow key={index}>
                 <TableCell
-                  style={{ fontSize: 10 }}
-                  className={styles.TableContainer}
+                  className={`${styles.FixedColumns} ${styles.TableCell} ${classes.tableCell}`}
                 >
                   {index + 1}
                 </TableCell>
-                <TableCell className={styles.TableContainer}>
-                  {row.isEditMode ? (
-                    <>
-                      {/* <IconButton
-                      aria-label="done"
-                      onClick={() => onToggleEditMode(row.id)}
-                    >
-                      <DoneIcon />
-                    </IconButton>
-                    <IconButton
-                      aria-label="revert"
-                      onClick={() => onRevert(row.id)}
-                    >
-                      <RevertIcon />
-                    </IconButton> */}
-                    </>
-                  ) : (
-                    <div style={{ fontSize: 10 }}>{row.employee.firstName}</div>
-                    // <IconButton
-                    //   aria-label="delete"
-                    //   onClick={() => onToggleEditMode(row.id)}
-                    // >
-                    //   <EditIcon />
-                    // </IconButton>
-                  )}
+                <TableCell
+                  className={`${styles.FixedColumns} ${styles.TableCell} ${classes.tableCell}`}
+                >
+                  <div>{`${row.employee.firstName} ${row.employee.lastName}`}</div>
                 </TableCell>
                 {row.shiftTypeEditableCells.map((shiftType, shiftTypeId) => (
                   <EditScheduleTableCell
+                    className={`${styles.TableCell} ${classes.tableCell}`}
                     key={shiftTypeId}
                     row={shiftType}
                     shiftTypes={shiftTypes}
-                    onSave={onChange}
+                    isEditMode={isEditMode}
                   />
                 ))}
               </TableRow>

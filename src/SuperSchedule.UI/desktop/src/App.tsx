@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { CreatePosition } from "./features/Position";
 import { CreateLocation } from "./features/Location";
@@ -15,10 +15,10 @@ import { CreateSchedule } from "./features/Schedule/components/CreateSchedule";
 function App() {
   return (
     <div className="App">
-      <Sidebar />
-      <Router>
+      <BrowserRouter>
+        <Sidebar />
         <Routes>
-          <Route path="/" element={<LocationSchedule locationId={1} />} />
+          <Route path="/" element={<CreatePosition />} />
           <Route path="/createSchedule" element={<CreateSchedule />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/shiftTypes" element={<CreateShiftType />} />
@@ -27,7 +27,7 @@ function App() {
           <Route path="/employees" element={<CreateEmployee />} />
           <Route path="/settings" element={<Setting />} />
         </Routes>
-      </Router>
+      </BrowserRouter>
     </div>
   );
 }

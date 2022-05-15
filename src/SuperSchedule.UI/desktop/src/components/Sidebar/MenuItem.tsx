@@ -4,6 +4,7 @@ import styles from "./Sidebar.module.scss";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { IconButton } from "@material-ui/core";
+import { Link } from "react-router-dom";
 
 export type MenuItemModel = {
   link: string;
@@ -27,17 +28,14 @@ export const MenuItem = (props: MenuItemProps) => {
 
   return (
     <>
-      <li
-        className={styles.Row}
-        id={window.location.pathname === item.link ? "active" : ""}
-        onClick={() => {
-          if (item.link !== "") window.location.pathname = item.link;
-        }}
-      >
-        <div id={styles.icon}>{item.icon}</div>{" "}
-        <div id={styles.title}>{item.title}</div>
-        {item.submenu.length !== 0 &&
-          (!isSubMenuShown ? (
+      {item.submenu.length !== 0 && (
+        <li
+          className={styles.Row}
+          id={window.location.pathname === item.link ? "active" : ""}
+        >
+          <div id={styles.icon}>{item.icon}</div>{" "}
+          <div id={styles.title}>{item.title}</div>
+          {!isSubMenuShown ? (
             <IconButton onClick={() => setIsSubMenuShown(!isSubMenuShown)}>
               <ArrowDropDownIcon className={styles.ArrowButton} />
             </IconButton>
@@ -45,21 +43,25 @@ export const MenuItem = (props: MenuItemProps) => {
             <IconButton onClick={() => setIsSubMenuShown(!isSubMenuShown)}>
               <ArrowDropUpIcon className={styles.ArrowButton} />
             </IconButton>
-          ))}
-      </li>
+          )}
+        </li>
+      )}
+      {item.submenu.length === 0 && (
+        <Link
+          className={styles.Row}
+          id={window.location.pathname === item.link ? "active" : ""}
+          to={item.link}
+        >
+          <div id={styles.icon}>{item.icon}</div>{" "}
+          <div id={styles.title}>{item.title}</div>
+        </Link>
+      )}
       {item.submenu.length !== 0 && isSubMenuShown && (
         <ul className={styles.Submenu}>
           {item.submenu.map((subItem, subKey) => (
-            <li
-              className={styles.SubmenuItem}
-              key={subKey}
-              id={window.location.pathname === subItem.link ? "active" : ""}
-              onClick={() => {
-                window.location.pathname = subItem.link;
-              }}
-            >
+            <Link key={subKey} className={styles.SubmenuItem} to={subItem.link}>
               <div id={styles.title}>{subItem.title}</div>
-            </li>
+            </Link>
           ))}
         </ul>
       )}

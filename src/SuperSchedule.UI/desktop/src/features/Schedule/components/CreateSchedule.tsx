@@ -12,20 +12,10 @@ import moment from "moment";
 
 export const CreateSchedule = () => {
   const [monthDate, setMonthDate] = React.useState<Date | null>(new Date());
-  const [name, setName] = useState<string>("");
-  const [abbreviation, setAbbreviation] = useState<string>("");
-
-  const onNameChange = (name: string) => {
-    setName(name);
-  };
-
-  const onAbbreviationChange = (abbreviation: string) => {
-    setAbbreviation(abbreviation);
-  };
 
   const save = () => {
     const stringMonthDate = moment(monthDate).format("YYYY-MM-DD");
-    console.log(stringMonthDate);
+
     fillSchedulesForMonth({ monthDate: stringMonthDate }).catch((error) =>
       console.log(`FillSchedulesForMonth not successful because: ${error}`)
     );

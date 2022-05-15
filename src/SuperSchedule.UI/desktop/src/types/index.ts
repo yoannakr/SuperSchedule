@@ -4,12 +4,12 @@ export type ShiftType = {
   id: number;
   name: string;
   abbreviation: string;
-  startTime: moment.Moment;
-  endTime: moment.Moment;
-  rotationDays: number;
-  locationId: number;
-  nightHours: number;
-  daysIds: number[];
+  startTime?: moment.Moment;
+  endTime?: moment.Moment;
+  rotationDays?: number;
+  locationId?: number;
+  nightHours?: number;
+  daysIds?: number[];
 };
 
 export type Location = {

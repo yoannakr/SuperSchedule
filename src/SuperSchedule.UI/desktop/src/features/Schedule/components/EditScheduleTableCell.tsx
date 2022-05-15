@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import "../../../App.css";
+import styles from "./Schedule.module.scss";
 import TableCell from "@material-ui/core/TableCell";
 import { SelectField } from "../../../components/Form";
 import { ShiftType } from "../../../types";
@@ -11,41 +11,42 @@ export type ShiftTypeEditableCell = {
 };
 
 type EditScheduleTableCellProps = {
+  className: string;
   shiftTypes: ShiftType[];
   row: ShiftTypeEditableCell;
-  onSave: any;
+  isEditMode: boolean;
 };
 
 export const EditScheduleTableCell = (props: EditScheduleTableCellProps) => {
-  const { shiftTypes, row, onSave } = props;
-  const isEditMode = true;
+  const { className, shiftTypes, row, isEditMode } = props;
 
-  const [previousRow, setPreviousRow] = useState<ShiftTypeEditableCell>(row);
-  const [currentRow, setCurrentRow] = useState<ShiftTypeEditableCell>(row);
+  const [currentShiftTypeId, setCurrentShiftTypeId] = useState<number>(
+    row.shiftType.id
+  );
 
-  const onChangeTest = (shiftTypeId: string) => {
-    const newRow: ShiftTypeEditableCell = {
-      scheduleId: currentRow.scheduleId,
-      shiftType: currentRow.shiftType,
-    };
-    newRow.shiftType.id = +shiftTypeId;
-    setCurrentRow(newRow);
+  useEffect(() => {
+    setCurrentShiftTypeId(row.shiftType.id);
+  }, [row.shiftType.id]);
+
+  const onShiftTypeChange = (shiftTypeId: string) => {
+    row.shiftType.id = +shiftTypeId;
+    setCurrentShiftTypeId(+shiftTypeId);
   };
 
   return (
-    <TableCell align="left">
+    <TableCell align="left" className={className}>
       {isEditMode ? (
         <SelectField
-          className="Test"
-          value={currentRow.shiftType.id}
-          onChange={onChangeTest}
+          className={styles.EditScheduleTableCell}
+          value={currentShiftTypeId}
+          onChange={onShiftTypeChange}
           options={shiftTypes.map((shiftType) => ({
-            label: shiftType.name,
+            label: shiftType.abbreviation,
             value: shiftType.id,
           }))}
         />
       ) : (
-        row.shiftType.name
+        row.shiftType.abbreviation
       )}
     </TableCell>
   );

@@ -1,13 +1,25 @@
-.TableContainer {
+.Table {
+  width: 100%;
+  margin: 10px;
+}
+
+.FixedColumns {
   position: sticky;
   left: 0;
   background: white;
-  box-shadow: 5px 2px 5px grey;
-  border-right: 2px solid black;
+  // box-shadow: 5px 2px 5px grey;
+}
+
+.EditScheduleTableCell {
+  font-size: 10px;
+  width: max-content;
 }
 
 .Schedule {
+  width: 100vw;
+  margin-left: 250px;
 }
 
-.test {
+.LocationSchedule {
+  width: calc(100vw - 270px);
 }

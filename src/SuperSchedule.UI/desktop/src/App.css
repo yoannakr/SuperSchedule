@@ -3,6 +3,7 @@
   width: 100vw;
   display: flex;
   flex-direction: row;
+  overflow-x: hidden;
 }
 
 body {
@@ -17,10 +18,4 @@ body {
   /* justify-content: center; */
   align-items: center;
   flex-direction: column;
-  overflow: auto;
-}
-
-.Test {
-  font-size: 10px;
-  width: max-content;
 }
