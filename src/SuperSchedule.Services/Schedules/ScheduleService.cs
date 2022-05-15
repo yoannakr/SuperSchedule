@@ -87,7 +87,7 @@ namespace SuperSchedule.Services.Schedules
         {
             foreach (var employee in employees)
             {
-                var schedulesForEmployee = schedules.Where(s => s.Employee.Id == employee.Id).ToList();
+                var schedulesForEmployee = schedules.Where(s => s.Employee?.Id == employee.Id).ToList();
                 var countOfMonthDays = (endDate.Date - startDate.Date).TotalDays + 1;
                 var countOfFilledDays = schedulesForEmployee.Count();
 
@@ -388,9 +388,21 @@ namespace SuperSchedule.Services.Schedules
             {
                 var previousShiftType = schedulesWithShiftTypeHighestPriority[i].ShiftType;
                 var date = schedulesWithShiftTypeHighestPriority[i].Date;
+                var currentIndex = i;
                 var otherEmployee = GetOtherEmployee(schedules, otherGroupEmployees, previousShiftType, date);
+                while(otherEmployee == null)
+                {
+                    currentIndex++;
+                    if(currentIndex >= schedulesWithShiftTypeHighestPriority.Count)
+                    {
+                        return;
+                    }
 
-                schedulesWithShiftTypeHighestPriority[i].ShiftType = defaultBreakShiftType;
+                    previousShiftType = schedulesWithShiftTypeHighestPriority[currentIndex].ShiftType;
+                    date = schedulesWithShiftTypeHighestPriority[currentIndex].Date;
+                    otherEmployee = GetOtherEmployee(schedules, otherGroupEmployees, previousShiftType, date);
+                }
+                schedulesWithShiftTypeHighestPriority[currentIndex].ShiftType = defaultBreakShiftType;
 
                 schedules.Add(new Schedule
                 {
@@ -399,6 +411,7 @@ namespace SuperSchedule.Services.Schedules
                     ShiftType = previousShiftType,
                     Date = date
                 });
+                currentIndex = i;
             }
 
         }
@@ -563,7 +576,7 @@ namespace SuperSchedule.Services.Schedules
         {
             var schedulesForEmployee = schedules.Where(s => s.Employee == employee).OrderBy(s => s.Date.Date).ToList();
             var startDate = GetFirstDateOfWeekFromDate(date);
-            var endDate = startDate.AddDays(7);
+            var endDate = startDate.AddDays(6);
 
             var weekHours = schedulesForEmployee.Where(t => t.Date >= startDate && t.Date <= endDate).Sum(s => s.ShiftType.TotalHours);
 
