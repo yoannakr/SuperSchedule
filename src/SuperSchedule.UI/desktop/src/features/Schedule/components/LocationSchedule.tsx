@@ -31,9 +31,6 @@ const useStyles = makeStyles({
     border: "1px solid grey",
     fontSize: "0.7em",
   },
-  table: {
-    // width: "80vw",
-  },
 });
 
 export type ScheduleRow = {
@@ -47,6 +44,12 @@ type LocationScheduleProps = {
   monthDate: Date | null;
 };
 
+type Day = {
+  content: number;
+  color: string;
+  background: string;
+};
+
 export const LocationSchedule = (props: LocationScheduleProps) => {
   const classes = useStyles();
   const { locationId, locationName, monthDate } = props;
@@ -58,7 +61,7 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
     []
   );
   const [countOfDays, setCountOfDays] = useState<number>(0);
-  const [days, setDays] = useState<number[]>([]);
+  const [days, setDays] = useState<Day[]>([]);
 
   useEffect(() => {
     const getDataShiftTypes = () => {
@@ -95,10 +98,24 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
           console.log(currentSchedulesRows);
           if (currentSchedulesRows.length !== 0) {
             const monthDays = moment(monthDate).daysInMonth();
+            const days: Day[] = [];
             setCountOfDays(monthDays);
 
-            const currentDays: number[] = getArrayInRange(1, monthDays);
-            setDays(currentDays);
+            let currentDate = moment(monthDate).startOf("month");
+            for (let i = 0; i < monthDays; i++) {
+              const weekDay = currentDate.isoWeekday();
+              const isWeekend = weekDay === 7 || weekDay === 6;
+              const day: Day = {
+                content: currentDate.date(),
+                color: isWeekend ? "red" : "black",
+                background: isWeekend ? "yellow" : "none",
+              };
+
+              days.push(day);
+              currentDate.add(1, "days");
+            }
+
+            setDays(days);
           } else {
             setCountOfDays(0);
             setDays([]);
@@ -188,7 +205,7 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
           <EditIcon />
         </IconButton>
       )}
-      <TableContainer className={`${styles.Table} ${classes.table}`}>
+      <TableContainer className={`${styles.Table}`}>
         <Table>
           <TableHead>
             <TableRow>
@@ -221,10 +238,14 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
               {days.map((day, index) => (
                 <TableCell
                   key={index}
-                  style={{ color: "red", fontWeight: "bold" }}
+                  style={{
+                    color: day.color,
+                    fontWeight: "bold",
+                    background: day.background,
+                  }}
                   className={`${styles.TableCell} ${classes.tableCell}`}
                 >
-                  {day}
+                  {day.content}
                 </TableCell>
               ))}
             </TableRow>
