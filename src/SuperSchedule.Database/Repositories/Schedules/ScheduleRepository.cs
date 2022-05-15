@@ -74,5 +74,15 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .Include(s => s.Location)
                 .FirstOrDefault(s => s.Location.Id == locationId && s.Date.Date == date.Date && s.Employee.Id == employee.Id);
         }
+
+        public bool IsScheduleFilledForPreviousMonth(int locationId, DateTime date)
+        {
+            return superScheduleDbContext
+                .Schedules
+                .Include(s => s.Employee)
+                .Include(s => s.ShiftType)
+                .Include(s => s.Location)
+                .Any(s => s.Location.Id == locationId && s.Date.Date == date.Date);
+        }
     }
 }

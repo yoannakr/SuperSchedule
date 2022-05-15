@@ -11,5 +11,7 @@
         public ShiftType? ShiftType { get; set; }
 
         public DateTime Date { get; set; }
+
+        public int? LastRotationDays { get; set; }
     }
 }

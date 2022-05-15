@@ -15,5 +15,7 @@ namespace SuperSchedule.Database.Repositories.Schedules
         Task UpdateShiftTypeOfSchedules(Schedule schedule, int newShiftTypeId);
 
         Schedule GetEmployeeScheduleByLocationForDate(int locationId, DateTime date, Employee employee);
+
+        bool IsScheduleFilledForPreviousMonth(int locationId, DateTime date);
     }
 }

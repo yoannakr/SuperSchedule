@@ -141,12 +141,15 @@ namespace SuperSchedule.Services.Schedules
 
         private void FillScheduleWithHighestPositionPriorityEmployeesTwelveHoursTemplate(List<Schedule> scheduler, Location location, IGrouping<int, Employee>? employeesWithHighestPositionPriority, DateTime startDate, DateTime endDate)
         {
+            var previousMonth = startDate.AddMonths(-1);
+            var isScheduleFilledForPreviousMonth = scheduleRepository.IsScheduleFilledForPreviousMonth(location.Id, previousMonth);
+
             var countOfMissedDays = 0;
 
             foreach (var employee in employeesWithHighestPositionPriority)
             {
                 var startDateWithMissedDays = startDate.AddDays(countOfMissedDays);
-                FillScheduleTwelveHoursTemplate(scheduler, location, startDateWithMissedDays, endDate, employee);
+                FillConreteScheduleTwelveHoursTemplate(scheduler, location, startDateWithMissedDays, endDate, employee, isScheduleFilledForPreviousMonth);
 
                 if (countOfMissedDays != 0)
                 {
@@ -154,7 +157,7 @@ namespace SuperSchedule.Services.Schedules
                     var lastDate = startDate;
                     FillScheduleOpposite(scheduler, location, firstDate, lastDate, employee);
                 }
-                countOfMissedDays += 2;
+                countOfMissedDays += isScheduleFilledForPreviousMonth ? 0 : 2;
             }
         }
 
@@ -192,15 +195,21 @@ namespace SuperSchedule.Services.Schedules
             FillAllScheduleDates(location, startDate, endDate, schedules, employees);
         }
 
-        private void FillScheduleTwelveHoursTemplate(List<Schedule> schedules, Location location, DateTime startDate, DateTime endDate, Employee employee)
+        private void FillConreteScheduleTwelveHoursTemplate(List<Schedule> schedules, Location location, DateTime startDate, DateTime endDate, Employee employee, bool isScheduleFilledForPreviousMonth)
         {
             var allShiftTypes = shiftTypeService.GetShiftTypesByLocation(location.Id).ToList();
             var countOfShiftTypes = allShiftTypes.Count;
 
             var currentShiftTypeIndex = 0;
+            var tempRotationDays = 0;
+            if (isScheduleFilledForPreviousMonth)
+            {
+                var (nextShiftTypeIndex, lastRotationDays) = GetNextShiftTypeForTwelveHoursTemplate(location.Id, startDate.AddDays(-1), allShiftTypes, employee);
+                currentShiftTypeIndex = nextShiftTypeIndex;
+                tempRotationDays = lastRotationDays ?? 0;
+            }
             var rotationDays = allShiftTypes[currentShiftTypeIndex].RotationDays;
 
-            var tempRotationDays = 0;
             var tempDate = startDate;
             while (tempDate.Date <= endDate.Date)
             {
@@ -231,7 +240,8 @@ namespace SuperSchedule.Services.Schedules
                     Location = location,
                     Employee = employee,
                     ShiftType = currentShiftType,
-                    Date = tempDate
+                    Date = tempDate,
+                    LastRotationDays = tempRotationDays + 1,
                 });
 
                 tempRotationDays += 1;
@@ -239,10 +249,47 @@ namespace SuperSchedule.Services.Schedules
             }
         }
 
+        private (int, int?) GetNextShiftTypeForTwelveHoursTemplate(int id, DateTime lastDayOfPreviousMonth, List<ShiftType> allShiftTypes, Employee employee)
+        {
+            var maxShiftTypePriority = allShiftTypes.Max(s => s.Priority);
+            var minShiftTypePriority = allShiftTypes.Min(s => s.Priority);
+            var lastScheduleOfPreviousMonth = scheduleRepository.GetEmployeeScheduleByLocationForDate(id, lastDayOfPreviousMonth, employee);
+            if(lastScheduleOfPreviousMonth == null)
+            {
+                return (-1, null);
+            }
+
+            var tempDate = lastDayOfPreviousMonth;
+            while(lastScheduleOfPreviousMonth?.ShiftType?.Id == 1)
+            {
+                lastScheduleOfPreviousMonth = scheduleRepository.GetEmployeeScheduleByLocationForDate(id, tempDate, employee);
+                tempDate = tempDate.AddDays(-1);
+            }
+
+            var currentPriorityShiftType = lastScheduleOfPreviousMonth?.ShiftType?.Priority;
+            var lastRotationDays = lastScheduleOfPreviousMonth?.LastRotationDays;
+
+            if(lastRotationDays == lastScheduleOfPreviousMonth?.ShiftType?.RotationDays)
+            {
+                currentPriorityShiftType++;
+                lastRotationDays = 0;
+                if(currentPriorityShiftType > maxShiftTypePriority)
+                {
+                    currentPriorityShiftType = minShiftTypePriority;
+                }
+            }
+
+            var shiftTypeWithGivenPriority = allShiftTypes.FirstOrDefault(s => s.Priority == currentPriorityShiftType);
+            var indexOfShiftType = allShiftTypes.IndexOf(shiftTypeWithGivenPriority);
+
+            return (indexOfShiftType, lastRotationDays);
+            
+        }
+
         private void FillScheduleHighestEmployeesFirstAndSecondShiftsTemplate(List<Schedule> schedules, Location location, List<IGrouping<int, DateTime>> datesGroupedByWeek, List<ShiftType> allShiftTypes, Employee employee, int firstShiftIndex)
         {
             var firstDateOfMonth = datesGroupedByWeek.First().First();
-            var currentShiftTypeIndex = GetLastShiftTypeForFirstAndSecondShiftsTemplate(location.Id, firstDateOfMonth, allShiftTypes, employee);
+            var currentShiftTypeIndex = GetNextShiftTypeForFirstAndSecondShiftsTemplate(location.Id, firstDateOfMonth, allShiftTypes, employee);
             if(currentShiftTypeIndex == -1)
             {
                 currentShiftTypeIndex = firstShiftIndex;
@@ -630,8 +677,8 @@ namespace SuperSchedule.Services.Schedules
             }
         }
 
-        private int GetLastShiftTypeForFirstAndSecondShiftsTemplate(int locationId, DateTime startDate, List<ShiftType> allShiftTypes, Employee employee)
-        {
+        private int GetNextShiftTypeForFirstAndSecondShiftsTemplate(int locationId, DateTime startDate, List<ShiftType> allShiftTypes, Employee employee)
+        { 
             if (startDate.DayOfWeek != DayOfWeek.Monday && startDate.DayOfWeek != DayOfWeek.Saturday && startDate.DayOfWeek != DayOfWeek.Sunday)
             {
                 var previousMonthSchedule = scheduleRepository.GetEmployeeScheduleByLocationForDate(locationId, startDate.AddDays(-1), employee);
