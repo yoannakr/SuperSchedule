@@ -64,5 +64,15 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .OrderBy(s => s.Date)
                 .ToList();
         }
+
+        public Schedule GetEmployeeScheduleByLocationForDate(int locationId, DateTime date, Employee employee)
+        {
+            return superScheduleDbContext
+                .Schedules
+                .Include(s => s.Employee)
+                .Include(s => s.ShiftType)
+                .Include(s => s.Location)
+                .FirstOrDefault(s => s.Location.Id == locationId && s.Date.Date == date.Date && s.Employee.Id == employee.Id);
+        }
     }
 }

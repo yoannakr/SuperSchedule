@@ -13,5 +13,7 @@ namespace SuperSchedule.Database.Repositories.Schedules
         Schedule GetScheduleById(int scheduleId);
 
         Task UpdateShiftTypeOfSchedules(Schedule schedule, int newShiftTypeId);
+
+        Schedule GetEmployeeScheduleByLocationForDate(int locationId, DateTime date, Employee employee);
     }
 }
