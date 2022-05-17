@@ -1,4 +1,5 @@
-﻿using SuperSchedule.Database.Models;
+﻿using SuperSchedule.Database.Enums;
+using SuperSchedule.Database.Models;
 
 namespace SuperSchedule.Database.Repositories.Schedules
 {
@@ -17,5 +18,9 @@ namespace SuperSchedule.Database.Repositories.Schedules
         Schedule GetEmployeeScheduleByLocationForDate(int locationId, DateTime date, Employee employee);
 
         bool IsScheduleFilledForPreviousMonth(int locationId, DateTime date);
+
+        bool IsEmployeeAvailable(DateTime date, Employee employee);
+
+        DayOfWeekTemplate? GetDayOfWeekTemplateForMonth(int locationId, DateTime monthDate, Employee employee);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace SuperSchedule.Database.Models
+﻿using SuperSchedule.Database.Enums;
+
+namespace SuperSchedule.Database.Models
 {
     public class Schedule
     {
@@ -13,5 +15,7 @@
         public DateTime Date { get; set; }
 
         public int? LastRotationDays { get; set; }
+
+        public DayOfWeekTemplate? DayOfWeekTemplate { get; set; }
     }
 }
