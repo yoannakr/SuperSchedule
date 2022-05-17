@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SuperSchedule.Database.Data;
+using SuperSchedule.Database.Enums;
 using SuperSchedule.Database.Models;
 
 namespace SuperSchedule.Database.Repositories.Schedules
@@ -83,6 +84,30 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .Include(s => s.ShiftType)
                 .Include(s => s.Location)
                 .Any(s => s.Location.Id == locationId && s.Date.Date == date.Date);
+        }
+
+        public bool IsEmployeeAvailable(DateTime date, Employee employee)
+        {
+            return !superScheduleDbContext
+                .Schedules
+                .Include(s => s.Employee)
+                .Include(s => s.ShiftType)
+                .Include(s => s.Location)
+                .Any(s => s.Employee.Id == employee.Id && s.Date.Date == date.Date);
+        }
+
+        public DayOfWeekTemplate? GetDayOfWeekTemplateForMonth(int locationId, DateTime monthDate, Employee employee)
+        {
+            var firstDayOfMonth = new DateTime(monthDate.Year, monthDate.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+            return superScheduleDbContext
+                .Schedules
+                .Include(s => s.Employee)
+                .Include(s => s.ShiftType)
+                .Include(s => s.Location)
+                .FirstOrDefault(s => s.Location.Id == locationId && s.Employee.Id == employee.Id && s.Date.Date >= firstDayOfMonth.Date && s.Date.Date <= lastDayOfMonth.Date && s.DayOfWeekTemplate != null)?
+                .DayOfWeekTemplate;
         }
     }
 }
