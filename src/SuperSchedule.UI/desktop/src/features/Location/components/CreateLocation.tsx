@@ -17,9 +17,14 @@ export const CreateLocation = () => {
       id: 2,
       name: "1 и 2 смяна",
     },
+    {
+      id: 3,
+      name: "1 смяна",
+    },
   ];
   const [name, setName] = useState<string>("");
   const [abbreviation, setAbbreviation] = useState<string>("");
+  const [priority, setPriority] = useState<number>(1);
   const [shiftTypesTemplateId, setShiftTypesTemplateId] = useState<number>(0);
 
   const onNameChange = (name: string) => {
@@ -28,6 +33,11 @@ export const CreateLocation = () => {
 
   const onAbbreviationChange = (abbreviation: string) => {
     setAbbreviation(abbreviation);
+  };
+
+  const onPriorityChange = (priorityInput: string) => {
+    const priority: number = +priorityInput;
+    setPriority(priority);
   };
 
   const onShiftTypesTemplateIdChange = (shiftTypeTemplateIdInput: string) => {
@@ -40,6 +50,7 @@ export const CreateLocation = () => {
       id: 0,
       name,
       abbreviation,
+      priority,
       shiftTypesTemplate: shiftTypesTemplateId,
     };
 
@@ -58,6 +69,8 @@ export const CreateLocation = () => {
             label="Име"
             value={name}
             onChange={onNameChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>
@@ -69,6 +82,8 @@ export const CreateLocation = () => {
             label="Абревиатура"
             value={abbreviation}
             onChange={onAbbreviationChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>
@@ -84,6 +99,22 @@ export const CreateLocation = () => {
               label: shiftTypeTemplate.name,
               value: shiftTypeTemplate.id,
             }))}
+          />
+        </Form.Group>
+      </Row>
+
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
+          <InputField
+            type="number"
+            label="Приоритет"
+            min={1}
+            value={priority}
+            onChange={onPriorityChange}
+            hasHelpIcon={true}
+            helpButtonTooltip={
+              "Спрямо приоритета се попълва графика. Започва се от най-високия приоритет."
+            }
           />
         </Form.Group>
       </Row>

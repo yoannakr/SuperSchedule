@@ -4,6 +4,7 @@ import EventIcon from "@mui/icons-material/Event";
 import GroupIcon from "@mui/icons-material/Group";
 import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
+import BadgeIcon from "@mui/icons-material/Badge";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import SettingIcon from "@mui/icons-material/Settings";
 
@@ -30,11 +31,19 @@ export const SidebarData = [
     submenu: [
       {
         title: "Нов служител",
-        link: "/addEmployee",
+        link: "/createEmployee",
       },
       {
         title: "Служители",
         link: "/employees",
+      },
+      {
+        title: "Лични графици",
+        link: "/employeeSchedules",
+      },
+      {
+        title: "Отпуски и болнични",
+        link: "/leavesAndSickLeave",
       },
     ],
   },
@@ -45,11 +54,26 @@ export const SidebarData = [
     submenu: [
       {
         title: "Нова смяна",
-        link: "/addShiftType",
+        link: "/createShiftType",
       },
       {
         title: "Смени",
         link: "/shiftTypes",
+      },
+    ],
+  },
+  {
+    title: "Позиции",
+    icon: <BadgeIcon />,
+    link: "",
+    submenu: [
+      {
+        title: "Нова позиция",
+        link: "/createPosition",
+      },
+      {
+        title: "Позиции",
+        link: "/positions",
       },
     ],
   },
@@ -60,7 +84,7 @@ export const SidebarData = [
     submenu: [
       {
         title: "Нов обект",
-        link: "/addLocation",
+        link: "/createLocation",
       },
       {
         title: "Обекти",

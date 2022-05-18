@@ -5,5 +5,6 @@
 
         TwelveHours  = 1,
         FirstAndSecondShifts = 2,
+        OneShift = 3,
     }
 }

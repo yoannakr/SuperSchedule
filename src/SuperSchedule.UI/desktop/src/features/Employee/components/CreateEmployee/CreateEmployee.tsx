@@ -135,6 +135,8 @@ export const CreateEmployee = () => {
             label="Име"
             value={firstName}
             onChange={onFirstNameChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>
@@ -146,6 +148,8 @@ export const CreateEmployee = () => {
             label="Презиме"
             value={middleName}
             onChange={onMiddleNameChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>
@@ -157,6 +161,8 @@ export const CreateEmployee = () => {
             label="Фамилия"
             value={lastName}
             onChange={onLastNameChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>
@@ -169,6 +175,8 @@ export const CreateEmployee = () => {
             min={1}
             value={vacationDays}
             onChange={onVacationDaysChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>

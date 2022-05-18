@@ -24,6 +24,7 @@ export const CreateShiftType = () => {
   );
   const [endTime, setEndTime] = useState<string>(moment().format(timeFormat));
   const [rotationDays, setRotationDays] = useState<number>(1);
+  const [priority, setPriority] = useState<number>(1);
   const [locations, setLocations] = useState<Location[]>([]);
   const [days, setDays] = useState<Day[]>([]);
   const [selectedLocationId, setSelectedLocationId] = useState<number>(0);
@@ -78,6 +79,11 @@ export const CreateShiftType = () => {
     setRotationDays(rotationDays);
   };
 
+  const onPriorityChange = (priorityInput: string) => {
+    const priority: number = +priorityInput;
+    setPriority(priority);
+  };
+
   const onSelectedLocationIdChange = (selectedLocationIdInput: string) => {
     const selectedLocationId: number = +selectedLocationIdInput;
     setSelectedLocationId(selectedLocationId);
@@ -109,6 +115,7 @@ export const CreateShiftType = () => {
       startTime: moment(startTime, timeFormat),
       endTime: moment(endTime, timeFormat),
       rotationDays,
+      priority,
       locationId: selectedLocationId,
       nightHours,
       daysIds: selectedDaysIds,
@@ -129,6 +136,8 @@ export const CreateShiftType = () => {
             label="Име"
             value={name}
             onChange={onNameChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>
@@ -140,6 +149,8 @@ export const CreateShiftType = () => {
             label="Абревиатура"
             value={abbreviation}
             onChange={onAbbreviationChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>
@@ -151,6 +162,8 @@ export const CreateShiftType = () => {
             label="Начало"
             value={startTime}
             onChange={onStartTimeChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>
@@ -162,6 +175,8 @@ export const CreateShiftType = () => {
             label="Край"
             value={endTime}
             onChange={onEndTimeChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>
@@ -174,6 +189,24 @@ export const CreateShiftType = () => {
             min={1}
             value={rotationDays}
             onChange={onRotationDaysChange}
+            hasHelpIcon={true}
+            helpButtonTooltip={"Използва се при 12-часовите смени."}
+          />
+        </Form.Group>
+      </Row>
+
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
+          <InputField
+            type="number"
+            label="Приоритет"
+            min={1}
+            value={priority}
+            onChange={onPriorityChange}
+            hasHelpIcon={true}
+            helpButtonTooltip={
+              "Приоритетът е определящ за създаването на графика."
+            }
           />
         </Form.Group>
       </Row>
@@ -201,6 +234,8 @@ export const CreateShiftType = () => {
             min={0}
             value={nightHours}
             onChange={onNightHoursChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>

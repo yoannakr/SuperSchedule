@@ -3,7 +3,6 @@
   width: 100vw;
   display: flex;
   flex-direction: row;
-  overflow-x: hidden;
 }
 
 body {
@@ -14,6 +13,7 @@ body {
 .Form {
   display: flex;
   height: 100vh;
+  margin-left: 250px;
   flex-grow: 1;
   /* justify-content: center; */
   align-items: center;

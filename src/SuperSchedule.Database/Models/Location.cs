@@ -10,6 +10,8 @@ namespace SuperSchedule.Database.Models
 
         public string Abbreviation { get; set; }
 
+        public int Priority { get; set; }
+
         public ShiftTypesTemplate ShiftTypesTemplate { get; set; } = ShiftTypesTemplate.TwelveHours;
 
         public ICollection<ShiftType> ShiftTypes { get; set; } = new HashSet<ShiftType>();

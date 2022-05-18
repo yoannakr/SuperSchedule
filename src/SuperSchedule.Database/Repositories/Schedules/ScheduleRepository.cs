@@ -93,7 +93,7 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .Include(s => s.Employee)
                 .Include(s => s.ShiftType)
                 .Include(s => s.Location)
-                .Any(s => s.Employee.Id == employee.Id && s.Date.Date == date.Date);
+                .Any(s => s.Employee.Id == employee.Id && s.Date.Date == date.Date && s.ShiftType != null);
         }
 
         public DayOfWeekTemplate? GetDayOfWeekTemplateForMonth(int locationId, DateTime monthDate, Employee employee)
@@ -108,6 +108,17 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .Include(s => s.Location)
                 .FirstOrDefault(s => s.Location.Id == locationId && s.Employee.Id == employee.Id && s.Date.Date >= firstDayOfMonth.Date && s.Date.Date <= lastDayOfMonth.Date && s.DayOfWeekTemplate != null)?
                 .DayOfWeekTemplate;
+        }
+
+        public IEnumerable<Schedule> GetEmployeeScheduleForPeriod(DateTime startDate, DateTime endDate, Employee employee)
+        {
+            return superScheduleDbContext
+                .Schedules
+                .Include(s => s.Employee)
+                .Include(s => s.ShiftType)
+                .Include(s => s.Location)
+                .Where(s => s.Employee.Id == employee.Id && s.Date.Date >= startDate.Date && s.Date.Date <= endDate.Date)
+                .ToList();
         }
     }
 }

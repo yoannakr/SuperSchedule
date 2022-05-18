@@ -40,6 +40,8 @@ export const CreatePosition = () => {
             label="Име"
             value={name}
             onChange={onNameChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>
@@ -51,6 +53,8 @@ export const CreatePosition = () => {
             label="Абревиатура"
             value={abbreviation}
             onChange={onAbbreviationChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
           />
         </Form.Group>
       </Row>

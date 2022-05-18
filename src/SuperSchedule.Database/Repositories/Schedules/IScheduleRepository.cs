@@ -22,5 +22,7 @@ namespace SuperSchedule.Database.Repositories.Schedules
         bool IsEmployeeAvailable(DateTime date, Employee employee);
 
         DayOfWeekTemplate? GetDayOfWeekTemplateForMonth(int locationId, DateTime monthDate, Employee employee);
+
+        IEnumerable<Schedule> GetEmployeeScheduleForPeriod(DateTime startDate, DateTime endDate, Employee employee);
     }
 }
