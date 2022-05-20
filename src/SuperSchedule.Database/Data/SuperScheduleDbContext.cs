@@ -35,6 +35,8 @@ namespace SuperSchedule.Database.Data
 
         public DbSet<Holiday> Holidays { get; set; }
 
+        public DbSet<Leave> Leaves { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
             if (!builder.IsConfigured)
@@ -71,15 +73,36 @@ namespace SuperSchedule.Database.Data
                 new Day { Name = "Събота" }
                 );
 
-            ShiftTypes.Add(new ShiftType
-            {
-                Name = "почивка",
-                Abbreviation = "П",
-                StartTime = new TimeOnly(0, 0),
-                EndTime = new TimeOnly(0, 0),
-                RotationDays = 0,
-                Priority = 0
-            });
+            ShiftTypes.AddRange(
+                new ShiftType
+                {
+                    Name = "отпуска",
+                    Abbreviation = "О",
+                    StartTime = new TimeOnly(6, 0),
+                    EndTime = new TimeOnly(14, 0),
+                    RotationDays = 0,
+                    Priority = 1
+                },
+                new ShiftType
+                {
+                    Name = "отпуска",
+                    Abbreviation = "О",
+                    StartTime = new TimeOnly(0, 0),
+                    EndTime = new TimeOnly(0, 0),
+                    RotationDays = 0,
+                    Priority = 2
+                },
+                new ShiftType
+                {
+                    Name = "почивка",
+                    Abbreviation = "П",
+                    StartTime = new TimeOnly(0, 0),
+                    EndTime = new TimeOnly(0, 0),
+                    RotationDays = 0,
+                    Priority = 3
+                }
+
+            );
 
             var publicHolidaysDates = DateSystem.GetPublicHolidays(DateTime.UtcNow.Year, CountryCode.BG)
                 .Select(h => new Holiday { Date = h.Date, Name = h.LocalName });

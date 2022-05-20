@@ -25,7 +25,7 @@ export const CreateLocation = () => {
   const [name, setName] = useState<string>("");
   const [abbreviation, setAbbreviation] = useState<string>("");
   const [priority, setPriority] = useState<number>(1);
-  const [shiftTypesTemplateId, setShiftTypesTemplateId] = useState<number>(0);
+  const [shiftTypesTemplateId, setShiftTypesTemplateId] = useState<number>(1);
 
   const onNameChange = (name: string) => {
     setName(name);
@@ -41,7 +41,6 @@ export const CreateLocation = () => {
   };
 
   const onShiftTypesTemplateIdChange = (shiftTypeTemplateIdInput: string) => {
-    console.log(shiftTypeTemplateIdInput);
     setShiftTypesTemplateId(+shiftTypeTemplateIdInput);
   };
 

@@ -25,6 +25,7 @@ function App() {
           <Route path="/createPosition" element={<CreatePosition />} />
           <Route path="/createEmployee" element={<CreateEmployee />} />
           <Route path="/settings" element={<Setting />} />
+          <Route path="/leavesAndSickLeave" element={<LeavesAndSickLeave />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -44,6 +44,7 @@ namespace SuperSchedule.Startup.Controllers
             return employeeService.GetAllEmployees().Select(employee =>
                 new EmployeeModel
                 {
+                    Id = employee.Id,
                     FirstName = employee.FirstName,
                     MiddleName = employee.MiddleName,
                     LastName = employee.LastName,

@@ -51,3 +51,12 @@ export type Schedule = {
   shiftTypeEditableCells: ShiftTypeEditableCell[];
   date: moment.Moment;
 };
+
+export type Leave = {
+  id: number;
+  fromDate: moment.Moment;
+  toDate: moment.Moment;
+  leaveTypeId: number;
+  comment: string;
+  employeeId: number;
+};

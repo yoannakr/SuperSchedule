@@ -120,5 +120,15 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .Where(s => s.Employee.Id == employee.Id && s.Date.Date >= startDate.Date && s.Date.Date <= endDate.Date)
                 .ToList();
         }
+
+        public Schedule GetEmployeeScheduleForDate(DateTime date, Employee employee)
+        {
+            return superScheduleDbContext
+               .Schedules
+               .Include(s => s.Employee)
+               .Include(s => s.ShiftType)
+               .Include(s => s.Location)
+               .FirstOrDefault(s => s.Date.Date == date.Date && s.Employee.Id == employee.Id);
+        }
     }
 }

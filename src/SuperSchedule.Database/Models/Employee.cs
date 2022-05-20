@@ -17,5 +17,7 @@
         public ICollection<Location> Locations { get; set; } = new HashSet<Location>();
 
         public ICollection<ShiftType> ShiftTypes { get; set; } = new HashSet<ShiftType>();
+        
+        public ICollection<Leave> Leaves { get; set; } = new HashSet<Leave>();
     }
 }

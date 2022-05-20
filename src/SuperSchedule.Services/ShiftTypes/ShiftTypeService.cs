@@ -41,5 +41,20 @@ namespace SuperSchedule.Services.ShiftTypes
         {
             return shiftTypeRepository.GetShiftTypesByLocationIncludingDefaultBreak(locationId);
         }
+
+        public ShiftType GetDefaultLeaveWorkDaysShiftType()
+        {
+            return shiftTypeRepository.GetDefaultLeaveWorkDaysShiftType();
+        }
+
+        public ShiftType GetDefaultLeaveWeekendDaysShiftType()
+        {
+            return shiftTypeRepository.GetDefaultLeaveWeekendDaysShiftType();
+        }
+
+        public bool IsShiftTypeBreak(ShiftType shiftType)
+        {
+            return shiftType.Priority == 0;
+        }
     }
 }

@@ -7,6 +7,7 @@ using SuperSchedule.Database.Repositories.Positions;
 using SuperSchedule.Database.Repositories.Schedules;
 using SuperSchedule.Database.Repositories.Settings;
 using SuperSchedule.Database.Repositories.ShiftTypes;
+using SuperSchedule.Database.Repositories.Leaves;
 
 namespace SuperSchedule.Startup.Modules
 {
@@ -22,6 +23,7 @@ namespace SuperSchedule.Startup.Modules
             builder.RegisterType<EmployeeRepository>().As<IEmployeeRepository>().InstancePerLifetimeScope();
             builder.RegisterType<SettingsRepository>().As<ISettingsRepository>().InstancePerLifetimeScope();
             builder.RegisterType<ScheduleRepository>().As<IScheduleRepository>().InstancePerLifetimeScope();
+            builder.RegisterType<LeaveRepository>().As<ILeaveRepository>().InstancePerLifetimeScope();
         }
     }
 }

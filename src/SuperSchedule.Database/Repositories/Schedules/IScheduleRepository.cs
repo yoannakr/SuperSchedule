@@ -17,6 +17,8 @@ namespace SuperSchedule.Database.Repositories.Schedules
 
         Schedule GetEmployeeScheduleByLocationForDate(int locationId, DateTime date, Employee employee);
 
+        Schedule GetEmployeeScheduleForDate(DateTime date, Employee employee);
+
         bool IsScheduleFilledForPreviousMonth(int locationId, DateTime date);
 
         bool IsEmployeeAvailable(DateTime date, Employee employee);

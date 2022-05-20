@@ -12,8 +12,14 @@ namespace SuperSchedule.Services.ShiftTypes
 
         ShiftType GetDefaultBreakShiftType();
 
+        ShiftType GetDefaultLeaveWorkDaysShiftType();
+
+        ShiftType GetDefaultLeaveWeekendDaysShiftType();
+
         IEnumerable<ShiftType> GetShiftTypesByLocation(int locationId);
 
         IEnumerable<ShiftType> GetShiftTypesByLocationIncludingDefaultBreak(int locationId);
+
+        bool IsShiftTypeBreak(ShiftType shiftType);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using SuperSchedule.Services.Days;
 using SuperSchedule.Services.Employees;
+using SuperSchedule.Services.Leaves;
 using SuperSchedule.Services.Locations;
 using SuperSchedule.Services.Positions;
 using SuperSchedule.Services.Schedules;
@@ -20,6 +21,7 @@ namespace SuperSchedule.Startup.Modules
             builder.RegisterType<EmployeeService>().As<IEmployeeService>().InstancePerLifetimeScope();
             builder.RegisterType<SettingsService>().As<ISettingsService>().InstancePerLifetimeScope();
             builder.RegisterType<ScheduleService>().As<IScheduleService>().InstancePerLifetimeScope();
+            builder.RegisterType<LeaveService>().As<ILeaveService>().InstancePerLifetimeScope();
         }
     }
 }
