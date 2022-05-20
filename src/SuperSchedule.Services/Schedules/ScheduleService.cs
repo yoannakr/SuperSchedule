@@ -39,6 +39,198 @@ namespace SuperSchedule.Services.Schedules
             }
         }
 
+        #region Twelve Hours Shift Type
+
+        private void FillScheduleTwelveHoursTemplate(Location location, DateTime startDate, DateTime endDate, List<Schedule> schedules, IEnumerable<Employee> employees, List<IGrouping<int, Employee>> employeesGroupByPositionPriority, IGrouping<int, Employee> employeesWithHighestPositionPriority)
+        {
+            var otherEmployeesGroup = employeesGroupByPositionPriority.First();
+            employeesGroupByPositionPriority.Remove(otherEmployeesGroup);
+
+            FillScheduleWithHighestPositionPriorityEmployeesTwelveHoursTemplate(schedules, location, employeesWithHighestPositionPriority, otherEmployeesGroup, startDate, endDate);
+
+            foreach (var employee in employeesWithHighestPositionPriority)
+            {
+                var countOfUnnecessaryShifts = GetCountOfUnnecessaryShifts(employee, startDate, schedules, ShiftTypesTemplate.TwelveHours);
+
+                RemoveUnneccessaryShiftsTwelveHours(employee, location, schedules, countOfUnnecessaryShifts, otherEmployeesGroup);
+                CheckWorkingHoursForWeek(employee, schedules);
+            }
+
+            FillAllScheduleDates(location, startDate, endDate, schedules, employees);
+        }
+
+        private void FillScheduleWithHighestPositionPriorityEmployeesTwelveHoursTemplate(List<Schedule> schedules, Location location, IGrouping<int, Employee>? employeesWithHighestPositionPriority, IGrouping<int, Employee> otherEmployeesGroup, DateTime startDate, DateTime endDate)
+        {
+            var previousMonth = startDate.AddMonths(-1);
+            var isScheduleFilledForPreviousMonth = scheduleRepository.IsScheduleFilledForPreviousMonth(location.Id, previousMonth);
+
+            var countOfMissedDays = 0;
+
+            foreach (var employee in employeesWithHighestPositionPriority)
+            {
+                var startDateWithMissedDays = startDate.AddDays(countOfMissedDays);
+                FillConreteScheduleTwelveHoursTemplate(schedules, location, startDateWithMissedDays, endDate, employee, isScheduleFilledForPreviousMonth);
+
+                if (countOfMissedDays != 0)
+                {
+                    var firstDate = startDate.AddDays(countOfMissedDays - 1);
+                    var lastDate = startDate;
+                    FillScheduleOpposite(schedules, location, firstDate, lastDate, employee);
+                }
+                countOfMissedDays += isScheduleFilledForPreviousMonth ? 0 : 2;
+
+                if (leaveService.IsEmployeeHasLeavesForPeriod(employee.Id, startDate, endDate))
+                {
+                    ManageLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
+                }
+            }
+        }
+
+        public void RemoveUnneccessaryShiftsTwelveHours(Employee employee, Location location, List<Schedule> schedules, double unnecessaryShifts, IGrouping<int, Employee?> otherGroupEmployees)
+        {
+            var schedulesForEmployee = schedules.Where(s => s.Employee == employee).OrderBy(s => s.Date.Date).ToList();
+            var defaultBreakShiftType = shiftTypeService.GetDefaultBreakShiftType();
+            var shiftTypeHighestPriority = schedulesForEmployee.Where(s => s.ShiftType?.Location?.Id == location.Id).OrderBy(s => s.ShiftType?.Priority).First()?.ShiftType?.Priority;
+            var schedulesWithShiftTypeHighestPriority = schedulesForEmployee.Where(s => s.ShiftType?.Location?.Id == location.Id && s.ShiftType.Priority == shiftTypeHighestPriority).ToList();
+            var dates = schedulesWithShiftTypeHighestPriority.Select(s => s.Date);
+
+            var tempUnnecessaryShifts = 0;
+            foreach (var date in dates)
+            {
+                if (tempUnnecessaryShifts == unnecessaryShifts)
+                {
+                    return;
+                }
+
+                var previousSchedule = schedulesWithShiftTypeHighestPriority.FirstOrDefault(s => s.Date.Date == date.Date);
+                if (previousSchedule == null)
+                {
+                    continue;
+                }
+
+                var previousShiftType = previousSchedule.ShiftType;
+                var otherEmployee = GetOtherEmployee(schedules, otherGroupEmployees, previousShiftType, date);
+                if (otherEmployee == null)
+                {
+                    continue;
+                }
+
+                previousSchedule.ShiftType = defaultBreakShiftType;
+
+                FillSchedule(schedules, location, otherEmployee, date, previousShiftType);
+            
+                tempUnnecessaryShifts++;
+            }
+        }
+
+        private void FillConreteScheduleTwelveHoursTemplate(List<Schedule> schedules, Location location, DateTime startDate, DateTime endDate, Employee employee, bool isScheduleFilledForPreviousMonth)
+        {
+            var allShiftTypes = shiftTypeService.GetShiftTypesByLocation(location.Id).ToList();
+            var countOfShiftTypes = allShiftTypes.Count;
+
+            var currentShiftTypeIndex = 0;
+            var tempRotationDays = 0;
+            if (isScheduleFilledForPreviousMonth)
+            {
+                var (nextShiftTypeIndex, lastRotationDays) = GetNextShiftTypeForTwelveHoursTemplate(location.Id, startDate.AddDays(-1), allShiftTypes, employee);
+                currentShiftTypeIndex = nextShiftTypeIndex;
+                tempRotationDays = lastRotationDays ?? 0;
+            }
+            var rotationDays = allShiftTypes[currentShiftTypeIndex].RotationDays;
+
+            var tempDate = startDate;
+            while (tempDate.Date <= endDate.Date)
+            {
+                if (tempRotationDays == rotationDays)
+                {
+                    currentShiftTypeIndex++;
+                    tempRotationDays = 0;
+
+                    if (currentShiftTypeIndex >= countOfShiftTypes)
+                    {
+                        currentShiftTypeIndex = 0;
+                    }
+
+                    rotationDays = allShiftTypes[currentShiftTypeIndex].RotationDays;
+                }
+
+                var currentShiftType = shiftTypeService.GetShiftTypeById(allShiftTypes[currentShiftTypeIndex].Id);
+
+                if (!CanHaveShiftTypeOnGivenDay(location, tempDate, employee, currentShiftType, schedules))
+                {
+                    tempDate = tempDate.AddDays(1);
+                    tempRotationDays += 1;
+                    continue;
+                }
+
+                FillSchedule(schedules, location, employee, tempDate, currentShiftType, lastRotationDays: tempRotationDays + 1);
+
+                tempRotationDays += 1;
+                tempDate = tempDate.AddDays(1);
+            }
+        }
+
+        private void FillScheduleOpposite(List<Schedule> schedules, Location location, DateTime startDate, DateTime endDate, Employee employee)
+        {
+            var shiftTypesOrderByDescending = shiftTypeService.GetShiftTypesByLocation(location.Id).OrderByDescending(s => s.Priority).ToList();
+            var countOfShiftTypes = shiftTypesOrderByDescending.Count;
+
+            var currentShiftTypeIndex = 0;
+            var tempRotationDays = 0;
+            var rotationDays = shiftTypesOrderByDescending[currentShiftTypeIndex].RotationDays;
+
+            var tempDate = startDate;
+            while (tempDate.Date >= endDate.Date)
+            {
+                if (tempRotationDays == rotationDays)
+                {
+                    currentShiftTypeIndex++;
+                    tempRotationDays = 0;
+
+                    if (currentShiftTypeIndex >= countOfShiftTypes)
+                    {
+                        currentShiftTypeIndex = 0;
+                    }
+
+                    rotationDays = shiftTypesOrderByDescending[currentShiftTypeIndex].RotationDays;
+                }
+
+                var currentShiftType = shiftTypeService.GetShiftTypeById(shiftTypesOrderByDescending[currentShiftTypeIndex].Id);
+
+                if (!CanHaveShiftTypeOnGivenDay(location, tempDate, employee, currentShiftType, schedules))
+                {
+                    tempDate = tempDate.AddDays(-1);
+                    tempRotationDays++;
+                    continue;
+                }
+
+                FillSchedule(schedules, location, employee, tempDate, currentShiftType);
+
+                tempRotationDays += 1;
+                tempDate = tempDate.AddDays(-1);
+            }
+        }
+
+
+        #endregion //Twelve Hours Shift Type
+
+        #region Common
+
+        private void FillSchedule(List<Schedule> schedules, Location location, Employee employee, DateTime tempDate, ShiftType? currentShiftType = null, int? lastRotationDays = null, DayOfWeekTemplate? dayOfWeekTemplate = null)
+        {
+            schedules.Add(new Schedule
+            {
+                Location = location,
+                Employee = employee,
+                ShiftType = currentShiftType,
+                Date = tempDate,
+                LastRotationDays = lastRotationDays,
+                DayOfWeekTemplate = dayOfWeekTemplate
+            });
+        }
+
+        #endregion
+
         public async Task FillScheduleForLocation(Location location, DateTime startDate, DateTime endDate)
         {
             var schedules = new List<Schedule>();
@@ -122,13 +314,7 @@ namespace SuperSchedule.Services.Schedules
                     tempCountOfUnnecessaryShifts++;
                     schedulesForEmployee.First(s => s.Date.Date == tempDate.Date).ShiftType = defaultBreakShiftType;
 
-                    schedules.Add(new Schedule
-                    {
-                        Location = location,
-                        Employee = otherEmployee,
-                        ShiftType = previousShiftType,
-                        Date = tempDate
-                    });
+                    FillSchedule(schedules, location, otherEmployee, tempDate, previousShiftType);
                 }
 
                 tempDate = tempDate.AddDays(1);
@@ -148,35 +334,13 @@ namespace SuperSchedule.Services.Schedules
                     continue;
                 }
 
-                schedules.Add(new Schedule
-                {
-                    Location = location,
-                    Employee = employee,
-                    ShiftType = currentShiftType,
-                    Date = tempDate
-                });
+                FillSchedule(schedules, location, employee, tempDate, currentShiftType);
 
                 tempDate = tempDate.AddDays(1);
             }
         }
 
-        private void FillScheduleTwelveHoursTemplate(Location location, DateTime startDate, DateTime endDate, List<Schedule> schedules, IEnumerable<Employee> employees, List<IGrouping<int, Employee>> employeesGroupByPositionPriority, IGrouping<int, Employee> employeesWithHighestPositionPriority)
-        {
-            var otherEmployeesGroup = employeesGroupByPositionPriority.First();
-            employeesGroupByPositionPriority.Remove(otherEmployeesGroup);
-
-            FillScheduleWithHighestPositionPriorityEmployeesTwelveHoursTemplate(schedules, location, employeesWithHighestPositionPriority, otherEmployeesGroup, startDate, endDate);
-
-            foreach (var employee in employeesWithHighestPositionPriority)
-            {
-                var countOfUnnecessaryShifts = GetCountOfUnnecessaryShifts(employee, startDate, schedules, ShiftTypesTemplate.TwelveHours);
-
-                RemoveUnneccessaryShiftsTwelveHours(employee, location, schedules, countOfUnnecessaryShifts, otherEmployeesGroup);
-                CheckWorkingHoursForWeek(employee, schedules);
-            }
-
-            FillAllScheduleDates(location, startDate, endDate, schedules, employees);
-        }
+        
 
         private void FillAllScheduleDates(Location location, DateTime startDate, DateTime endDate, List<Schedule> schedules, IEnumerable<Employee> employees)
         {
@@ -198,12 +362,7 @@ namespace SuperSchedule.Services.Schedules
                             continue;
                         }
 
-                        schedules.Add(new Schedule
-                        {
-                            Location = location,
-                            Employee = employee,
-                            Date = tempDate
-                        });
+                        FillSchedule(schedules, location, employee, tempDate);
 
                         tempDate = tempDate.AddDays(1);
                     }
@@ -234,32 +393,7 @@ namespace SuperSchedule.Services.Schedules
             return countOfWorkingDays * 8;
         }
 
-        private void FillScheduleWithHighestPositionPriorityEmployeesTwelveHoursTemplate(List<Schedule> schedules, Location location, IGrouping<int, Employee>? employeesWithHighestPositionPriority, IGrouping<int, Employee> otherEmployeesGroup, DateTime startDate, DateTime endDate)
-        {
-            var previousMonth = startDate.AddMonths(-1);
-            var isScheduleFilledForPreviousMonth = scheduleRepository.IsScheduleFilledForPreviousMonth(location.Id, previousMonth);
-
-            var countOfMissedDays = 0;
-
-            foreach (var employee in employeesWithHighestPositionPriority)
-            {
-                var startDateWithMissedDays = startDate.AddDays(countOfMissedDays);
-                FillConreteScheduleTwelveHoursTemplate(schedules, location, startDateWithMissedDays, endDate, employee, isScheduleFilledForPreviousMonth);
-
-                if (countOfMissedDays != 0)
-                {
-                    var firstDate = startDate.AddDays(countOfMissedDays - 1);
-                    var lastDate = startDate;
-                    FillScheduleOpposite(schedules, location, firstDate, lastDate, employee);
-                }
-                countOfMissedDays += isScheduleFilledForPreviousMonth ? 0 : 2;
-
-                if (leaveService.IsEmployeeHasLeavesForPeriod(employee.Id, startDate, endDate))
-                {
-                    ManageLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
-                }
-            }
-        }
+        
 
         private void ManageLeaves(List<Schedule> schedules, Location location, IGrouping<int, Employee> otherEmployeesGroup, DateTime startDate, DateTime endDate, Employee employee)
         {
@@ -305,13 +439,7 @@ namespace SuperSchedule.Services.Schedules
 
                 schedule.ShiftType = currentLeaveShiftType;
 
-                schedules.Add(new Schedule
-                {
-                    Location = location,
-                    Employee = otherEmployee,
-                    ShiftType = previousShiftType,
-                    Date = leaveDate
-                });
+                FillSchedule(schedules, location, otherEmployee, leaveDate, previousShiftType);
             }
         }
 
@@ -359,59 +487,7 @@ namespace SuperSchedule.Services.Schedules
             FillAllScheduleDates(location, startDate, endDate, schedules, employees);
         }
 
-        private void FillConreteScheduleTwelveHoursTemplate(List<Schedule> schedules, Location location, DateTime startDate, DateTime endDate, Employee employee, bool isScheduleFilledForPreviousMonth)
-        {
-            var allShiftTypes = shiftTypeService.GetShiftTypesByLocation(location.Id).ToList();
-            var countOfShiftTypes = allShiftTypes.Count;
-
-            var currentShiftTypeIndex = 0;
-            var tempRotationDays = 0;
-            if (isScheduleFilledForPreviousMonth)
-            {
-                var (nextShiftTypeIndex, lastRotationDays) = GetNextShiftTypeForTwelveHoursTemplate(location.Id, startDate.AddDays(-1), allShiftTypes, employee);
-                currentShiftTypeIndex = nextShiftTypeIndex;
-                tempRotationDays = lastRotationDays ?? 0;
-            }
-            var rotationDays = allShiftTypes[currentShiftTypeIndex].RotationDays;
-
-            var tempDate = startDate;
-            while (tempDate.Date <= endDate.Date)
-            {
-                if (tempRotationDays == rotationDays)
-                {
-                    currentShiftTypeIndex++;
-                    tempRotationDays = 0;
-
-                    if (currentShiftTypeIndex >= countOfShiftTypes)
-                    {
-                        currentShiftTypeIndex = 0;
-                    }
-
-                    rotationDays = allShiftTypes[currentShiftTypeIndex].RotationDays;
-                }
-
-                var currentShiftType = shiftTypeService.GetShiftTypeById(allShiftTypes[currentShiftTypeIndex].Id);
-
-                if (!CanHaveShiftTypeOnGivenDay(location, tempDate, employee, currentShiftType, schedules))
-                {
-                    tempDate = tempDate.AddDays(1);
-                    tempRotationDays += 1;
-                    continue;
-                }
-
-                schedules.Add(new Schedule
-                {
-                    Location = location,
-                    Employee = employee,
-                    ShiftType = currentShiftType,
-                    Date = tempDate,
-                    LastRotationDays = tempRotationDays + 1,
-                });
-
-                tempRotationDays += 1;
-                tempDate = tempDate.AddDays(1);
-            }
-        }
+        
 
         private (int, int?) GetNextShiftTypeForTwelveHoursTemplate(int id, DateTime lastDayOfPreviousMonth, List<ShiftType> allShiftTypes, Employee employee)
         {
@@ -473,13 +549,7 @@ namespace SuperSchedule.Services.Schedules
                         continue;
                     }
 
-                    schedules.Add(new Schedule
-                    {
-                        Location = location,
-                        Employee = employee,
-                        ShiftType = currentShiftType,
-                        Date = date
-                    });
+                    FillSchedule(schedules, location, employee, date, currentShiftType);
                 }
 
                 currentShiftTypeIndex++;
@@ -551,52 +621,7 @@ namespace SuperSchedule.Services.Schedules
             return true;
         }
 
-        private void FillScheduleOpposite(List<Schedule> schedules, Location location, DateTime startDate, DateTime endDate, Employee employee)
-        {
-            var shiftTypesOrderByDescending = shiftTypeService.GetShiftTypesByLocation(location.Id).OrderByDescending(s => s.Priority).ToList();
-            var countOfShiftTypes = shiftTypesOrderByDescending.Count;
-
-            var currentShiftTypeIndex = 0;
-            var tempRotationDays = 0;
-            var rotationDays = shiftTypesOrderByDescending[currentShiftTypeIndex].RotationDays;
-
-            var tempDate = startDate;
-            while (tempDate.Date >= endDate.Date)
-            {
-                if (tempRotationDays == rotationDays)
-                {
-                    currentShiftTypeIndex++;
-                    tempRotationDays = 0;
-
-                    if (currentShiftTypeIndex >= countOfShiftTypes)
-                    {
-                        currentShiftTypeIndex = 0;
-                    }
-
-                    rotationDays = shiftTypesOrderByDescending[currentShiftTypeIndex].RotationDays;
-                }
-
-                var currentShiftType = shiftTypeService.GetShiftTypeById(shiftTypesOrderByDescending[currentShiftTypeIndex].Id);
-
-                if (!CanHaveShiftTypeOnGivenDay(location, tempDate, employee, currentShiftType, schedules))
-                {
-                    tempDate = tempDate.AddDays(-1);
-                    tempRotationDays++;
-                    continue;
-                }
-
-                schedules.Add(new Schedule
-                {
-                    Location = location,
-                    Employee = employee,
-                    ShiftType = currentShiftType,
-                    Date = tempDate
-                });
-
-                tempRotationDays += 1;
-                tempDate = tempDate.AddDays(-1);
-            }
-        }
+        
 
         public double GetCountOfUnnecessaryShifts(Employee employee, DateTime startDate, List<Schedule> schedules, ShiftTypesTemplate shiftTypesTemplate)
         {
@@ -623,47 +648,7 @@ namespace SuperSchedule.Services.Schedules
 
             return unnecessaryShifts;}
 
-        public void RemoveUnneccessaryShiftsTwelveHours(Employee employee, Location location, List<Schedule> schedules, double unnecessaryShifts, IGrouping<int, Employee?> otherGroupEmployees)
-        {
-            var schedulesForEmployee = schedules.Where(s => s.Employee == employee).OrderBy(s => s.Date.Date).ToList();
-            var defaultBreakShiftType = shiftTypeService.GetDefaultBreakShiftType();
-            var shiftTypeHighestPriority = schedulesForEmployee.Where(s => s.ShiftType?.Location?.Id == location.Id).OrderBy(s => s.ShiftType?.Priority).First()?.ShiftType?.Priority;
-            var schedulesWithShiftTypeHighestPriority = schedulesForEmployee.Where(s => s.ShiftType?.Location?.Id == location.Id && s.ShiftType.Priority == shiftTypeHighestPriority).ToList();
-            var dates = schedulesWithShiftTypeHighestPriority.Select(s => s.Date);
-
-            var tempUnnecessaryShifts = 0;
-            foreach (var date in dates)
-            {
-                if(tempUnnecessaryShifts == unnecessaryShifts)
-                {
-                    return;
-                }
-
-                var previousSchedule = schedulesWithShiftTypeHighestPriority.FirstOrDefault(s => s.Date.Date == date.Date);
-                if(previousSchedule == null)
-                {
-                    continue;
-                }
-
-                var previousShiftType = previousSchedule.ShiftType;
-                var otherEmployee = GetOtherEmployee(schedules, otherGroupEmployees, previousShiftType, date);
-                if(otherEmployee == null)
-                {
-                    continue;
-                }
-
-                previousSchedule.ShiftType = defaultBreakShiftType;
-
-                schedules.Add(new Schedule
-                {
-                    Location = location,
-                    Employee = otherEmployee,
-                    ShiftType = previousShiftType,
-                    Date = date
-                });
-                tempUnnecessaryShifts++;
-            }
-        }
+        
 
         public void RemoveUnneccessaryFirstAndSecondShiftsTemplate(Employee employee, Location location, List<Schedule> schedules, double unnecessaryShifts, IGrouping<int, Employee?> otherGroupEmployees, List<IGrouping<int, DateTime>> datesGroupedByWeek, List<ShiftType> allShiftTypes)
         {
@@ -725,14 +710,8 @@ namespace SuperSchedule.Services.Schedules
 
                     schedulesForEmployee.First(s => s.Date.Date == date.Date).ShiftType = defaultBreakShiftType;
 
-                    schedules.Add(new Schedule
-                    {
-                        Location = location,
-                        Employee = otherEmployee,
-                        ShiftType = previousShiftType,
-                        Date = date,
-                        DayOfWeekTemplate = currentDayOfWeekTemplate
-                    });
+                    FillSchedule(schedules, location, otherEmployee, date, previousShiftType, dayOfWeekTemplate: currentDayOfWeekTemplate);
+                    
                     tempUnnecessaryShifts++;
                 }
                 else
@@ -745,15 +724,8 @@ namespace SuperSchedule.Services.Schedules
                     }
 
                     schedulesForEmployee.First(s => s.Date.Date == date.Date).ShiftType = defaultBreakShiftType;
+                    FillSchedule(schedules, location, otherEmployee, date, previousShiftType, dayOfWeekTemplate: currentDayOfWeekTemplate);
 
-                    schedules.Add(new Schedule
-                    {
-                        Location = location,
-                        Employee = otherEmployee,
-                        ShiftType = previousShiftType,
-                        Date = date,
-                        DayOfWeekTemplate = currentDayOfWeekTemplate
-                    });
                     tempUnnecessaryShifts++;
                 }
             }
@@ -873,14 +845,7 @@ namespace SuperSchedule.Services.Schedules
         public void FillWithBreak(Location location, DateTime date, Employee employee, List<Schedule> schedules)
         {
             var breakShiftType = shiftTypeService.GetDefaultBreakShiftType();
-
-            schedules.Add(new Schedule
-            {
-                Location = location,
-                Employee = employee,
-                ShiftType = breakShiftType,
-                Date = date
-            });
+            FillSchedule(schedules, location, employee, date, breakShiftType);
         }
 
         public DateTime GetFirstDateOfWeekFromDate(DateTime date)
