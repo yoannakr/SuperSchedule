@@ -95,7 +95,6 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
             (schedule) => createScheduleRow(schedule)
           );
 
-          console.log(currentSchedulesRows);
           if (currentSchedulesRows.length !== 0) {
             const monthDays = moment(monthDate).daysInMonth();
             const days: Day[] = [];
@@ -120,6 +119,7 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
             setCountOfDays(0);
             setDays([]);
           }
+          setSchedulesRows(currentSchedulesRows);
           setSchedulesRows(currentSchedulesRows);
         })
         .catch((error) =>
@@ -163,7 +163,6 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
       }
     );
     setPreviousScheduleRow(previousScheduleRow);
-    console.log(previousScheduleRow);
   };
 
   const onSave = async () => {
@@ -175,8 +174,6 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
         ))
     );
 
-    console.log(allShiftTypeEditableCells);
-
     await updateShiftTypeOfSchedules({
       shiftTypeEditableCells: allShiftTypeEditableCells,
     });
@@ -185,7 +182,6 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
   const onRevert = () => {
     setIsEditMode(false);
     setSchedulesRows(previousScheduleRow);
-    console.log("Previous", previousScheduleRow);
   };
 
   return (

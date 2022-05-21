@@ -40,10 +40,21 @@ export const EditScheduleTableCell = (props: EditScheduleTableCellProps) => {
           className={styles.EditScheduleTableCell}
           value={currentShiftTypeId}
           onChange={onShiftTypeChange}
-          options={shiftTypes.map((shiftType) => ({
-            label: shiftType.abbreviation,
-            value: shiftType.id,
-          }))}
+          options={shiftTypes.map((shiftType) => {
+            if (
+              shiftType.locationId === 0 &&
+              (shiftType.priority === 1 || shiftType.priority === 2)
+            ) {
+              return {
+                label: shiftType.name,
+                value: shiftType.id,
+              };
+            }
+            return {
+              label: shiftType.abbreviation,
+              value: shiftType.id,
+            };
+          })}
         />
       ) : (
         row.shiftType.abbreviation

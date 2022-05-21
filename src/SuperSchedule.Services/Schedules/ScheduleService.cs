@@ -483,13 +483,17 @@ namespace SuperSchedule.Services.Schedules
                 return;
             }
 
+            var otherEmployeesGroup = employeesGroupByPositionPriority.First();
+            employeesGroupByPositionPriority.Remove(otherEmployeesGroup);
+
             foreach (var employee in employeesWithHighestPositionPriority)
             {
                 FillScheduleHighestEmployeesOneShiftTemplate(schedules, location, startDate, endDate, allShiftTypes, employee);
+                if (leaveService.IsEmployeeHasLeavesForPeriod(employee.Id, startDate, endDate))
+                {
+                    ManageLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
+                }
             }
-
-            var otherEmployeesGroup = employeesGroupByPositionPriority.First();
-            employeesGroupByPositionPriority.Remove(otherEmployeesGroup);
 
             foreach (var employee in employeesWithHighestPositionPriority)
             {

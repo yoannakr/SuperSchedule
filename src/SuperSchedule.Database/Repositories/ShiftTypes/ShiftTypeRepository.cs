@@ -63,6 +63,8 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
                   .ToList();
 
             shiftTypesByLocation.Add(GetDefaultBreakShiftType());
+            shiftTypesByLocation.Add(GetDefaultLeaveWorkDaysShiftType());
+            shiftTypesByLocation.Add(GetDefaultLeaveWeekendDaysShiftType());
 
             return shiftTypesByLocation;
         }

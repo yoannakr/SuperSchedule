@@ -49,7 +49,6 @@ export const Setting = () => {
       getSettings()
         .then((response) => {
           const setting: Setting = response.data;
-          console.log(setting);
           setSetting(setting);
           let holidays: Holiday[] = [];
           setting.holidays.map((holiday) => {
@@ -152,7 +151,7 @@ export const Setting = () => {
     if (setting != undefined) {
       setting.holidays = holidays;
     }
-    console.log(setting);
+
     updateSetting({ setting }).catch((error) =>
       console.log(`UpdateSetting not successful because: ${error}`)
     );

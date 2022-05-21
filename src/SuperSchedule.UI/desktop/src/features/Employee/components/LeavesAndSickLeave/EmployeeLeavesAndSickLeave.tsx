@@ -117,8 +117,6 @@ export const EmployeeLeavesAndSickLeave = (
   };
 
   const save = () => {
-    console.log("StartDate", startDate);
-    console.log("EndDate", endDate);
     const leave: Leave = {
       id: 0,
       fromDate: moment(startDate),
