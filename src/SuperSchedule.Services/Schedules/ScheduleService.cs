@@ -116,6 +116,7 @@ namespace SuperSchedule.Services.Schedules
                 }
 
                 previousSchedule.ShiftType = defaultBreakShiftType;
+                previousSchedule.RemovedShiftType = previousShiftType;
 
                 FillSchedule(schedules, location, otherEmployee, date, previousShiftType);
 
@@ -221,15 +222,13 @@ namespace SuperSchedule.Services.Schedules
                 return (-1, null);
             }
 
-            var tempDate = lastDayOfPreviousMonth;
-            while (lastScheduleOfPreviousMonth?.ShiftType?.Id == 1)
-            {
-                lastScheduleOfPreviousMonth = scheduleRepository.GetEmployeeScheduleByLocationForDate(id, tempDate, employee);
-                tempDate = tempDate.AddDays(-1);
-            }
-
             var currentPriorityShiftType = lastScheduleOfPreviousMonth?.ShiftType?.Priority;
             var lastRotationDays = lastScheduleOfPreviousMonth?.LastRotationDays;
+            if (shiftTypeService.IsShiftTypeBreak(lastScheduleOfPreviousMonth?.ShiftType) ||
+                shiftTypeService.IsShiftTypeLeave(lastScheduleOfPreviousMonth?.ShiftType))
+            {
+                currentPriorityShiftType = lastScheduleOfPreviousMonth?.RemovedShiftType?.Priority;   
+            }
 
             if (lastRotationDays == lastScheduleOfPreviousMonth?.ShiftType?.RotationDays)
             {
@@ -258,19 +257,23 @@ namespace SuperSchedule.Services.Schedules
             var datesGroupedByWeek = dates.GroupBy(x => CultureInfo.CurrentCulture.DateTimeFormat.Calendar.GetWeekOfYear(x, CalendarWeekRule.FirstFullWeek, DayOfWeek.Monday)).ToList();
             var allShiftTypes = shiftTypeService.GetShiftTypesByLocation(location.Id).OrderBy(s => s.Priority).ToList();
 
+            var otherEmployeesGroup = employeesGroupByPositionPriority.First();
+            employeesGroupByPositionPriority.Remove(otherEmployeesGroup);
+
             var firstShiftIndex = 0;
             foreach (var employee in employeesWithHighestPositionPriority)
             {
                 FillScheduleHighestEmployeesFirstAndSecondShiftsTemplate(schedules, location, datesGroupedByWeek, allShiftTypes, employee, firstShiftIndex);
+                if (leaveService.IsEmployeeHasLeavesForPeriod(employee.Id, startDate, endDate))
+                {
+                    ManageLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
+                }
                 firstShiftIndex++;
                 if (firstShiftIndex >= allShiftTypes.Count)
                 {
                     firstShiftIndex = 0;
                 }
             }
-
-            var otherEmployeesGroup = employeesGroupByPositionPriority.First();
-            employeesGroupByPositionPriority.Remove(otherEmployeesGroup);
 
             foreach (var employee in employeesWithHighestPositionPriority)
             {
@@ -366,6 +369,11 @@ namespace SuperSchedule.Services.Schedules
                 usedWeekIndex.Add(dateGroupIndex);
                 dateFromWeek = dateFromWeek.OrderBy(d => d.Date).ToList();
                 var previousShiftType = schedulesForEmployee.FirstOrDefault(s => s.Date.Date == dateFromWeek[0].Date)?.ShiftType;
+                if(shiftTypeService.IsShiftTypeBreak(previousShiftType) || shiftTypeService.IsShiftTypeLeave(previousShiftType))
+                {
+                    continue;
+                }
+
                 if (previousShiftType?.Id == firstShift.Id)
                 {
                     var date = dateFromWeek[0];
@@ -375,7 +383,9 @@ namespace SuperSchedule.Services.Schedules
                         continue;
                     }
 
-                    schedulesForEmployee.First(s => s.Date.Date == date.Date).ShiftType = defaultBreakShiftType;
+                    var previousSchedule = schedulesForEmployee.First(s => s.Date.Date == date.Date);
+                    previousSchedule.ShiftType = defaultBreakShiftType;
+                    previousSchedule.RemovedShiftType = previousShiftType;
 
                     FillSchedule(schedules, location, otherEmployee, date, previousShiftType, dayOfWeekTemplate: currentDayOfWeekTemplate);
 
@@ -409,6 +419,11 @@ namespace SuperSchedule.Services.Schedules
                 }
 
                 var lastMonthShiftTypeId = previousMonthSchedule.ShiftType?.Id;
+                if(shiftTypeService.IsShiftTypeBreak(previousMonthSchedule.ShiftType) ||
+                    shiftTypeService.IsShiftTypeLeave(previousMonthSchedule.ShiftType))
+                {
+                    lastMonthShiftTypeId = previousMonthSchedule.RemovedShiftType?.Id;
+                }
                 var lastMonthShiftType = allShiftTypes.FirstOrDefault(s => s.Id == lastMonthShiftTypeId);
 
                 return allShiftTypes.IndexOf(lastMonthShiftType);
@@ -658,23 +673,25 @@ namespace SuperSchedule.Services.Schedules
 
             var leaveWorkDaysShiftType = shiftTypeService.GetDefaultLeaveWorkDaysShiftType();
             var leaveWeekendDaysShiftType = shiftTypeService.GetDefaultLeaveWeekendDaysShiftType();
+            var currentMonthLeaveDates = monthDates.Where(d => leaveDates.Any(l => l.Date == d.Date)).ToList();
 
-            foreach (var leaveDate in leaveDates)
+            if(currentMonthLeaveDates.Count() == 0)
+            {
+                return;
+            }
+
+            foreach (var leaveDate in currentMonthLeaveDates)
             {
                 var currentLeaveShiftType = IsWeekendDate(leaveDate) ? leaveWeekendDaysShiftType : leaveWorkDaysShiftType;
-                if (!monthDates.Any(d => d.Date == leaveDate.Date))
-                {
-                    continue;
-                }
 
                 var schedule = schedules.FirstOrDefault(s => s.Employee.Id == employee.Id && s.Date.Date == leaveDate.Date);
                 var previousShiftType = schedule?.ShiftType;
-                if (schedule == null || previousShiftType == null)
+                if (schedule == null || previousShiftType == null || shiftTypeService.IsShiftTypeLeave(previousShiftType))
                 {
                     continue;
                 }
 
-                if (shiftTypeService.IsShiftTypeBreak(previousShiftType) || previousShiftType.TotalHours <= 0)
+                if (shiftTypeService.IsShiftTypeBreak(previousShiftType) || previousShiftType.TotalHours <= 0) 
                 {
                     schedule.ShiftType = currentLeaveShiftType;
                     continue;
@@ -683,10 +700,12 @@ namespace SuperSchedule.Services.Schedules
                 var otherEmployee = GetOtherEmployee(schedules, otherEmployeesGroup, previousShiftType, leaveDate);
                 if (otherEmployee == null)
                 {
+                    // съобщение
                     continue;
                 }
 
                 schedule.ShiftType = currentLeaveShiftType;
+                schedule.RemovedShiftType = previousShiftType;
 
                 FillSchedule(schedules, location, otherEmployee, leaveDate, previousShiftType);
             }
@@ -825,7 +844,7 @@ namespace SuperSchedule.Services.Schedules
             {
                 var contextEmployee = employeeService.GetEmployeeById(employee.Id);
                 // свободен ли е за този ден служителя
-                if (!IsEmployeeAvailable(date, contextEmployee))
+                if (!IsEmployeeAvailable(date, contextEmployee, schedules))
                 {
                     continue;
                 }
@@ -876,9 +895,11 @@ namespace SuperSchedule.Services.Schedules
             return false;
         }
 
-        public bool IsEmployeeAvailable(DateTime date, Employee employee)
+        public bool IsEmployeeAvailable(DateTime date, Employee employee, List<Schedule> schedules)
         {
-            return scheduleRepository.IsEmployeeAvailable(date, employee);
+            var newSchedulesForEmployee = schedules.Where(s => s.Employee.Id == employee.Id && s.Date.Date == date.Date && s.ShiftType != null).ToList();
+            
+            return newSchedulesForEmployee.Count() == 0 && scheduleRepository.IsEmployeeAvailable(date, employee);
         }
 
         public bool IsEmployeeWorkLastFourDays(DateTime date, Employee employee, List<Schedule> schedulers)

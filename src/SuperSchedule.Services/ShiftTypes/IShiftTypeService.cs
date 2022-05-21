@@ -21,5 +21,7 @@ namespace SuperSchedule.Services.ShiftTypes
         IEnumerable<ShiftType> GetShiftTypesByLocationIncludingDefaultBreak(int locationId);
 
         bool IsShiftTypeBreak(ShiftType shiftType);
+
+        bool IsShiftTypeLeave(ShiftType shiftType);
     }
 }

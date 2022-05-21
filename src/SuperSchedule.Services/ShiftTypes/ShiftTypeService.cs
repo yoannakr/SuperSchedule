@@ -54,7 +54,12 @@ namespace SuperSchedule.Services.ShiftTypes
 
         public bool IsShiftTypeBreak(ShiftType shiftType)
         {
-            return shiftType.Priority == 0;
+            return shiftType.Location == null && shiftType.Priority == 3;
+        }
+
+        public bool IsShiftTypeLeave(ShiftType shiftType)
+        {
+            return shiftType.Location == null && (shiftType.Priority == 1 || shiftType.Priority == 2);
         }
     }
 }

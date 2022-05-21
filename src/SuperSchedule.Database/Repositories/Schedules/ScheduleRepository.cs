@@ -63,6 +63,7 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .Include(s => s.Location)
                 .Where(s => s.Location.Id == locationId && s.Date.Date >= startDate.Date && s.Date.Date <= endDate.Date)
                 .OrderBy(s => s.Date)
+                .ThenBy(s => s.Employee.Position.Priority)
                 .ToList();
         }
 

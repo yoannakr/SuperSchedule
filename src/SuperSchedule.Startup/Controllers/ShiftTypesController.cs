@@ -34,6 +34,7 @@ namespace SuperSchedule.Startup.Controllers
                     StartTime = new DateTime(sh.StartTime.Ticks),
                     EndTime = new DateTime(sh.EndTime.Ticks),
                     RotationDays = sh.RotationDays,
+                    Priority = sh.Priority,
                     LocationId = sh.Location?.Id ?? 0,
                     DaysIds = sh.Days.Select(d => d.Id)
                 });
@@ -51,6 +52,7 @@ namespace SuperSchedule.Startup.Controllers
                 StartTime = TimeOnly.FromDateTime(shiftTypeInputModel.StartTime.ToLocalTime()),
                 EndTime = TimeOnly.FromDateTime(shiftTypeInputModel.EndTime.ToLocalTime()),
                 RotationDays = shiftTypeInputModel.RotationDays,
+                Priority = shiftTypeInputModel.Priority,
                 Location = locationService.GetLocationById(shiftTypeInputModel.LocationId),
                 NightHours = shiftTypeInputModel.NightHours,
                 Days = shiftTypeInputModel.DaysIds.Select(id => dayService.GetDayById(id)).ToList()

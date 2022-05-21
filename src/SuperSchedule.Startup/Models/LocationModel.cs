@@ -10,6 +10,8 @@ namespace SuperSchedule.Startup.Models
 
         public string Abbreviation { get; set; }
 
+        public int Priority { get; set; }
+
         public int ShiftTypesTemplate { get; set; }
     }
 }

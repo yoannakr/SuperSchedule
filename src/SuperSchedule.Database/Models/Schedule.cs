@@ -12,6 +12,8 @@ namespace SuperSchedule.Database.Models
 
         public ShiftType? ShiftType { get; set; }
 
+        public ShiftType? RemovedShiftType { get; set; }
+
         public DateTime Date { get; set; }
 
         public int? LastRotationDays { get; set; }

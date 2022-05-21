@@ -15,6 +15,8 @@ namespace SuperSchedule.Startup.Models
 
         public int RotationDays { get; set; }
 
+        public int Priority { get; set; }
+
         public int LocationId { get; set; }
 
         public int? NightHours { get; set; }

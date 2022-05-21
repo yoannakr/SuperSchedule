@@ -28,6 +28,7 @@ namespace SuperSchedule.Startup.Controllers
             {
                 Name = locationInputModel.Name,
                 Abbreviation = locationInputModel.Abbreviation,
+                Priority = locationInputModel.Priority,
                 ShiftTypesTemplate = (ShiftTypesTemplate)locationInputModel.ShiftTypesTemplate,
             });
         }
