@@ -19,5 +19,9 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
         ShiftType GetDefaultLeaveWorkDaysShiftType();
 
         ShiftType GetDefaultLeaveWeekendDaysShiftType();
+
+        ShiftType GetDefaultSickLeaveWorkDaysShiftType();
+
+        ShiftType GetDefaultSickLeaveWeekendDaysShiftType();
     }
 }

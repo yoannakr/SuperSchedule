@@ -39,6 +39,7 @@ namespace SuperSchedule.Startup.Controllers
                         FirstName = g.Key.FirstName,
                         MiddleName = g.Key.MiddleName,
                         LastName = g.Key.LastName,
+                        ShiftTypesIds = g.Key.ShiftTypes.Select(s => s.Id).ToList()
                     },
                     ShiftTypeEditableCells = g.Select(v => new ShiftTypeEditableCellModel
                     {
@@ -49,8 +50,39 @@ namespace SuperSchedule.Startup.Controllers
                             Name = v.ShiftType?.Name ?? "",
                             Abbreviation = v.ShiftType?.Abbreviation ?? ""
                         }
-                    }), 
-                });         
+                    }),
+                });
+        }
+
+        [HttpGet]
+        public IEnumerable<ScheduleModel> GetPersonalSchedules(int employeeId, DateTime startDate, DateTime endDate)
+        {
+            return scheduleService
+                .GetPersonalSchedules(employeeId, startDate, endDate)
+                .Select(s => new ScheduleModel
+                {
+                    Employee = new EmployeeModel
+                    {
+                        Id = s.Employee.Id,
+                        FirstName = s.Employee.FirstName,
+                        MiddleName = s.Employee.MiddleName,
+                        LastName = s.Employee.LastName,
+                        ShiftTypesIds = s.Employee.ShiftTypes.Select(s => s.Id).ToList()
+                    },
+                    ShiftTypeEditableCells = new List<ShiftTypeEditableCellModel>
+                    {
+                        new ShiftTypeEditableCellModel
+                        {
+                            ScheduleId = s.Id,
+                            ShiftType = new ShiftTypeModel
+                            {
+                                Id = s.ShiftType?.Id ?? 0,
+                                Name = s.ShiftType?.Name ?? "",
+                                Abbreviation = s.ShiftType?.Abbreviation ?? ""
+                            }
+                        }
+                    }
+                });
         }
 
         [HttpPost]

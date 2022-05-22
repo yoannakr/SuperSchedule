@@ -59,6 +59,7 @@ namespace SuperSchedule.Database.Repositories.Schedules
             return superScheduleDbContext
                 .Schedules
                 .Include(s => s.Employee)
+                .ThenInclude(e => e.ShiftTypes)
                 .Include(s => s.ShiftType)
                 .Include(s => s.Location)
                 .Where(s => s.Location.Id == locationId && s.Date.Date >= startDate.Date && s.Date.Date <= endDate.Date)
@@ -111,14 +112,14 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .DayOfWeekTemplate;
         }
 
-        public IEnumerable<Schedule> GetEmployeeScheduleForPeriod(DateTime startDate, DateTime endDate, Employee employee)
+        public IEnumerable<Schedule> GetEmployeeScheduleForPeriod(DateTime startDate, DateTime endDate, int employeeId)
         {
             return superScheduleDbContext
                 .Schedules
                 .Include(s => s.Employee)
                 .Include(s => s.ShiftType)
                 .Include(s => s.Location)
-                .Where(s => s.Employee.Id == employee.Id && s.Date.Date >= startDate.Date && s.Date.Date <= endDate.Date)
+                .Where(s => s.Employee.Id == employeeId && s.Date.Date >= startDate.Date && s.Date.Date <= endDate.Date)
                 .ToList();
         }
 

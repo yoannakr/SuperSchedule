@@ -65,6 +65,8 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
             shiftTypesByLocation.Add(GetDefaultBreakShiftType());
             shiftTypesByLocation.Add(GetDefaultLeaveWorkDaysShiftType());
             shiftTypesByLocation.Add(GetDefaultLeaveWeekendDaysShiftType());
+            shiftTypesByLocation.Add(GetDefaultSickLeaveWorkDaysShiftType());
+            shiftTypesByLocation.Add(GetDefaultSickLeaveWeekendDaysShiftType());
 
             return shiftTypesByLocation;
         }
@@ -77,6 +79,16 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
         public ShiftType GetDefaultLeaveWeekendDaysShiftType()
         {
             return superScheduleDbContext.ShiftTypes.First(shiftType => shiftType.Location == null && shiftType.Priority == 2);
+        }
+
+        public ShiftType GetDefaultSickLeaveWorkDaysShiftType()
+        {
+            return superScheduleDbContext.ShiftTypes.First(shiftType => shiftType.Location == null && shiftType.Priority == 4);
+        }
+
+        public ShiftType GetDefaultSickLeaveWeekendDaysShiftType()
+        {
+            return superScheduleDbContext.ShiftTypes.First(shiftType => shiftType.Location == null && shiftType.Priority == 5);
         }
     }
 }

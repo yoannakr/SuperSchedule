@@ -59,7 +59,17 @@ namespace SuperSchedule.Services.ShiftTypes
 
         public bool IsShiftTypeLeave(ShiftType shiftType)
         {
-            return shiftType.Location == null && (shiftType.Priority == 1 || shiftType.Priority == 2);
+            return shiftType.Location == null && (shiftType.Priority == 1 || shiftType.Priority == 2 || shiftType.Priority == 4 || shiftType.Priority == 5);
+        }
+
+        public ShiftType GetDefaultSickLeaveWorkDaysShiftType()
+        {
+            return shiftTypeRepository.GetDefaultSickLeaveWorkDaysShiftType();
+        }
+
+        public ShiftType GetDefaultSickLeaveWeekendDaysShiftType()
+        {
+            return shiftTypeRepository.GetDefaultSickLeaveWeekendDaysShiftType();
         }
     }
 }

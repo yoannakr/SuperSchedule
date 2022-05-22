@@ -83,6 +83,11 @@ namespace SuperSchedule.Services.Schedules
                 {
                     ManageLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
                 }
+
+                if (leaveService.IsEmployeeHasSickLeavesForPeriod(employee.Id, startDate, endDate))
+                {
+                    ManageSickLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
+                }
             }
         }
 
@@ -268,6 +273,12 @@ namespace SuperSchedule.Services.Schedules
                 {
                     ManageLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
                 }
+
+                if (leaveService.IsEmployeeHasSickLeavesForPeriod(employee.Id, startDate, endDate))
+                {
+                    ManageSickLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
+                }
+
                 firstShiftIndex++;
                 if (firstShiftIndex >= allShiftTypes.Count)
                 {
@@ -400,7 +411,10 @@ namespace SuperSchedule.Services.Schedules
                         continue;
                     }
 
-                    schedulesForEmployee.First(s => s.Date.Date == date.Date).ShiftType = defaultBreakShiftType;
+                    var previousSchedule = schedulesForEmployee.First(s => s.Date.Date == date.Date);
+                    previousSchedule.ShiftType = defaultBreakShiftType;
+                    previousSchedule.RemovedShiftType = previousShiftType;
+
                     FillSchedule(schedules, location, otherEmployee, date, previousShiftType, dayOfWeekTemplate: currentDayOfWeekTemplate);
 
                     tempUnnecessaryShifts++;
@@ -492,6 +506,11 @@ namespace SuperSchedule.Services.Schedules
                 if (leaveService.IsEmployeeHasLeavesForPeriod(employee.Id, startDate, endDate))
                 {
                     ManageLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
+                }
+
+                if (leaveService.IsEmployeeHasSickLeavesForPeriod(employee.Id, startDate, endDate))
+                {
+                    ManageSickLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
                 }
             }
 
@@ -668,6 +687,63 @@ namespace SuperSchedule.Services.Schedules
             return countOfWorkingDays * 8;
         }
 
+        private void ManageSickLeaves(List<Schedule> schedules, Location location, IGrouping<int, Employee> otherEmployeesGroup, DateTime startDate, DateTime endDate, Employee employee)
+        {
+            // вземам всички дати, за всяка дата вземам новия employee и сетвам с приоритет -1 смяната
+            var sickLeaves = leaveService.GetSickLeavesForEmployee(employee.Id, startDate, endDate);
+            var sickLeaveDates = sickLeaves.SelectMany(l => GetRangeOfDates(0, l.FromDate, l.ToDate)).ToList();
+            var monthDates = GetAllMonthDays(startDate);
+
+            var sickLeaveWorkDaysShiftType = shiftTypeService.GetDefaultSickLeaveWorkDaysShiftType();
+            var sickLeaveWeekendDaysShiftType = shiftTypeService.GetDefaultSickLeaveWeekendDaysShiftType();
+            var currentMonthSickLeaveDates = monthDates.Where(d => sickLeaveDates.Any(l => l.Date == d.Date)).ToList();
+
+            if (currentMonthSickLeaveDates.Count() == 0)
+            {
+                return;
+            }
+
+            foreach (var sickLeaveDate in currentMonthSickLeaveDates)
+            {
+                var currentLeaveShiftType = IsWeekendDate(sickLeaveDate) ? sickLeaveWeekendDaysShiftType : sickLeaveWorkDaysShiftType;
+
+                if (!FillLeavesInSchedule(schedules, employee, sickLeaveDate, currentLeaveShiftType, otherEmployeesGroup, location))
+                {
+                    continue;
+                }
+            }
+        }
+
+        private bool FillLeavesInSchedule(List<Schedule> schedules, Employee employee, DateTime date, ShiftType newShiftType, IGrouping<int, Employee> otherEmployeesGroup, Location location)
+        {
+            var schedule = schedules.FirstOrDefault(s => s.Employee.Id == employee.Id && s.Date.Date == date.Date);
+            var previousShiftType = schedule?.ShiftType;
+            if (schedule == null || previousShiftType == null || shiftTypeService.IsShiftTypeLeave(previousShiftType))
+            {
+                return false;
+            }
+
+            if (shiftTypeService.IsShiftTypeBreak(previousShiftType) || previousShiftType.TotalHours <= 0)
+            {
+                schedule.ShiftType = newShiftType;
+                return false;
+            }
+
+            var otherEmployee = GetOtherEmployee(schedules, otherEmployeesGroup, previousShiftType, date);
+            if (otherEmployee == null)
+            {
+                // съобщение
+                return false;
+            }
+
+            schedule.ShiftType = newShiftType;
+            schedule.RemovedShiftType = previousShiftType;
+
+            FillSchedule(schedules, location, otherEmployee, date, previousShiftType);
+
+            return true;
+        }
+
         private void ManageLeaves(List<Schedule> schedules, Location location, IGrouping<int, Employee> otherEmployeesGroup, DateTime startDate, DateTime endDate, Employee employee)
         {
             // вземам всички дати, за всяка дата вземам новия employee и сетвам с приоритет -1 смяната
@@ -688,30 +764,10 @@ namespace SuperSchedule.Services.Schedules
             {
                 var currentLeaveShiftType = IsWeekendDate(leaveDate) ? leaveWeekendDaysShiftType : leaveWorkDaysShiftType;
 
-                var schedule = schedules.FirstOrDefault(s => s.Employee.Id == employee.Id && s.Date.Date == leaveDate.Date);
-                var previousShiftType = schedule?.ShiftType;
-                if (schedule == null || previousShiftType == null || shiftTypeService.IsShiftTypeLeave(previousShiftType))
+                if (!FillLeavesInSchedule(schedules, employee, leaveDate, currentLeaveShiftType, otherEmployeesGroup, location))
                 {
                     continue;
                 }
-
-                if (shiftTypeService.IsShiftTypeBreak(previousShiftType) || previousShiftType.TotalHours <= 0) 
-                {
-                    schedule.ShiftType = currentLeaveShiftType;
-                    continue;
-                }
-
-                var otherEmployee = GetOtherEmployee(schedules, otherEmployeesGroup, previousShiftType, leaveDate);
-                if (otherEmployee == null)
-                {
-                    // съобщение
-                    continue;
-                }
-
-                schedule.ShiftType = currentLeaveShiftType;
-                schedule.RemovedShiftType = previousShiftType;
-
-                FillSchedule(schedules, location, otherEmployee, leaveDate, previousShiftType);
             }
         }
 
@@ -860,7 +916,8 @@ namespace SuperSchedule.Services.Schedules
                 }
 
                 // дали е в отпуска или болничен тогава
-                if (leaveService.IsEmployeeHasLeavesForDate(contextEmployee.Id, date))
+                if (leaveService.IsEmployeeHasLeavesForDate(contextEmployee.Id, date) ||
+                    leaveService.IsEmployeeHasSickLeavesForDate(contextEmployee.Id, date))
                 {
                     continue;
                 }
@@ -934,7 +991,7 @@ namespace SuperSchedule.Services.Schedules
             var endDate = startDate.AddDays(6);
             var newSchedulesForEmployee = schedules.Where(s => s.Employee.Id == employee.Id && s.Date.Date >= startDate.Date && s.Date.Date <= endDate.Date).ToList();
             var schedulesForEmployee = scheduleRepository
-                .GetEmployeeScheduleForPeriod(startDate, endDate, employee)
+                .GetEmployeeScheduleForPeriod(startDate, endDate, employee.Id)
                 .Union(newSchedulesForEmployee)
                 .ToList();
 
@@ -992,6 +1049,11 @@ namespace SuperSchedule.Services.Schedules
             }
         }
 
+        public IEnumerable<Schedule> GetPersonalSchedules(int employeeId, DateTime startDate, DateTime endDate)
+        {
+            var contextSchedule = scheduleRepository.GetEmployeeScheduleForPeriod(startDate, endDate, employeeId);
 
+            return contextSchedule;
+        }
     }
 }
