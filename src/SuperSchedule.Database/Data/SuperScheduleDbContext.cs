@@ -76,7 +76,7 @@ namespace SuperSchedule.Database.Data
             ShiftTypes.AddRange(
                 new ShiftType
                 {
-                    Name = "отпуска",
+                    Name = "отпуска - работен ден",
                     Abbreviation = "О",
                     StartTime = new TimeOnly(6, 0),
                     EndTime = new TimeOnly(14, 0),
@@ -85,7 +85,7 @@ namespace SuperSchedule.Database.Data
                 },
                 new ShiftType
                 {
-                    Name = "отпуска",
+                    Name = "отпуска - почивен ден",
                     Abbreviation = "О",
                     StartTime = new TimeOnly(0, 0),
                     EndTime = new TimeOnly(0, 0),
@@ -100,8 +100,25 @@ namespace SuperSchedule.Database.Data
                     EndTime = new TimeOnly(0, 0),
                     RotationDays = 0,
                     Priority = 3
-                }
-
+                },
+                 new ShiftType
+                 {
+                     Name = "болничен - работен ден",
+                     Abbreviation = "Б",
+                     StartTime = new TimeOnly(6, 0),
+                     EndTime = new TimeOnly(14, 0),
+                     RotationDays = 0,
+                     Priority = 4
+                 },
+                  new ShiftType
+                  {
+                      Name = "болничен - почивен ден",
+                      Abbreviation = "Б",
+                      StartTime = new TimeOnly(0, 0),
+                      EndTime = new TimeOnly(0, 0),
+                      RotationDays = 0,
+                      Priority = 5
+                  }
             );
 
             var publicHolidaysDates = DateSystem.GetPublicHolidays(DateTime.UtcNow.Year, CountryCode.BG)
