@@ -1,15 +1,13 @@
 import { axios } from "../../../lib/axios";
 import { ShiftTypeEditableCell } from "../components/EditScheduleTableCell";
+import { LocationScheduleRow } from "../components/LocationSchedule";
 
 type UpdateShiftTypeOfSchedulesOptions = {
-  shiftTypeEditableCells: ShiftTypeEditableCell[];
+  scheduleModels: LocationScheduleRow[];
 };
 
 export const updateShiftTypeOfSchedules = ({
-  shiftTypeEditableCells,
+  scheduleModels,
 }: UpdateShiftTypeOfSchedulesOptions) => {
-  return axios.post(
-    "/schedule/UpdateShiftTypeOfSchedules",
-    shiftTypeEditableCells
-  );
+  return axios.post("/schedule/UpdateShiftTypeOfSchedules", scheduleModels);
 };

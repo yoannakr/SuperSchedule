@@ -42,11 +42,16 @@ namespace SuperSchedule.Database.Repositories.Schedules
             if (newShiftTypeId == 0)
             {
                 schedule.ShiftType = null;
+                superScheduleDbContext.Schedules.Remove(schedule);
+                await superScheduleDbContext.SaveChangesAsync();
+                return;
             }
             else
             {
+                var previousShiftType = superScheduleDbContext.ShiftTypes.FirstOrDefault(s => s.Id == schedule.ShiftType.Id);
                 var contextShiftType = superScheduleDbContext.ShiftTypes.FirstOrDefault(s => s.Id == newShiftTypeId);
-
+                
+                schedule.RemovedShiftType = previousShiftType;
                 schedule.ShiftType = contextShiftType;
             }
 
@@ -62,7 +67,7 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .ThenInclude(e => e.ShiftTypes)
                 .Include(s => s.ShiftType)
                 .Include(s => s.Location)
-                .Where(s => s.Location.Id == locationId && s.Date.Date >= startDate.Date && s.Date.Date <= endDate.Date)
+                .Where(s => s.Location != null && s.Location.Id == locationId && s.Date.Date >= startDate.Date && s.Date.Date <= endDate.Date)
                 .OrderBy(s => s.Date)
                 .ThenBy(s => s.Employee.Position.Priority)
                 .ToList();
@@ -75,7 +80,7 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .Include(s => s.Employee)
                 .Include(s => s.ShiftType)
                 .Include(s => s.Location)
-                .FirstOrDefault(s => s.Location.Id == locationId && s.Date.Date == date.Date && s.Employee.Id == employee.Id);
+                .FirstOrDefault(s => s.Location != null && s.Location.Id == locationId && s.Date.Date == date.Date && s.Employee.Id == employee.Id);
         }
 
         public bool IsScheduleFilledForPreviousMonth(int locationId, DateTime date)
@@ -85,7 +90,7 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .Include(s => s.Employee)
                 .Include(s => s.ShiftType)
                 .Include(s => s.Location)
-                .Any(s => s.Location.Id == locationId && s.Date.Date == date.Date);
+                .Any(s => s.Location != null && s.Location.Id == locationId && s.Date.Date == date.Date);
         }
 
         public bool IsEmployeeAvailable(DateTime date, Employee employee)
@@ -108,7 +113,7 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .Include(s => s.Employee)
                 .Include(s => s.ShiftType)
                 .Include(s => s.Location)
-                .FirstOrDefault(s => s.Location.Id == locationId && s.Employee.Id == employee.Id && s.Date.Date >= firstDayOfMonth.Date && s.Date.Date <= lastDayOfMonth.Date && s.DayOfWeekTemplate != null)?
+                .FirstOrDefault(s => s.Location != null && s.Location.Id == locationId && s.Employee.Id == employee.Id && s.Date.Date >= firstDayOfMonth.Date && s.Date.Date <= lastDayOfMonth.Date && s.DayOfWeekTemplate != null)?
                 .DayOfWeekTemplate;
         }
 
@@ -117,7 +122,9 @@ namespace SuperSchedule.Database.Repositories.Schedules
             return superScheduleDbContext
                 .Schedules
                 .Include(s => s.Employee)
+                .ThenInclude(e => e.ShiftTypes)
                 .Include(s => s.ShiftType)
+                .ThenInclude(sh => sh.Location)
                 .Include(s => s.Location)
                 .Where(s => s.Employee.Id == employeeId && s.Date.Date >= startDate.Date && s.Date.Date <= endDate.Date)
                 .ToList();

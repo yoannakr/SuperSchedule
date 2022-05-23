@@ -22,6 +22,10 @@ export const SidebarData = [
         title: "График",
         link: "/schedule",
       },
+      {
+        title: "Лични графици",
+        link: "/personalSchedules",
+      },
     ],
   },
   {
@@ -36,10 +40,6 @@ export const SidebarData = [
       {
         title: "Служители",
         link: "/employees",
-      },
-      {
-        title: "Лични графици",
-        link: "/employeeSchedules",
       },
       {
         title: "Отпуски и болнични",

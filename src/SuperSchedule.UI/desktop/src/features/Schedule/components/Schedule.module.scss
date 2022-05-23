@@ -20,6 +20,22 @@
   margin-left: 250px;
 }
 
-.LocationSchedule {
+.LocationSchedule,
+.TabList {
   width: calc(100vw - 270px);
+}
+
+.Tab:hover {
+  color: #495057;
+  border: 1px solid;
+  border-color: #dee2e6 #dee2e6 #fff;
+}
+
+.SelectedTab {
+  color: #495057 !important;
+  background-color: #fff !important;
+  border: 1px solid !important;
+  border-color: #dee2e6 #dee2e6 #fff !important;
+  border-bottom: none !important;
+  text-decoration: none !important;
 }

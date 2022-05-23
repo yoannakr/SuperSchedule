@@ -3,25 +3,39 @@ import React, { useEffect, useState } from "react";
 import styles from "./Schedule.module.scss";
 import TableCell from "@material-ui/core/TableCell";
 import { SelectField } from "../../../components/Form";
-import { ShiftType } from "../../../types";
+import { Employee, ShiftType } from "../../../types";
 
 export type ShiftTypeEditableCell = {
   scheduleId: number;
   shiftType: ShiftType;
+  date?: string;
 };
 
 type EditScheduleTableCellProps = {
   className: string;
   shiftTypes: ShiftType[];
   row: ShiftTypeEditableCell;
+  employee?: Employee;
   isEditMode: boolean;
 };
 
 export const EditScheduleTableCell = (props: EditScheduleTableCellProps) => {
-  const { className, shiftTypes, row, isEditMode } = props;
+  const { className, shiftTypes, row, employee, isEditMode } = props;
 
   const [currentShiftTypeId, setCurrentShiftTypeId] = useState<number>(
     row.shiftType.id
+  );
+
+  const employeeShiftTypes = employee?.shiftTypesIds ?? [];
+  const shiftTypesEmployeeCanHave = shiftTypes.filter(
+    (s) =>
+      employeeShiftTypes.includes(s.id) ||
+      (s.locationId === 0 &&
+        (s.priority === 1 ||
+          s.priority === 2 ||
+          s.priority === 3 ||
+          s.priority === 4 ||
+          s.priority === 5))
   );
 
   useEffect(() => {
@@ -40,10 +54,13 @@ export const EditScheduleTableCell = (props: EditScheduleTableCellProps) => {
           className={styles.EditScheduleTableCell}
           value={currentShiftTypeId}
           onChange={onShiftTypeChange}
-          options={shiftTypes.map((shiftType) => {
+          options={shiftTypesEmployeeCanHave.map((shiftType) => {
             if (
               shiftType.locationId === 0 &&
-              (shiftType.priority === 1 || shiftType.priority === 2)
+              (shiftType.priority === 1 ||
+                shiftType.priority === 2 ||
+                shiftType.priority === 4 ||
+                shiftType.priority === 5)
             ) {
               return {
                 label: shiftType.name,

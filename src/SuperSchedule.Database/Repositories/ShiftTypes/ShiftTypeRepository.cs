@@ -36,7 +36,7 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
                 .ShiftTypes
                 .Include(s => s.Location)
                 .Include(s => s.Days)
-                .First(shiftType => shiftType.Id == id);
+                .FirstOrDefault(shiftType => shiftType.Id == id);
         }
 
         public ShiftType GetDefaultBreakShiftType()
@@ -55,12 +55,7 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
 
         public IEnumerable<ShiftType> GetShiftTypesByLocationIncludingDefaultBreak(int locationId)
         {
-            var shiftTypesByLocation = superScheduleDbContext
-                  .ShiftTypes
-                  .Include(s => s.Location)
-                  .Include(s => s.Days)
-                  .Where(s => s.Location != null && s.Location.Id == locationId)
-                  .ToList();
+            var shiftTypesByLocation = GetShiftTypesByLocation(locationId).ToList();
 
             shiftTypesByLocation.Add(GetDefaultBreakShiftType());
             shiftTypesByLocation.Add(GetDefaultLeaveWorkDaysShiftType());
@@ -89,6 +84,25 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
         public ShiftType GetDefaultSickLeaveWeekendDaysShiftType()
         {
             return superScheduleDbContext.ShiftTypes.First(shiftType => shiftType.Location == null && shiftType.Priority == 5);
+        }
+
+        public IEnumerable<ShiftType> GetAllShiftTypesForEmployee(int employeeId)
+        {
+            var shiftTypesForEmployee = superScheduleDbContext
+                 .Employees
+                 .Include(e => e.ShiftTypes)
+                 .ThenInclude(s => s.Location)
+                 .Where(e => e.Id == employeeId)
+                 .SelectMany(e => e.ShiftTypes)
+                 .ToList();
+
+            shiftTypesForEmployee.Add(GetDefaultBreakShiftType());
+            shiftTypesForEmployee.Add(GetDefaultLeaveWorkDaysShiftType());
+            shiftTypesForEmployee.Add(GetDefaultLeaveWeekendDaysShiftType());
+            shiftTypesForEmployee.Add(GetDefaultSickLeaveWorkDaysShiftType());
+            shiftTypesForEmployee.Add(GetDefaultSickLeaveWeekendDaysShiftType());
+
+            return shiftTypesForEmployee;
         }
     }
 }

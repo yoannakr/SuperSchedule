@@ -6,7 +6,7 @@ namespace SuperSchedule.Database.Models
     {
         public int Id { get; set; }
 
-        public Location Location { get; set; }
+        public Location? Location { get; set; }
 
         public Employee Employee { get; set; }
 

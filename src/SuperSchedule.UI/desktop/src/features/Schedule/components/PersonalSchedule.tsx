@@ -15,14 +15,13 @@ import {
   ShiftTypeEditableCell,
 } from "./EditScheduleTableCell";
 import { Employee, Schedule as ScheduleModel, ShiftType } from "../../../types";
-import { getSchedulesByLocationForPeriod } from "../api/getSchedulesByLocationForPeriod";
-import { getArrayInRange } from "../utils/getArrayInRange";
 import IconButton from "@material-ui/core/IconButton";
-import { updateShiftTypeOfSchedules } from "../api/updateShiftTypeOfSchedules";
 import TableContainer from "@material-ui/core/TableContainer";
-import { getShiftTypesByLocationIncludingDefaultBreak } from "../../ShiftType/api/getShiftTypesByLocationIncludingDefaultBreak";
 
 import { makeStyles } from "@material-ui/core/styles";
+import { getPersonalSchedules } from "../api/getPersonalSchedules";
+import { getAllShiftTypesForEmployee } from "../../ShiftType/api/getAllShiftTypesForEmployee";
+import { updatePersonalScheduleShiftTypes } from "../api/updatePersonalScheduleShiftTypes";
 
 const useStyles = makeStyles({
   tableCell: {
@@ -33,14 +32,13 @@ const useStyles = makeStyles({
   },
 });
 
-export type LocationScheduleRow = {
-  employee: Employee;
-  shiftTypeEditableCells: ShiftTypeEditableCell[];
+export type PersonalScheduleRow = {
+  employee?: Employee;
+  shiftTypeEditableCells?: ShiftTypeEditableCell[];
 };
 
-type LocationScheduleProps = {
-  locationId: number;
-  locationName: string;
+type PersonalScheduleProps = {
+  employeeId: number;
   monthDate: Date | null;
 };
 
@@ -50,28 +48,29 @@ type Day = {
   background: string;
 };
 
-export const LocationSchedule = (props: LocationScheduleProps) => {
+export const PersonalSchedule = (props: PersonalScheduleProps) => {
   const classes = useStyles();
-  const { locationId, locationName, monthDate } = props;
+  const { employeeId, monthDate } = props;
 
   const [shiftTypes, setShiftTypes] = useState<ShiftType[]>([]);
-  const [schedulesRows, setSchedulesRows] = useState<LocationScheduleRow[]>([]);
+  const [schedulesRow, setSchedulesRow] = useState<PersonalScheduleRow>();
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
-  const [previousScheduleRow, setPreviousScheduleRow] = useState<
-    LocationScheduleRow[]
-  >([]);
+  const [previousScheduleRow, setPreviousScheduleRow] =
+    useState<PersonalScheduleRow>();
   const [countOfDays, setCountOfDays] = useState<number>(0);
   const [days, setDays] = useState<Day[]>([]);
 
   useEffect(() => {
     const getDataShiftTypes = () => {
-      getShiftTypesByLocationIncludingDefaultBreak({ locationId })
+      getAllShiftTypesForEmployee({ employeeId })
         .then((response) => {
           const shiftTypes: ShiftType[] = response.data;
           setShiftTypes(shiftTypes);
         })
         .catch((error) =>
-          console.log(`GetAllShiftTypes not successful because: ${error}`)
+          console.log(
+            `GetAllShiftTypesForEmployee not successful because: ${error}`
+          )
         );
     };
 
@@ -80,22 +79,19 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
 
   useEffect(() => {
     const getDataSchedules = () => {
-      const startDate = moment(monthDate).startOf("month").format("YYYY-MM-DD");
-      const endDate = moment(monthDate).endOf("month").format("YYYY-MM-DD");
+      const monthDateString = moment(monthDate).format("YYYY-MM-DD");
 
-      getSchedulesByLocationForPeriod({
-        locationId: locationId,
-        startDate: startDate,
-        endDate: endDate,
+      getPersonalSchedules({
+        employeeId: employeeId,
+        monthDate: monthDateString,
       })
         .then((response) => {
-          const schedules: ScheduleModel[] = response.data;
+          const schedule: ScheduleModel = response.data;
 
-          const currentSchedulesRows: LocationScheduleRow[] = schedules.map(
-            (schedule) => createScheduleRow(schedule)
-          );
+          const currentSchedulesRow: PersonalScheduleRow =
+            createScheduleRow(schedule);
 
-          if (currentSchedulesRows.length !== 0) {
+          if (currentSchedulesRow !== undefined) {
             const monthDays = moment(monthDate).daysInMonth();
             const days: Day[] = [];
             setCountOfDays(monthDays);
@@ -119,19 +115,17 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
             setCountOfDays(0);
             setDays([]);
           }
-          setSchedulesRows(currentSchedulesRows);
-          setSchedulesRows(currentSchedulesRows);
+          setSchedulesRow(currentSchedulesRow);
+          setSchedulesRow(currentSchedulesRow);
         })
         .catch((error) =>
-          console.log(
-            `GetSchedulesByLocationForPeriod not successful because: ${error}`
-          )
+          console.log(`GetPersonalSchedules not successful because: ${error}`)
         );
     };
     if (!isEditMode) getDataSchedules();
   }, [isEditMode, monthDate]);
 
-  const createScheduleRow = (schedule: ScheduleModel): LocationScheduleRow => ({
+  const createScheduleRow = (schedule: ScheduleModel): PersonalScheduleRow => ({
     employee: schedule.employee,
     shiftTypeEditableCells: schedule.shiftTypeEditableCells,
   });
@@ -143,40 +137,35 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
 
   const onStartEditing = () => {
     setIsEditMode(true);
-    const previousScheduleRow: LocationScheduleRow[] = schedulesRows.map(
-      (scheduleRow) => {
-        return {
-          employee: scheduleRow.employee,
-          shiftTypeEditableCells: scheduleRow.shiftTypeEditableCells.map(
-            (shiftTypeEditableCell) => {
-              return {
-                scheduleId: shiftTypeEditableCell.scheduleId,
-                shiftType: {
-                  id: shiftTypeEditableCell.shiftType.id,
-                  name: shiftTypeEditableCell.shiftType.name,
-                  abbreviation: shiftTypeEditableCell.shiftType.abbreviation,
-                },
-              };
-            }
-          ),
-        };
-      }
-    );
+    const previousScheduleRow: PersonalScheduleRow = {
+      employee: schedulesRow?.employee,
+      shiftTypeEditableCells: schedulesRow?.shiftTypeEditableCells?.map(
+        (shiftTypeEditableCell) => {
+          return {
+            scheduleId: shiftTypeEditableCell.scheduleId,
+            shiftType: {
+              id: shiftTypeEditableCell.shiftType.id,
+              name: shiftTypeEditableCell.shiftType.name,
+              abbreviation: shiftTypeEditableCell.shiftType.abbreviation,
+            },
+          };
+        }
+      ),
+    };
     setPreviousScheduleRow(previousScheduleRow);
   };
 
   const onSave = async () => {
-
-    await updateShiftTypeOfSchedules({ scheduleModels: schedulesRows });
+    await updatePersonalScheduleShiftTypes({ scheduleModel: schedulesRow });
   };
 
   const onRevert = () => {
     setIsEditMode(false);
-    setSchedulesRows(previousScheduleRow);
+    setSchedulesRow(previousScheduleRow);
   };
 
   return (
-    <div className={styles.LocationSchedule}>
+    <div>
       {isEditMode && (
         <>
           <IconButton aria-label="done" onClick={onDoneEditing}>
@@ -202,7 +191,7 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
               <TableCell
                 className={`${styles.FixedColumns} ${styles.TableCell} ${classes.tableCell}`}
               >
-                {locationName}
+                Блок
               </TableCell>
               <TableCell
                 colSpan={countOfDays}
@@ -238,30 +227,31 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {schedulesRows.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell
-                  className={`${styles.FixedColumns} ${styles.TableCell} ${classes.tableCell}`}
-                >
-                  {index + 1}
-                </TableCell>
-                <TableCell
-                  className={`${styles.FixedColumns} ${styles.TableCell} ${classes.tableCell}`}
-                >
-                  <div>{`${row.employee.firstName} ${row.employee.lastName}`}</div>
-                </TableCell>
-                {row.shiftTypeEditableCells.map((shiftType, shiftTypeId) => (
-                  <EditScheduleTableCell
-                    className={`${styles.TableCell} ${classes.tableCell}`}
-                    key={shiftTypeId}
-                    row={shiftType}
-                    employee={row.employee}
-                    shiftTypes={shiftTypes}
-                    isEditMode={isEditMode}
-                  />
-                ))}
-              </TableRow>
-            ))}
+            <TableRow>
+              <TableCell
+                className={`${styles.FixedColumns} ${styles.TableCell} ${classes.tableCell}`}
+              >
+                1
+              </TableCell>
+              <TableCell
+                className={`${styles.FixedColumns} ${styles.TableCell} ${classes.tableCell}`}
+              >
+                <div>{`${schedulesRow?.employee?.firstName} ${schedulesRow?.employee?.lastName}`}</div>
+              </TableCell>
+              {schedulesRow?.shiftTypeEditableCells !== undefined &&
+                schedulesRow.shiftTypeEditableCells.map(
+                  (shiftType, shiftTypeId) => (
+                    <EditScheduleTableCell
+                      className={`${styles.TableCell} ${classes.tableCell}`}
+                      key={shiftTypeId}
+                      row={shiftType}
+                      employee={schedulesRow.employee}
+                      shiftTypes={shiftTypes}
+                      isEditMode={isEditMode}
+                    />
+                  )
+                )}
+            </TableRow>
           </TableBody>
         </Table>
       </TableContainer>

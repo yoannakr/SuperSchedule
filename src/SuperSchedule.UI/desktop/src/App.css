@@ -19,3 +19,7 @@ body {
   align-items: center;
   flex-direction: column;
 }
+
+.nav-link {
+  width: max-content !important;
+}

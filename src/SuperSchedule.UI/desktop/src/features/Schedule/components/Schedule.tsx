@@ -17,26 +17,6 @@ export const Schedule = () => {
   const [locations, setLocations] = useState<Location[]>([]);
   const [monthDate, setMonthDate] = React.useState<Date | null>(new Date());
 
-  // const getSchedules = () =>{
-  //   locations.map((location) => {
-  //     const startDate = moment(monthDate).startOf("month").format("YYYY-MM-DD");
-  //     const endDate = moment(monthDate).endOf("month").format("YYYY-MM-DD");
-
-  //     getSchedulesByLocationForPeriod({
-  //       locationId: location.id,
-  //       startDate: startDate,
-  //       endDate: endDate,
-  //     })
-  //       .then((response) => {
-  //         const schedules: ScheduleModel[] = response.data;
-
-  //         const currentSchedulesRows: ScheduleRow[] = schedules.map(
-  //           (schedule) => createScheduleRow(schedule)
-  //         );
-
-  //   })
-  // }
-
   useEffect(() => {
     const getDataLocations = () => {
       getLocations()
@@ -71,7 +51,15 @@ export const Schedule = () => {
         </Box>
       </LocalizationProvider>
       {locations.length !== 0 && (
-        <Tabs defaultActiveKey={locations[0].id} transition={false}>
+        <Tabs
+          defaultActiveKey={locations[0].id}
+          transition={false}
+          style={{
+            flexWrap: "nowrap",
+            overflowX: "auto",
+            overflowY: "hidden",
+          }}
+        >
           {locations.map((location, key) => (
             <Tab key={key} eventKey={location.id} title={location.name}>
               <LocationSchedule

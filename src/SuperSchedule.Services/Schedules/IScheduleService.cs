@@ -10,6 +10,8 @@ namespace SuperSchedule.Services.Schedules
 
         Task UpdateShiftTypeOfSchedules(List<Schedule> schedules);
 
-        IEnumerable<Schedule> GetPersonalSchedules(int employeeId, DateTime startDate, DateTime endDate);
+        (Employee employee, IEnumerable<Schedule> schedules) GetPersonalSchedules(int employeeId, DateTime startDate, DateTime endDate);
+       
+        Task UpdatePersonalScheduleShiftTypes(int employeeId, List<Schedule> schedules);
     }
 }

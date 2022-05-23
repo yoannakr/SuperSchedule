@@ -95,5 +95,23 @@ namespace SuperSchedule.Startup.Controllers
                     DaysIds = sh.Days.Select(d => d.Id)
                 });
         }
+
+        [HttpGet]
+        public IEnumerable<ShiftTypeModel> GetAllShiftTypesForEmployee(int employeeId)
+        {
+            return shiftTypeService.GetAllShiftTypesForEmployee(employeeId).Select(sh =>
+                new ShiftTypeModel
+                {
+                    Id = sh.Id,
+                    Name = sh.Name,
+                    Abbreviation = sh.Abbreviation,
+                    StartTime = new DateTime(sh.StartTime.Ticks),
+                    EndTime = new DateTime(sh.EndTime.Ticks),
+                    RotationDays = sh.RotationDays,
+                    Priority = sh.Priority,
+                    LocationId = sh.Location?.Id ?? 0,
+                    DaysIds = sh.Days.Select(d => d.Id)
+                });
+        }
     }
 }

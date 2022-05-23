@@ -71,5 +71,10 @@ namespace SuperSchedule.Services.ShiftTypes
         {
             return shiftTypeRepository.GetDefaultSickLeaveWeekendDaysShiftType();
         }
+
+        public IEnumerable<ShiftType> GetAllShiftTypesForEmployee(int employeeId)
+        {
+            return shiftTypeRepository.GetAllShiftTypesForEmployee(employeeId);
+        }
     }
 }

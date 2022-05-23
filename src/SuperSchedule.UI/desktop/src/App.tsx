@@ -10,6 +10,7 @@ import { Sidebar } from "./components/Sidebar";
 import { Setting } from "./features/Setting/";
 import { Schedule } from "./features/Schedule/components/Schedule";
 import { CreateSchedule } from "./features/Schedule/components/CreateSchedule";
+import { PersonalSchedulesList } from "./features/Schedule/components/PersonalSchedulesList";
 
 function App() {
   return (
@@ -26,6 +27,10 @@ function App() {
           <Route path="/createEmployee" element={<CreateEmployee />} />
           <Route path="/settings" element={<Setting />} />
           <Route path="/leavesAndSickLeave" element={<LeavesAndSickLeave />} />
+          <Route
+            path="/personalSchedules"
+            element={<PersonalSchedulesList />}
+          />
         </Routes>
       </BrowserRouter>
     </div>

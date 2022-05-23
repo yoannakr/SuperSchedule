@@ -55,49 +55,98 @@ namespace SuperSchedule.Startup.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<ScheduleModel> GetPersonalSchedules(int employeeId, DateTime startDate, DateTime endDate)
+        public ScheduleModel GetPersonalSchedules(int employeeId, DateTime monthDate)
         {
-            return scheduleService
-                .GetPersonalSchedules(employeeId, startDate, endDate)
-                .Select(s => new ScheduleModel
+            var firstDayOfMonth = new DateTime(monthDate.Year, monthDate.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+            var (employee, schedules) = scheduleService.GetPersonalSchedules(employeeId, firstDayOfMonth, lastDayOfMonth);
+
+            return
+                new ScheduleModel
                 {
                     Employee = new EmployeeModel
                     {
-                        Id = s.Employee.Id,
-                        FirstName = s.Employee.FirstName,
-                        MiddleName = s.Employee.MiddleName,
-                        LastName = s.Employee.LastName,
-                        ShiftTypesIds = s.Employee.ShiftTypes.Select(s => s.Id).ToList()
+                        Id = employee.Id,
+                        FirstName = employee.FirstName,
+                        MiddleName = employee.MiddleName,
+                        LastName = employee.LastName,
+                        ShiftTypesIds = employee.ShiftTypes.Select(s => s.Id).ToList()
                     },
-                    ShiftTypeEditableCells = new List<ShiftTypeEditableCellModel>
+                    ShiftTypeEditableCells = schedules.Select(s => new ShiftTypeEditableCellModel
                     {
-                        new ShiftTypeEditableCellModel
+                        ScheduleId = s.Id,
+                        ShiftType = new ShiftTypeModel
                         {
-                            ScheduleId = s.Id,
-                            ShiftType = new ShiftTypeModel
-                            {
-                                Id = s.ShiftType?.Id ?? 0,
-                                Name = s.ShiftType?.Name ?? "",
-                                Abbreviation = s.ShiftType?.Abbreviation ?? ""
-                            }
-                        }
-                    }
-                });
+                            Id = s.ShiftType?.Id ?? 0,
+                            Name = s.ShiftType?.Name ?? "",
+                            Abbreviation = s.ShiftType?.Abbreviation ?? "",
+                            LocationId = s.ShiftType?.Location?.Id ?? 0
+                        },
+                        Date = s.Date
+                    })
+                };
+        }
+
+        //[HttpPost]
+        //public async Task UpdateShiftTypeOfSchedules(List<ShiftTypeEditableCellModel> shiftTypeEditableCells)
+        //{
+        //    var schedules = shiftTypeEditableCells.Select(s => new Schedule
+        //    {
+        //        Id = s.ScheduleId,
+        //        ShiftType = s.ShiftType != null ? new ShiftType
+        //        {
+        //            Id = s.ShiftType.Id
+        //        } : null,
+        //        Date = s.Date ?? DateTime.UtcNow
+        //    }).ToList();
+
+        //    await scheduleService.UpdateShiftTypeOfSchedules(schedules);
+        //}
+
+        [HttpPost]
+        public async Task UpdateShiftTypeOfSchedules(List<ScheduleModel> scheduleModels)
+        {
+            if (scheduleModels == null || scheduleModels.Count == 0)
+            {
+                return;
+            }
+
+            var schedules = scheduleModels.SelectMany(s => s.ShiftTypeEditableCells.Select(cell  => new Schedule
+            {
+                Id = cell.ScheduleId,
+                Employee = new Employee
+                {
+                    Id  = s.Employee.Id
+                },
+                ShiftType = cell.ShiftType != null ? new ShiftType
+                {
+                    Id = cell.ShiftType.Id
+                } : null,
+                Date = cell.Date ?? DateTime.UtcNow
+            })).ToList();
+
+            await scheduleService.UpdateShiftTypeOfSchedules(schedules);
         }
 
         [HttpPost]
-        public async Task UpdateShiftTypeOfSchedules(List<ShiftTypeEditableCellModel> shiftTypeEditableCells)
+        public async Task UpdatePersonalScheduleShiftTypes(ScheduleModel scheduleModel)
         {
-            var schedules = shiftTypeEditableCells.Select(s => new Schedule
+            if (scheduleModel == null)
+            {
+                return;
+            }
+
+            var schedules = scheduleModel.ShiftTypeEditableCells.Select(s => new Schedule
             {
                 Id = s.ScheduleId,
                 ShiftType = s.ShiftType != null ? new ShiftType
                 {
                     Id = s.ShiftType.Id
-                } : null
+                } : null,
+                Date = s.Date ?? DateTime.UtcNow
             }).ToList();
 
-            await scheduleService.UpdateShiftTypeOfSchedules(schedules);
+            await scheduleService.UpdatePersonalScheduleShiftTypes(scheduleModel.Employee.Id, schedules);
         }
     }
 

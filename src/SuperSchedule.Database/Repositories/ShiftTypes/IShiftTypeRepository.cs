@@ -23,5 +23,7 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
         ShiftType GetDefaultSickLeaveWorkDaysShiftType();
 
         ShiftType GetDefaultSickLeaveWeekendDaysShiftType();
+
+        IEnumerable<ShiftType> GetAllShiftTypesForEmployee(int employeeId);
     }
 }
