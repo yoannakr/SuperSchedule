@@ -31,5 +31,10 @@ namespace SuperSchedule.Services.Employees
         {
             return employeeRepository.GetEmployeeByLocation(locationId);
         }
+
+        public IEnumerable<Employee> GetEmployeesWithLowestPositionPriority()
+        {
+            return employeeRepository.GetEmployeesWithLowestPositionPriority();
+        }
     }
 }

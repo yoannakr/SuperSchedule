@@ -11,5 +11,7 @@ namespace SuperSchedule.Database.Repositories.Employees
         Employee GetEmployeeById(int id);
 
         IEnumerable<Employee> GetEmployeeByLocation(int locationId);
+
+        IEnumerable<Employee> GetEmployeesWithLowestPositionPriority();
     }
 }

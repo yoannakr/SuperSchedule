@@ -49,5 +49,17 @@ namespace SuperSchedule.Database.Repositories.Employees
                 .Include(e => e.Position)
                 .Where(e => e.Locations.Select(l => l.Id).Contains(locationId));
         }
+
+        public IEnumerable<Employee> GetEmployeesWithLowestPositionPriority()
+        {
+            return superScheduleDbContext
+                .Employees
+                .Include(e => e.Locations)
+                .Include(e => e.Position)
+                .ToList()
+                .GroupBy(e => e.Position.Priority)
+                .LastOrDefault()
+                .Select(e => e);
+        }
     }
 }
