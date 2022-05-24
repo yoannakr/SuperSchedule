@@ -3,6 +3,8 @@ import { getLocations } from "../../../api/getLocations";
 import { Location } from "../../../types";
 import { Tab, Tabs } from "react-bootstrap";
 import { LocationSchedule } from "./LocationSchedule";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 import TextField from "@mui/material/TextField";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
@@ -12,10 +14,12 @@ import styles from "./Schedule.module.scss";
 import { ExportExcel } from "./ExportExcel";
 import moment from "moment";
 import { getSchedulesByLocationForPeriod } from "../api/getSchedulesByLocationForPeriod";
+import { getErrorsForMonthSchedule } from "../api/getErrorsForMonthSchedule";
 
 export const Schedule = () => {
   const [locations, setLocations] = useState<Location[]>([]);
-  const [monthDate, setMonthDate] = React.useState<Date | null>(new Date());
+  const [monthDate, setMonthDate] = useState<Date | null>(new Date());
+  const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
     const getDataLocations = () => {
@@ -32,8 +36,35 @@ export const Schedule = () => {
     getDataLocations();
   }, []);
 
+  const getDataErrors = () => {
+    const monthDateString = moment(monthDate).format("YYYY-MM-DD");
+
+    getErrorsForMonthSchedule({ monthDate: monthDateString })
+      .then((response) => {
+        const responseErrors: string[] = response.data;
+        setErrors(responseErrors);
+      })
+      .catch((error) =>
+        console.log(
+          `GetErrorsForMonthSchedule not successful because: ${error}`
+        )
+      );
+  };
+
+  useEffect(() => {
+    getDataErrors();
+  }, [monthDate]);
+
   return (
     <div className={styles.Schedule}>
+      {errors.length !== 0 && (
+        <Alert severity="error">
+          <AlertTitle>Моля, проверете следните грешки:</AlertTitle>
+          {errors.map((error, key) => (
+            <p key={key}>{error}</p>
+          ))}
+        </Alert>
+      )}
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Box m={2}>
           <DatePicker
@@ -66,6 +97,7 @@ export const Schedule = () => {
                 locationId={location.id}
                 locationName={location.name}
                 monthDate={monthDate}
+                onShiftTypesChange={getDataErrors}
               />
             </Tab>
           ))}

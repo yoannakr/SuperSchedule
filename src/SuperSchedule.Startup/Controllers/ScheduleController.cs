@@ -26,6 +26,15 @@ namespace SuperSchedule.Startup.Controllers
         }
 
         [HttpGet]
+        public IEnumerable<string> GetErrorsForMonthSchedule(DateTime monthDate)
+        {
+            var firstDayOfMonth = new DateTime(monthDate.Year, monthDate.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+            return scheduleService.GetErrorsForMonthSchedule(firstDayOfMonth, lastDayOfMonth);
+        }
+
+        [HttpGet]
         public IEnumerable<ScheduleModel> GetSchedulesByLocationForPeriod(int locationId, DateTime startDate, DateTime endDate)
         {
             return scheduleService
@@ -49,7 +58,8 @@ namespace SuperSchedule.Startup.Controllers
                             Id = v.ShiftType?.Id ?? 0,
                             Name = v.ShiftType?.Name ?? "",
                             Abbreviation = v.ShiftType?.Abbreviation ?? ""
-                        }
+                        },
+                        Date = v.Date
                     }),
                 });
         }
@@ -111,12 +121,12 @@ namespace SuperSchedule.Startup.Controllers
                 return;
             }
 
-            var schedules = scheduleModels.SelectMany(s => s.ShiftTypeEditableCells.Select(cell  => new Schedule
+            var schedules = scheduleModels.SelectMany(s => s.ShiftTypeEditableCells.Select(cell => new Schedule
             {
                 Id = cell.ScheduleId,
                 Employee = new Employee
                 {
-                    Id  = s.Employee.Id
+                    Id = s.Employee.Id
                 },
                 ShiftType = cell.ShiftType != null ? new ShiftType
                 {

@@ -53,7 +53,6 @@ namespace SuperSchedule.Services.Schedules
                 var countOfUnnecessaryShifts = GetCountOfUnnecessaryShifts(employee, startDate, schedules, ShiftTypesTemplate.TwelveHours);
 
                 RemoveUnneccessaryShiftsTwelveHours(employee, location, schedules, countOfUnnecessaryShifts, otherEmployeesGroup);
-                CheckWorkingHoursForWeek(employee, schedules);
             }
 
             //FillAllScheduleDates(location, startDate, endDate, schedules, employees);
@@ -299,10 +298,7 @@ namespace SuperSchedule.Services.Schedules
                 var countOfUnnecessaryShifts = GetCountOfUnnecessaryShifts(employee, startDate, schedules, ShiftTypesTemplate.FirstAndSecondShifts);
 
                 RemoveUnneccessaryFirstAndSecondShiftsTemplate(employee, location, schedules, countOfUnnecessaryShifts, otherEmployeesGroup, datesGroupedByWeek, allShiftTypes);
-                CheckWorkingHoursForWeek(employee, schedules);
             }
-
-            //FillAllScheduleDates(location, startDate, endDate, schedules, employees);
         }
 
         private void FillScheduleHighestEmployeesFirstAndSecondShiftsTemplate(List<Schedule> schedules, Location location, List<IGrouping<int, DateTime>> datesGroupedByWeek, List<ShiftType> allShiftTypes, Employee employee, int firstShiftIndex)
@@ -531,10 +527,7 @@ namespace SuperSchedule.Services.Schedules
                 var countOfUnnecessaryShifts = GetCountOfUnnecessaryShifts(employee, startDate, schedules, ShiftTypesTemplate.OneShift);
 
                 RemoveUnneccessaryOneShiftTemplate(employee, location, schedules, startDate, endDate, countOfUnnecessaryShifts, otherEmployeesGroup);
-                CheckWorkingHoursForWeek(employee, schedules);
             }
-
-            //FillAllScheduleDates(location, startDate, endDate, schedules, employees);
         }
 
         private void FillScheduleHighestEmployeesOneShiftTemplate(List<Schedule> schedules, Location location, DateTime startDate, DateTime endDate, List<ShiftType> allShiftTypes, Employee employee)
@@ -703,16 +696,24 @@ namespace SuperSchedule.Services.Schedules
             return countOfWorkingDays * 8;
         }
 
+        public int CalculateWorkingHoursForYear(DateTime year)
+        {
+            var workingHoursForYear = 0;
+            for (int i = 1; i <= 12; i++)
+            {
+                var monthDate = new DateTime(year.Year, i, 1);
+                workingHoursForYear += CalculateWorkingHoursForMonth(monthDate);
+            }
+
+            return workingHoursForYear;
+        }
+
         private void ManageSickLeaves(List<Schedule> schedules, Location location, IGrouping<int, Employee> otherEmployeesGroup, DateTime startDate, DateTime endDate, Employee employee)
         {
             // вземам всички дати, за всяка дата вземам новия employee и сетвам с приоритет -1 смяната
-            var sickLeaves = leaveService.GetSickLeavesForEmployee(employee.Id, startDate, endDate);
-            var sickLeaveDates = sickLeaves.SelectMany(l => GetRangeOfDates(0, l.FromDate, l.ToDate)).ToList();
-            var monthDates = GetAllMonthDays(startDate);
-
             var sickLeaveWorkDaysShiftType = shiftTypeService.GetDefaultSickLeaveWorkDaysShiftType();
             var sickLeaveWeekendDaysShiftType = shiftTypeService.GetDefaultSickLeaveWeekendDaysShiftType();
-            var currentMonthSickLeaveDates = monthDates.Where(d => sickLeaveDates.Any(l => l.Date == d.Date)).ToList();
+            var currentMonthSickLeaveDates = GetMonthSickLeaveDates(startDate, endDate, employee);
 
             if (currentMonthSickLeaveDates.Count() == 0)
             {
@@ -728,6 +729,16 @@ namespace SuperSchedule.Services.Schedules
                     continue;
                 }
             }
+        }
+
+        private List<DateTime> GetMonthSickLeaveDates(DateTime startDate, DateTime endDate, Employee employee)
+        {
+            var sickLeaves = leaveService.GetSickLeavesForEmployee(employee.Id, startDate, endDate);
+            var sickLeaveDates = sickLeaves.SelectMany(l => GetRangeOfDates(0, l.FromDate, l.ToDate)).ToList();
+            var monthDates = GetAllMonthDays(startDate);
+
+            var currentMonthSickLeaveDates = monthDates.Where(d => sickLeaveDates.Any(l => l.Date == d.Date)).ToList();
+            return currentMonthSickLeaveDates;
         }
 
         private bool FillLeavesInSchedule(List<Schedule> schedules, Employee employee, DateTime date, ShiftType newShiftType, IGrouping<int, Employee> otherEmployeesGroup, Location location)
@@ -763,13 +774,10 @@ namespace SuperSchedule.Services.Schedules
         private void ManageLeaves(List<Schedule> schedules, Location location, IGrouping<int, Employee> otherEmployeesGroup, DateTime startDate, DateTime endDate, Employee employee)
         {
             // вземам всички дати, за всяка дата вземам новия employee и сетвам с приоритет -1 смяната
-            var leaves = leaveService.GetLeavesForEmployee(employee.Id, startDate, endDate);
-            var leaveDates = leaves.SelectMany(l => GetRangeOfDates(0, l.FromDate, l.ToDate)).ToList();
-            var monthDates = GetAllMonthDays(startDate);
-
             var leaveWorkDaysShiftType = shiftTypeService.GetDefaultLeaveWorkDaysShiftType();
             var leaveWeekendDaysShiftType = shiftTypeService.GetDefaultLeaveWeekendDaysShiftType();
-            var currentMonthLeaveDates = monthDates.Where(d => leaveDates.Any(l => l.Date == d.Date)).ToList();
+
+            var currentMonthLeaveDates = GetMonthLeaveDates(startDate, endDate, employee);
 
             if (currentMonthLeaveDates.Count() == 0)
             {
@@ -785,6 +793,16 @@ namespace SuperSchedule.Services.Schedules
                     continue;
                 }
             }
+        }
+
+        private List<DateTime> GetMonthLeaveDates(DateTime startDate, DateTime endDate, Employee employee)
+        {
+            var leaves = leaveService.GetLeavesForEmployee(employee.Id, startDate, endDate);
+            var leaveDates = leaves.SelectMany(l => GetRangeOfDates(0, l.FromDate, l.ToDate)).ToList();
+            var monthDates = GetAllMonthDays(startDate);
+
+            var currentMonthLeaveDates = monthDates.Where(d => leaveDates.Any(l => l.Date == d.Date)).ToList();
+            return currentMonthLeaveDates;
         }
 
         private bool IsWeekendDate(DateTime leaveDate)
@@ -1016,30 +1034,184 @@ namespace SuperSchedule.Services.Schedules
             return weekHours;
         }
 
-        public void CheckWorkingHoursForWeek(Employee employee, List<Schedule> schedules)
+        #endregion //Common
+
+        #region Validation
+
+        public IEnumerable<string> CheckWorkingHoursForWeek(Employee employee, DateTime startDate, DateTime endDate)
         {
-            var schedulesForEmployee = schedules.Where(s => s.Employee == employee).OrderBy(s => s.Date.Date).ToList();
-            var dates = schedulesForEmployee.Select(t => t.Date);
+            var result = new List<string>();
+            var schedulesForEmployee = scheduleRepository.GetEmployeeScheduleForPeriod(startDate, endDate, employee.Id);
+
+            var dates = schedulesForEmployee.Select(t => t.Date).ToList();
             var settingsWeekHours = settingsService.GetSettings().MaxHoursPerWeek;
 
             var datesGroupedByWeek = dates.GroupBy(x => CultureInfo.CurrentCulture.DateTimeFormat.Calendar.GetWeekOfYear(x, CalendarWeekRule.FirstFullWeek, DayOfWeek.Monday));
 
             foreach (var week in datesGroupedByWeek)
             {
-                var startDate = week.First().Date;
-                var endDate = week.Last().Date;
+                var firstDateOfWeek = week.First().Date;
+                var lastDateOfWekk = week.Last().Date;
 
-                var weekHours = schedulesForEmployee.Where(t => t.Date >= startDate && t.Date <= endDate).Sum(s => s.ShiftType.TotalHours);
+                var weekHours = schedulesForEmployee.Where(t => t.Date >= firstDateOfWeek && t.Date <= lastDateOfWekk).Sum(s => s.ShiftType.TotalHours);
 
                 if (weekHours > settingsWeekHours)
                 {
-                    Console.WriteLine("Надвишаваш");
+                    var overWorkingHours = weekHours - settingsWeekHours;
+                    result.Add($"{employee.FullName} надвишава седмичните часове за периода {firstDateOfWeek.ToString("dd.MM.yyyy")} - {lastDateOfWekk.ToString("dd.MM.yyyy")} с {Math.Round(overWorkingHours, 2)}.");
                 }
             }
 
+            return result;
         }
 
-        #endregion // Common
+        public IEnumerable<string> CheckWorkingHoursForMonth(Employee employee, DateTime startDate, DateTime endDate)
+        {
+            var result = new List<string>();
+            var schedulesForEmployee = scheduleRepository.GetEmployeeScheduleForPeriod(startDate, endDate, employee.Id);
+
+            var totalWorkingHours = schedulesForEmployee.Sum(s => s?.ShiftType?.TotalHours ?? 0);
+            var workingHoursForMonth = CalculateWorkingHoursForMonth(startDate);
+            var overWorkingHoursForMonth = totalWorkingHours - workingHoursForMonth;
+
+            var dates = schedulesForEmployee.Select(t => t.Date).ToList();
+            var settingsMonthHours = settingsService.GetSettings().MaxOvertimeHoursPerMonth;
+
+            if (overWorkingHoursForMonth > settingsMonthHours)
+            {
+                result.Add($"{employee.FullName} надвишава месечните часове с {Math.Round(overWorkingHoursForMonth, 2)} при позволени {settingsMonthHours}.");
+            }
+
+            return result;
+        }
+
+        public IEnumerable<string> CheckWorkingHoursForYear(Employee employee, DateTime year)
+        {
+            var firstDateOfYear = new DateTime(year.Year, 1, 1);
+            var lastDateOfYear = new DateTime(year.Year, 12, 31);
+
+            var result = new List<string>();
+            var schedulesForEmployee = scheduleRepository.GetEmployeeScheduleForPeriod(firstDateOfYear, lastDateOfYear, employee.Id);
+
+            var totalWorkingHours = schedulesForEmployee.Sum(s => s?.ShiftType?.TotalHours ?? 0);
+            var workingHoursForYear = CalculateWorkingHoursForYear(year);
+
+            var overWorkingHoursForYear = totalWorkingHours - workingHoursForYear;
+            var settingsYearHours = settingsService.GetSettings().MaxOvertimeHoursPerYear;
+
+            if (overWorkingHoursForYear > settingsYearHours)
+            {
+                result.Add($"{employee.FullName} надвишава годишните часове с {Math.Round(overWorkingHoursForYear, 2)} при позволени {settingsYearHours}.");
+            }
+
+            return result;
+        }
+
+        public IEnumerable<string> CheckMissedLeavesAndSickLeaves(Employee employee, DateTime startDate, DateTime endDate)
+        {
+            var result = new List<string>();
+            var schedulesForEmployee = scheduleRepository.GetEmployeeScheduleForPeriod(startDate, endDate, employee.Id);
+            if (leaveService.IsEmployeeHasLeavesForPeriod(employee.Id, startDate, endDate))
+            {
+                var monthLeaveDates = GetMonthLeaveDates(startDate, endDate, employee);
+                var schedulesForLeaveDates = schedulesForEmployee.Where(s => monthLeaveDates.Any(d => d.Date == s.Date.Date));
+                foreach (var schedule in schedulesForLeaveDates)
+                {
+                    if (shiftTypeService.IsShiftTypeLeave(schedule.ShiftType))
+                    {
+                        continue;
+                    }
+
+                    result.Add($"{employee.FullName} има непопълнена отпуска за {schedule.Date.ToString("dd.MM.yyyy")}.");
+                }
+            }
+
+            if (leaveService.IsEmployeeHasSickLeavesForPeriod(employee.Id, startDate, endDate))
+            {
+                var monthSickLeaveDates = GetMonthSickLeaveDates(startDate, endDate, employee);
+                var schedulesForSickLeaveDates = schedulesForEmployee.Where(s => monthSickLeaveDates.Any(d => d.Date == s.Date.Date));
+                foreach (var schedule in schedulesForSickLeaveDates)
+                {
+                    if (shiftTypeService.IsShiftTypeLeave(schedule.ShiftType))
+                    {
+                        continue;
+                    }
+
+                    result.Add($"{employee.FullName} има непопълнен болничен за {schedule.Date.ToString("dd.MM.yyyy")}.");
+                }
+            }
+
+            return result;
+        }
+
+        private IEnumerable<string> CheckLocationForMissedShiftTypes(DateTime firstDayOfMonth, DateTime lastDayOfMonth, Location location)
+        {
+            var result = new List<string>();
+
+            var shiftTypesForLocation = shiftTypeService.GetShiftTypesByLocation(location.Id).Where(s => s.TotalHours > 0).ToList();
+            var shiftTypesForLocationIds = shiftTypesForLocation.Select(s => s.Id).ToList();
+            var locationWorkingDays = shiftTypesForLocation.SelectMany(s => s.Days.Select(d => d.Id)).Distinct().ToList();
+            var locationScheduleByDates = scheduleRepository.GetSchedulesByLocationForPeriod(location.Id, firstDayOfMonth, lastDayOfMonth)
+                                .GroupBy(s => s.Date.Date);
+
+            foreach (var locationScheduleByDate in locationScheduleByDates)
+            {
+                var shiftTypeIds = locationScheduleByDate
+                    .Where(s => !shiftTypeService.IsShiftTypeBreak(s.ShiftType)
+                    && !shiftTypeService.IsShiftTypeLeave(s.ShiftType)
+                    && s.ShiftType.TotalHours > 0)
+                    .Select(s => s.ShiftType?.Id)
+                    .Distinct()
+                    .ToList();
+
+                var isAllShiftTypeForLocationAreTaken = shiftTypesForLocationIds.All(s => shiftTypeIds.Contains(s)) && shiftTypesForLocationIds.Count == shiftTypeIds.Count;
+                
+                if (!isAllShiftTypeForLocationAreTaken)
+                {
+                    if (!(location.ShiftTypesTemplate == ShiftTypesTemplate.TwelveHours))
+                    {
+                        var holidays = settingsService.GetSettings().Holidays.ToList();
+                        if (holidays.Any(d => d.Date.Date == locationScheduleByDate.Key)
+                            || !locationWorkingDays.Contains(((int)locationScheduleByDate.Key.DayOfWeek) + 1))
+                        {
+                            continue;
+                        }
+                    }
+                    result.Add($"{location.Name} има невзети смени за {locationScheduleByDate.Key.ToString("dd.MM.yyyy")}.");
+                }
+            }
+
+            return result;
+        }
+
+        private IEnumerable<string> CheckLocationForRepeatedShiftTypes(DateTime firstDayOfMonth, DateTime lastDayOfMonth, Location location)
+        {
+            var result = new List<string>();
+            var locationScheduleByDates = scheduleRepository.GetSchedulesByLocationForPeriod(location.Id, firstDayOfMonth, lastDayOfMonth)
+                                .GroupBy(s => s.Date.Date);
+
+            foreach (var locationScheduleByDate in locationScheduleByDates)
+            {
+                var shiftTypeIds = locationScheduleByDate.Select(s => s.ShiftType).GroupBy(s => s.Id).ToList();
+                foreach (var shiftTypeId in shiftTypeIds)
+                {
+                    if (shiftTypeId.Count() > 1)
+                    {
+                        var shiftType = shiftTypeId.FirstOrDefault();
+                        if (shiftTypeService.IsShiftTypeBreak(shiftType) || shiftTypeService.IsShiftTypeLeave(shiftType) || shiftType.TotalHours <= 0)
+                        {
+                            continue;
+                        }
+
+                        result.Add($"{location.Name} има съвпадение на смените за {locationScheduleByDate.Key.ToString("dd.MM.yyyy")}.");
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        #endregion // Validation
 
         public IEnumerable<Schedule> GetSchedulesByLocationForPeriod(int locationId, DateTime startDate, DateTime endDate)
         {
@@ -1052,7 +1224,7 @@ namespace SuperSchedule.Services.Schedules
                 resultSchedules.AddRange(GetScheduleForEmployee(scheduleEmployee, scheduleEmployee.Key, startDate, endDate));
             }
 
-            return resultSchedules.OrderBy(s => s.Date).ToList();
+            return resultSchedules.OrderBy(s => s.Date).ThenBy(s => s.Employee.Position.Priority).ToList();
         }
 
         public async Task UpdateShiftTypeOfSchedules(List<Schedule> schedules)
@@ -1106,7 +1278,7 @@ namespace SuperSchedule.Services.Schedules
 
                 var abbreviation = string.Empty;
 
-                if (!generateAbbr 
+                if (!generateAbbr
                     || shiftTypeService.IsShiftTypeBreak(schedule.ShiftType)
                     || shiftTypeService.IsShiftTypeLeave(schedule.ShiftType)
                     || schedule.ShiftType.TotalHours <= 0
@@ -1212,6 +1384,36 @@ namespace SuperSchedule.Services.Schedules
 
                 await scheduleRepository.UpdateShiftTypeOfSchedules(contextSchedule, schedule.ShiftType.Id);
             }
+        }
+
+        public IEnumerable<string> GetErrorsForMonthSchedule(DateTime firstDayOfMonth, DateTime lastDayOfMonth)
+        {
+            var employees = employeeService.GetAllEmployees();
+            var locations = locationService.GetAllLocations();
+            var result = new List<string>();
+            foreach (var employee in employees)
+            {
+                var errorsFromWeekHours = CheckWorkingHoursForWeek(employee, firstDayOfMonth, lastDayOfMonth);
+                var errorsFromMonthHours = CheckWorkingHoursForMonth(employee, firstDayOfMonth, lastDayOfMonth);
+                var errorsFromYearHours = CheckWorkingHoursForYear(employee, firstDayOfMonth);
+                var errorsFromMissedLeavesAndSickLeaves = CheckMissedLeavesAndSickLeaves(employee, firstDayOfMonth, lastDayOfMonth);
+
+                result.AddRange(errorsFromWeekHours);
+                result.AddRange(errorsFromMonthHours);
+                result.AddRange(errorsFromYearHours);
+                result.AddRange(errorsFromMissedLeavesAndSickLeaves);
+            }
+
+            foreach (var location in locations)
+            {
+                var errorsFromLocationForRepeatedShiftTypes = CheckLocationForRepeatedShiftTypes(firstDayOfMonth, lastDayOfMonth, location);
+                var errorsFromLocationForMissedShiftTypes = CheckLocationForMissedShiftTypes(firstDayOfMonth, lastDayOfMonth, location);
+
+                result.AddRange(errorsFromLocationForRepeatedShiftTypes);
+                result.AddRange(errorsFromLocationForMissedShiftTypes);
+            }
+
+            return result;
         }
     }
 }

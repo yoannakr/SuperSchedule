@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Employee } from "../../../types";
-import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import TabPanel from "@mui/lab/TabPanel";
 import TabContext from "@mui/lab/TabContext";

@@ -63,6 +63,7 @@ namespace SuperSchedule.Database.Repositories.Schedules
         {
             return superScheduleDbContext
                 .Schedules
+                .Include(s => s.Employee.Position)
                 .Include(s => s.Employee)
                 .ThenInclude(e => e.ShiftTypes)
                 .Include(s => s.ShiftType)

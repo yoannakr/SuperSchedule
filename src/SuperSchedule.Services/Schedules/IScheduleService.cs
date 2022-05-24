@@ -13,5 +13,7 @@ namespace SuperSchedule.Services.Schedules
         (Employee employee, IEnumerable<Schedule> schedules) GetPersonalSchedules(int employeeId, DateTime startDate, DateTime endDate);
        
         Task UpdatePersonalScheduleShiftTypes(int employeeId, List<Schedule> schedules);
+
+        IEnumerable<string> GetErrorsForMonthSchedule(DateTime firstDayOfMonth, DateTime lastDayOfMonth);
     }
 }

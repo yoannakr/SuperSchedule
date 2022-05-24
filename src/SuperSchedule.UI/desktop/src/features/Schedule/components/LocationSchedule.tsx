@@ -16,7 +16,6 @@ import {
 } from "./EditScheduleTableCell";
 import { Employee, Schedule as ScheduleModel, ShiftType } from "../../../types";
 import { getSchedulesByLocationForPeriod } from "../api/getSchedulesByLocationForPeriod";
-import { getArrayInRange } from "../utils/getArrayInRange";
 import IconButton from "@material-ui/core/IconButton";
 import { updateShiftTypeOfSchedules } from "../api/updateShiftTypeOfSchedules";
 import TableContainer from "@material-ui/core/TableContainer";
@@ -42,6 +41,7 @@ type LocationScheduleProps = {
   locationId: number;
   locationName: string;
   monthDate: Date | null;
+  onShiftTypesChange: any;
 };
 
 type Day = {
@@ -52,7 +52,7 @@ type Day = {
 
 export const LocationSchedule = (props: LocationScheduleProps) => {
   const classes = useStyles();
-  const { locationId, locationName, monthDate } = props;
+  const { locationId, locationName, monthDate, onShiftTypesChange } = props;
 
   const [shiftTypes, setShiftTypes] = useState<ShiftType[]>([]);
   const [schedulesRows, setSchedulesRows] = useState<LocationScheduleRow[]>([]);
@@ -128,7 +128,10 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
           )
         );
     };
-    if (!isEditMode) getDataSchedules();
+    if (!isEditMode) {
+      getDataSchedules();
+      onShiftTypesChange();
+    }
   }, [isEditMode, monthDate]);
 
   const createScheduleRow = (schedule: ScheduleModel): LocationScheduleRow => ({
@@ -166,7 +169,6 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
   };
 
   const onSave = async () => {
-
     await updateShiftTypeOfSchedules({ scheduleModels: schedulesRows });
   };
 
