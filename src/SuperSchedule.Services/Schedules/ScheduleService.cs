@@ -31,6 +31,7 @@ namespace SuperSchedule.Services.Schedules
 
         public async Task FillSchedulesForMonth(DateTime startDate, DateTime endDate)
         {
+            await scheduleRepository.RemoveSchedulesForPeriod(startDate, endDate);
             var employeesWithLowestPositionPriority = employeeService.GetEmployeesWithLowestPositionPriority().ToList();
             await ManageLeavesAndSickLeavesForEmployeesWithLowestPositionPriority(employeesWithLowestPositionPriority, startDate, endDate);
 
@@ -897,7 +898,7 @@ namespace SuperSchedule.Services.Schedules
                                         && s.ShiftType.TotalHours > 0)
                                 .Select(s => s?.ShiftType?.EndTime);
 
-            return previousShiftTypesEndTimes.Any(endTime => endTime == shiftType.StartTime);       
+            return previousShiftTypesEndTimes.Any(endTime => endTime == shiftType.StartTime);
         }
 
         private bool CanEmployeeWorkShiftType(Employee employee, ShiftType shiftType)
@@ -1078,7 +1079,7 @@ namespace SuperSchedule.Services.Schedules
             foreach (var locationScheduleByDate in locationScheduleByDates)
             {
                 var shiftTypeIds = locationScheduleByDate
-                    .Where(s => s.ShiftType != null 
+                    .Where(s => s.ShiftType != null
                     && !shiftTypeService.IsShiftTypeBreak(s.ShiftType)
                     && !shiftTypeService.IsShiftTypeLeave(s.ShiftType)
                     && s.ShiftType.TotalHours > 0)
@@ -1320,10 +1321,10 @@ namespace SuperSchedule.Services.Schedules
                                 hasErrors = true;
                                 errorMessages.Add($"{contextEmployee.FullName} не може да бъде {contextShiftType.Abbreviation} на {schedule.Date.ToString("dd.MM.yyyy")}, вече има смяна за този ден.");
                             }
-                        }              
+                        }
                     }
 
-                    if(IsShiftTypeOverlapWithPreviousDate(contextShiftType,schedule.Date,contextEmployee))
+                    if (IsShiftTypeOverlapWithPreviousDate(contextShiftType, schedule.Date, contextEmployee))
                     {
                         hasErrors = true;
                         errorMessages.Add($"{contextEmployee.FullName} не може да бъде {contextShiftType.Abbreviation} на {schedule.Date.ToString("dd.MM.yyyy")}, припокриват се със смяна от предишния ден.");
@@ -1512,6 +1513,11 @@ namespace SuperSchedule.Services.Schedules
             }
 
             return result;
+        }
+
+        public bool IsScheduleFilled(DateTime firstDayOfMonth, DateTime lastDayOfMonth)
+        {
+            return scheduleRepository.IsScheduleFilled(firstDayOfMonth, lastDayOfMonth);
         }
     }
 }

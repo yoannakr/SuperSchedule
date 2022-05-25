@@ -133,5 +133,26 @@ namespace SuperSchedule.Database.Repositories.Schedules
                .Include(s => s.Location)
                .Where(s => s.Date.Date == date.Date && s.Employee.Id == employee.Id);
         }
+
+        public bool IsScheduleFilled(DateTime firstDayOfMonth, DateTime lastDayOfMonth)
+        {
+            return superScheduleDbContext
+               .Schedules
+               .Include(s => s.Employee)
+               .Include(s => s.ShiftType)
+               .Include(s => s.Location)
+               .Any(s => s.Date.Date >= firstDayOfMonth.Date && s.Date.Date <= lastDayOfMonth.Date);
+        }
+
+        public async Task RemoveSchedulesForPeriod(DateTime startDate, DateTime endDate)
+        {
+            var schedules = superScheduleDbContext
+                .Schedules
+                .Where(s => s.Date.Date >= startDate && s.Date <= endDate)
+                .ToList();
+
+            superScheduleDbContext.Schedules.RemoveRange(schedules);
+            await superScheduleDbContext.SaveChangesAsync();
+        }
     }
 }

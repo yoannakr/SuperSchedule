@@ -73,7 +73,8 @@ export const Schedule = () => {
             label="Месец и Година"
             minDate={new Date("2020-01-01")}
             value={monthDate}
-            onChange={setMonthDate}
+            onChange={() => {}}
+            onMonthChange={setMonthDate}
             renderInput={(params) => (
               <TextField {...params} helperText={null} />
             )}

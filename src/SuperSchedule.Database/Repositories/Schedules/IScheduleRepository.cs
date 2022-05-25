@@ -26,5 +26,9 @@ namespace SuperSchedule.Database.Repositories.Schedules
         DayOfWeekTemplate? GetDayOfWeekTemplateForMonth(int locationId, DateTime monthDate, Employee employee);
 
         IEnumerable<Schedule> GetEmployeeScheduleForPeriod(DateTime startDate, DateTime endDate, int employeeId);
+
+        bool IsScheduleFilled(DateTime firstDayOfMonth, DateTime lastDayOfMonth);
+       
+        Task RemoveSchedulesForPeriod(DateTime startDate, DateTime endDate);
     }
 }

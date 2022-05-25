@@ -26,6 +26,15 @@ namespace SuperSchedule.Startup.Controllers
         }
 
         [HttpGet]
+        public bool IsScheduleFilled(DateTime monthDate)
+        {
+            var firstDayOfMonth = new DateTime(monthDate.Year, monthDate.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+            return scheduleService.IsScheduleFilled(firstDayOfMonth, lastDayOfMonth);
+        }
+
+        [HttpGet]
         public IEnumerable<string> GetErrorsForMonthSchedule(DateTime monthDate)
         {
             var firstDayOfMonth = new DateTime(monthDate.Year, monthDate.Month, 1);

@@ -15,5 +15,7 @@ namespace SuperSchedule.Services.Schedules
         Task UpdatePersonalScheduleShiftTypes(int employeeId, List<Schedule> schedules);
 
         IEnumerable<string> GetErrorsForMonthSchedule(DateTime firstDayOfMonth, DateTime lastDayOfMonth);
+
+        bool IsScheduleFilled(DateTime firstDayOfMonth, DateTime lastDayOfMonth);
     }
 }
