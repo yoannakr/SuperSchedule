@@ -7,5 +7,7 @@
         public ShiftTypeModel? ShiftType { get; set; }
 
         public DateTime? Date { get; set; }
+
+        public int? LocationId { get; set; }
     }
 }

@@ -8,6 +8,9 @@ import TableRow from "@material-ui/core/TableRow";
 import EditIcon from "@material-ui/icons/EditOutlined";
 import DoneIcon from "@material-ui/icons/DoneAllTwoTone";
 import RevertIcon from "@material-ui/icons/NotInterestedOutlined";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 
 import styles from "./Schedule.module.scss";
 import {
@@ -22,6 +25,13 @@ import TableContainer from "@material-ui/core/TableContainer";
 import { getShiftTypesByLocationIncludingDefaultBreak } from "../../ShiftType/api/getShiftTypesByLocationIncludingDefaultBreak";
 
 import { makeStyles } from "@material-ui/core/styles";
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const useStyles = makeStyles({
   tableCell: {
@@ -62,6 +72,8 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
   >([]);
   const [countOfDays, setCountOfDays] = useState<number>(0);
   const [days, setDays] = useState<Day[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
+  const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
     const getDataShiftTypes = () => {
@@ -140,8 +152,10 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
   });
 
   const onDoneEditing = async () => {
-    await onSave();
-    setIsEditMode(false);
+    const isSavedSuccessful = await onSave();
+    if (isSavedSuccessful) {
+      setIsEditMode(false);
+    }
   };
 
   const onStartEditing = () => {
@@ -169,7 +183,18 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
   };
 
   const onSave = async () => {
-    await updateShiftTypeOfSchedules({ scheduleModels: schedulesRows });
+    let isSaved = true;
+    await updateShiftTypeOfSchedules({ scheduleModels: schedulesRows }).catch(
+      (error) => {
+            if (error.response !== undefined) {
+                setOpen(true);
+                setErrors(error.response.data);
+                isSaved = false;
+            }
+      }
+    );
+
+    return isSaved;
   };
 
   const onRevert = () => {
@@ -177,8 +202,32 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
     setSchedulesRows(previousScheduleRow);
   };
 
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+
   return (
     <div className={styles.LocationSchedule}>
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          <AlertTitle>Неуспешно записване!</AlertTitle>
+          {errors.map((error, key) => (
+            <p key={key}>{error}</p>
+          ))}
+        </Alert>
+      </Snackbar>
       {isEditMode && (
         <>
           <IconButton aria-label="done" onClick={onDoneEditing}>

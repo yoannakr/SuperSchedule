@@ -59,7 +59,8 @@ namespace SuperSchedule.Startup.Controllers
                             Name = v.ShiftType?.Name ?? "",
                             Abbreviation = v.ShiftType?.Abbreviation ?? ""
                         },
-                        Date = v.Date
+                        Date = v.Date,
+                        LocationId = locationId
                     }),
                 });
         }
@@ -114,11 +115,11 @@ namespace SuperSchedule.Startup.Controllers
         //}
 
         [HttpPost]
-        public async Task UpdateShiftTypeOfSchedules(List<ScheduleModel> scheduleModels)
+        public async Task<ActionResult<IEnumerable<string>>> UpdateShiftTypeOfSchedules(List<ScheduleModel> scheduleModels)
         {
             if (scheduleModels == null || scheduleModels.Count == 0)
             {
-                return;
+                return new OkResult();
             }
 
             var schedules = scheduleModels.SelectMany(s => s.ShiftTypeEditableCells.Select(cell => new Schedule
@@ -132,10 +133,21 @@ namespace SuperSchedule.Startup.Controllers
                 {
                     Id = cell.ShiftType.Id
                 } : null,
-                Date = cell.Date ?? DateTime.UtcNow
+                Date = cell.Date ?? DateTime.UtcNow,
+                Location = new Location
+                {
+                    Id = cell.LocationId ?? 0
+                }
             })).ToList();
 
-            await scheduleService.UpdateShiftTypeOfSchedules(schedules);
+            var (hasErrors, errorMessages) = await scheduleService.UpdateShiftTypeOfSchedules(schedules);
+
+            if (hasErrors)
+            {
+                return new BadRequestObjectResult(errorMessages);
+            }
+
+            return new OkResult();
         }
 
         [HttpPost]

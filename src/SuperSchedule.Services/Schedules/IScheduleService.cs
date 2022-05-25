@@ -8,7 +8,7 @@ namespace SuperSchedule.Services.Schedules
 
         IEnumerable<Schedule> GetSchedulesByLocationForPeriod(int locationId, DateTime startDate, DateTime endDate);
 
-        Task UpdateShiftTypeOfSchedules(List<Schedule> schedules);
+        Task<(bool, IEnumerable<string>)> UpdateShiftTypeOfSchedules(List<Schedule> schedules);
 
         (Employee employee, IEnumerable<Schedule> schedules) GetPersonalSchedules(int employeeId, DateTime startDate, DateTime endDate);
        

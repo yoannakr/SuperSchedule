@@ -39,21 +39,14 @@ namespace SuperSchedule.Database.Repositories.Schedules
 
         public async Task UpdateShiftTypeOfSchedules(Schedule schedule, int newShiftTypeId)
         {
-            if (newShiftTypeId == 0)
-            {
-                schedule.ShiftType = null;
-                superScheduleDbContext.Schedules.Remove(schedule);
-                await superScheduleDbContext.SaveChangesAsync();
-                return;
-            }
-            else
+            var contextShiftType = superScheduleDbContext.ShiftTypes.FirstOrDefault(s => s.Id == newShiftTypeId);
+
+            if (schedule.RemovedShiftType == null && schedule.ShiftType != null)
             {
                 var previousShiftType = superScheduleDbContext.ShiftTypes.FirstOrDefault(s => s.Id == schedule.ShiftType.Id);
-                var contextShiftType = superScheduleDbContext.ShiftTypes.FirstOrDefault(s => s.Id == newShiftTypeId);
-                
                 schedule.RemovedShiftType = previousShiftType;
-                schedule.ShiftType = contextShiftType;
             }
+            schedule.ShiftType = contextShiftType;
 
             superScheduleDbContext.Schedules.Update(schedule);
             await superScheduleDbContext.SaveChangesAsync();
@@ -131,14 +124,14 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .ToList();
         }
 
-        public Schedule GetEmployeeScheduleForDate(DateTime date, Employee employee)
+        public IEnumerable<Schedule> GetEmployeeSchedulesForDate(DateTime date, Employee employee)
         {
             return superScheduleDbContext
                .Schedules
                .Include(s => s.Employee)
                .Include(s => s.ShiftType)
                .Include(s => s.Location)
-               .FirstOrDefault(s => s.Date.Date == date.Date && s.Employee.Id == employee.Id);
+               .Where(s => s.Date.Date == date.Date && s.Employee.Id == employee.Id);
         }
     }
 }
