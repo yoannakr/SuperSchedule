@@ -1,18 +1,21 @@
 import React from "react";
 
 import EventIcon from "@mui/icons-material/Event";
-import GroupIcon from "@mui/icons-material/Group";
-import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
 import BadgeIcon from "@mui/icons-material/Badge";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import SettingIcon from "@mui/icons-material/Settings";
+import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
+import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+import ContactPageIcon from "@mui/icons-material/ContactPage";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 export const SidebarData = [
   {
     title: "График",
     icon: <EventIcon />,
     link: "",
+    isOnlyForAdmin: false,
     submenu: [
       {
         title: "Нов график",
@@ -30,8 +33,9 @@ export const SidebarData = [
   },
   {
     title: "Служители",
-    icon: <GroupIcon />,
+    icon: <ContactPageIcon />,
     link: "",
+    isOnlyForAdmin: true,
     submenu: [
       {
         title: "Нов служител",
@@ -49,8 +53,9 @@ export const SidebarData = [
   },
   {
     title: "Смени",
-    icon: <PublishedWithChangesIcon />,
+    icon: <WorkHistoryIcon />,
     link: "",
+    isOnlyForAdmin: true,
     submenu: [
       {
         title: "Нова смяна",
@@ -66,6 +71,7 @@ export const SidebarData = [
     title: "Позиции",
     icon: <BadgeIcon />,
     link: "",
+    isOnlyForAdmin: true,
     submenu: [
       {
         title: "Нова позиция",
@@ -81,6 +87,7 @@ export const SidebarData = [
     title: "Обекти",
     icon: <LocationCityIcon />,
     link: "",
+    isOnlyForAdmin: true,
     submenu: [
       {
         title: "Нов обект",
@@ -96,12 +103,30 @@ export const SidebarData = [
     title: "Отчет",
     icon: <SummarizeIcon />,
     link: "/report",
+    isOnlyForAdmin: true,
     submenu: [],
+  },
+  {
+    title: "Потребители",
+    icon: <SupervisedUserCircleIcon />,
+    link: "",
+    isOnlyForAdmin: true,
+    submenu: [
+      {
+        title: "Нов потребител",
+        link: "/createUser",
+      },
+      {
+        title: "Потребители",
+        link: "/users",
+      },
+    ],
   },
   {
     title: "Настройки",
     icon: <SettingIcon />,
     link: "/settings",
+    isOnlyForAdmin: true,
     submenu: [],
   },
 ];

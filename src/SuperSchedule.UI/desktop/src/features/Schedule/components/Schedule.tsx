@@ -13,7 +13,6 @@ import Box from "@mui/material/Box";
 import styles from "./Schedule.module.scss";
 import { ExportExcel } from "./ExportExcel";
 import moment from "moment";
-import { getSchedulesByLocationForPeriod } from "../api/getSchedulesByLocationForPeriod";
 import { getErrorsForMonthSchedule } from "../api/getErrorsForMonthSchedule";
 
 export const Schedule = () => {

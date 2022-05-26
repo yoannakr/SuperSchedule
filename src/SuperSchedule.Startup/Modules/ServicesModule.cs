@@ -7,6 +7,7 @@ using SuperSchedule.Services.Positions;
 using SuperSchedule.Services.Schedules;
 using SuperSchedule.Services.Settings;
 using SuperSchedule.Services.ShiftTypes;
+using SuperSchedule.Services.Users;
 
 namespace SuperSchedule.Startup.Modules
 {
@@ -22,6 +23,7 @@ namespace SuperSchedule.Startup.Modules
             builder.RegisterType<SettingsService>().As<ISettingsService>().InstancePerLifetimeScope();
             builder.RegisterType<ScheduleService>().As<IScheduleService>().InstancePerLifetimeScope();
             builder.RegisterType<LeaveService>().As<ILeaveService>().InstancePerLifetimeScope();
+            builder.RegisterType<UserService>().As<IUserService>().InstancePerLifetimeScope();
         }
     }
 }

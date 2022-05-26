@@ -27,8 +27,6 @@ namespace SuperSchedule.Database.Data
 
         public DbSet<Employee> Employees { get; set; }
 
-        public DbSet<Role> Roles { get; set; }
-
         public DbSet<Schedule> Schedules { get; set; }
 
         public DbSet<Setting> Settings { get; set; }
@@ -36,6 +34,8 @@ namespace SuperSchedule.Database.Data
         public DbSet<Holiday> Holidays { get; set; }
 
         public DbSet<Leave> Leaves { get; set; }
+
+        public DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {

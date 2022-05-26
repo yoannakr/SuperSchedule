@@ -60,3 +60,10 @@ export type Leave = {
   comment: string;
   employeeId: number;
 };
+
+export type User = {
+  id: number;
+  username: string;
+  password: string;
+  role: number;
+};
