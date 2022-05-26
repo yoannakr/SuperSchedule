@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Employee } from "../../../types";
-import Tab from "@mui/material/Tab";
 import TabPanel from "@mui/lab/TabPanel";
 import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
 import TextField from "@mui/material/TextField";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DatePicker from "@mui/lab/DatePicker";
 import Box from "@mui/material/Box";
+
 import styles from "./Schedule.module.scss";
 import { getAllEmployees } from "../../Employee/api/getAllEmployees";
 import { PersonalSchedule } from "./PersonalSchedule";
+import { TabItem, TabList } from "./TabList";
 
 export const PersonalSchedulesList = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("1");
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employeeTabItems, setEmployeeTabItems] = useState<TabItem[]>([]);
   const [monthDate, setMonthDate] = React.useState<Date | null>(new Date());
 
   useEffect(() => {
@@ -23,7 +23,10 @@ export const PersonalSchedulesList = () => {
       getAllEmployees()
         .then((response) => {
           const employees: Employee[] = response.data;
-          setEmployees(employees);
+          const tabItems: TabItem[] = employees.map((employee) =>
+            createTabItem(employee)
+          );
+          setEmployeeTabItems(tabItems);
         })
         .catch((error) =>
           console.log(`GetAllEmployees not successful because: ${error}`)
@@ -32,6 +35,11 @@ export const PersonalSchedulesList = () => {
 
     getDataEmployees();
   }, []);
+
+  const createTabItem = (employee: Employee): TabItem => ({
+    value: employee.id.toString(),
+    label: employee.fullName ?? `${employee.firstName}`,
+  });
 
   const onSelectedEmployeeChange = (
     event: React.SyntheticEvent,
@@ -58,37 +66,21 @@ export const PersonalSchedulesList = () => {
           {/* <ExportExcel csvData={schedules} fileName={"test"} /> */}
         </Box>
       </LocalizationProvider>
-      {employees.length !== 0 && (
+      {employeeTabItems.length !== 0 && (
         <TabContext value={selectedEmployeeId}>
           <TabList
-            className={styles.TabList}
             onChange={onSelectedEmployeeChange}
-            variant="scrollable"
-            scrollButtons="auto"
-            TabIndicatorProps={{
-              style: {
-                display: "none",
-              },
-            }}
-          >
-            {employees.map((employee, key) => (
-              <Tab
-                key={key}
-                className={`${styles.Tab} ${
-                  selectedEmployeeId === employee.id.toString()
-                    ? styles.SelectedTab
-                    : ""
-                }`}
-                value={employee.id.toString()}
-                label={`${employee.firstName} ${employee.lastName}`}
-              />
-            ))}
-          </TabList>
-          {employees.map((employee, key) => (
-            <TabPanel key={key} value={employee.id.toString()}>
-              <h1>{employee.lastName}</h1>
+            items={employeeTabItems}
+            selectedItem={selectedEmployeeId}
+          />
+          {employeeTabItems.map((employee, key) => (
+            <TabPanel
+              key={key}
+              value={employee.value}
+              className={styles.TabPanel}
+            >
               <PersonalSchedule
-                employeeId={employee.id}
+                employeeId={+employee.value}
                 monthDate={monthDate}
               />
             </TabPanel>

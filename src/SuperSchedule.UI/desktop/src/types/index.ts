@@ -37,6 +37,7 @@ export type Employee = {
   firstName: string;
   middleName: string;
   lastName: string;
+  fullName?: string;
   vacationDays: number;
   positionId: number;
   locationsIds: number[];

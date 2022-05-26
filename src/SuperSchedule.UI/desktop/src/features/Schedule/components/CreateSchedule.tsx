@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -15,25 +15,40 @@ import Box from "@mui/material/Box";
 import { fillSchedulesForMonth } from "../api/fillSchedulesForMonth";
 import moment from "moment";
 import { isScheduleFilled } from "../api/isScheduleFilled";
+import { SnackBar } from "../../../components/Snackbar";
 
 export const CreateSchedule = () => {
   const [monthDate, setMonthDate] = React.useState<Date | null>(new Date());
-  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [showErrors, setShowErrors] = useState<boolean>(false);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
+
+  const onMonthDateChange = (monthDateInput: Date | null) => {
+    setMonthDate(monthDateInput);
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
+    }
+  };
 
   const handleClose = () => {
-    setShowAlert(false);
+    setShowErrors(false);
   };
 
   const fillSchedules = () => {
-    setShowAlert(false);
+    setShowErrors(false);
     const stringMonthDate = moment(monthDate).format("YYYY-MM-DD");
 
-    fillSchedulesForMonth({ monthDate: stringMonthDate }).catch((error) =>
-      console.log(`FillSchedulesForMonth not successful because: ${error}`)
-    );
+    fillSchedulesForMonth({ monthDate: stringMonthDate })
+      .then((response) => {
+        setShowSuccess(true);
+      })
+      .catch((error) =>
+        console.log(`FillSchedulesForMonth not successful because: ${error}`)
+      );
   };
 
   const save = () => {
+    setIsButtonDisabled(true);
     const stringMonthDate = moment(monthDate).format("YYYY-MM-DD");
 
     isScheduleFilled({ monthDate: stringMonthDate }).then((response) => {
@@ -41,8 +56,9 @@ export const CreateSchedule = () => {
       if (!isScheduleFilled) {
         fillSchedules();
       } else {
-        setShowAlert(isScheduleFilled);
+        setShowErrors(isScheduleFilled);
       }
+      setIsButtonDisabled(false);
     });
   };
 
@@ -57,7 +73,7 @@ export const CreateSchedule = () => {
             label="Месец и Година"
             minDate={new Date("2020-01-01")}
             value={monthDate}
-            onChange={setMonthDate}
+            onChange={onMonthDateChange}
             renderInput={(params) => (
               <TextField {...params} helperText={null} />
             )}
@@ -66,7 +82,7 @@ export const CreateSchedule = () => {
       </LocalizationProvider>
 
       <Dialog
-        open={showAlert}
+        open={showErrors}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -87,7 +103,20 @@ export const CreateSchedule = () => {
         </DialogActions>
       </Dialog>
 
-      <Button className="mt-4" variant="primary" onClick={save}>
+      <SnackBar
+        isOpen={showSuccess}
+        messages={["Успешно създаване!"]}
+        setIsOpen={setShowSuccess}
+        severity={"success"}
+        alertTitle={""}
+      />
+
+      <Button
+        className="Button"
+        variant="primary"
+        onClick={save}
+        disabled={isButtonDisabled}
+      >
         Запис
       </Button>
     </Form>

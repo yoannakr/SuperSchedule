@@ -1,19 +1,10 @@
 import React, { useState } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertProps } from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
 
 import "../../../App.css";
 import { InputField } from "../../../components/Form";
 import { login } from "../api/login";
-
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  props,
-  ref
-) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import { SnackBar } from "../../../components/Snackbar";
 
 type LoginOptions = {
   onSuccessfulLogin: any;
@@ -60,17 +51,13 @@ export const Login = (props: LoginOptions) => {
 
   return (
     <Form className="Login">
-      <Snackbar
-        open={showErrorMessage}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-          <AlertTitle>Неуспешно влизане</AlertTitle>
-          Грешно потребителско име и/или парола!
-        </Alert>
-      </Snackbar>
+      <SnackBar
+        isOpen={showErrorMessage}
+        messages={["Грешно потребителско име и/или парола!"]}
+        setIsOpen={setShowErrorMessage}
+        severity={"error"}
+        alertTitle={"Неуспешно влизане"}
+      />
       <h1>Вход</h1>
       <Row>
         <Form.Group as={Col}>

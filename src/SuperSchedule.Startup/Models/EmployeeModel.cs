@@ -10,6 +10,8 @@
 
         public string? LastName { get; set; }
 
+        public string? FullName { get; set; }
+
         public int VacationDays { get; set; }
 
         public int PositionId { get; set; }

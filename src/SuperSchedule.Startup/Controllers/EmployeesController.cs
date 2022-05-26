@@ -48,6 +48,7 @@ namespace SuperSchedule.Startup.Controllers
                     FirstName = employee.FirstName,
                     MiddleName = employee.MiddleName,
                     LastName = employee.LastName,
+                    FullName = employee.FullName,
                     VacationDays = employee.VacationDays,
                     PositionId = employee.Position.Id,
                     LocationsIds = employee.Locations.Select(l => l.Id),

@@ -15,7 +15,7 @@ body {
   height: 100vh;
   margin-left: 250px;
   flex-grow: 1;
-  /* justify-content: center; */
+  justify-content: center;
   align-items: center;
   flex-direction: column;
 }
@@ -31,4 +31,14 @@ body {
 
 .nav-link {
   width: max-content !important;
+}
+
+.Button,
+.Button:disabled {
+  background-color: #2f4050;
+  border: none;
+}
+
+.Button:hover {
+  background-color: #293846;
 }

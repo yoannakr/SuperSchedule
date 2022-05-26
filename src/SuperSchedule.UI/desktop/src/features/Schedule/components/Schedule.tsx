@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getLocations } from "../../../api/getLocations";
-import { Location } from "../../../types";
-import { Tab, Tabs } from "react-bootstrap";
-import { LocationSchedule } from "./LocationSchedule";
+import TabPanel from "@mui/lab/TabPanel";
+import TabContext from "@mui/lab/TabContext";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import TextField from "@mui/material/TextField";
@@ -10,12 +8,19 @@ import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DatePicker from "@mui/lab/DatePicker";
 import Box from "@mui/material/Box";
+import moment from "moment";
+
+import { getLocations } from "../../../api/getLocations";
+import { Location } from "../../../types";
+import { LocationSchedule } from "./LocationSchedule";
 import styles from "./Schedule.module.scss";
 import { ExportExcel } from "./ExportExcel";
-import moment from "moment";
 import { getErrorsForMonthSchedule } from "../api/getErrorsForMonthSchedule";
+import { TabItem, TabList } from "./TabList";
 
 export const Schedule = () => {
+  const [selectedLocationId, setSelectedLocationId] = useState<string>("1");
+  const [locationTabItems, setLocationTabItems] = useState<TabItem[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [monthDate, setMonthDate] = useState<Date | null>(new Date());
   const [errors, setErrors] = useState<string[]>([]);
@@ -25,6 +30,10 @@ export const Schedule = () => {
       getLocations()
         .then((response) => {
           const locations: Location[] = response.data;
+          const tabItems: TabItem[] = locations.map((location) =>
+            createTabItem(location)
+          );
+          setLocationTabItems(tabItems);
           setLocations(locations);
         })
         .catch((error) =>
@@ -34,6 +43,10 @@ export const Schedule = () => {
 
     getDataLocations();
   }, []);
+
+  useEffect(() => {
+    getDataErrors();
+  }, [monthDate]);
 
   const getDataErrors = () => {
     const monthDateString = moment(monthDate).format("YYYY-MM-DD");
@@ -50,9 +63,17 @@ export const Schedule = () => {
       );
   };
 
-  useEffect(() => {
-    getDataErrors();
-  }, [monthDate]);
+  const createTabItem = (location: Location): TabItem => ({
+    value: location.id.toString(),
+    label: location.name,
+  });
+
+  const onSelectedLocationChange = (
+    event: React.SyntheticEvent,
+    newValue: number
+  ) => {
+    setSelectedLocationId(newValue.toString());
+  };
 
   return (
     <div className={styles.Schedule}>
@@ -82,26 +103,27 @@ export const Schedule = () => {
         </Box>
       </LocalizationProvider>
       {locations.length !== 0 && (
-        <Tabs
-          defaultActiveKey={locations[0].id}
-          transition={false}
-          style={{
-            flexWrap: "nowrap",
-            overflowX: "auto",
-            overflowY: "hidden",
-          }}
-        >
-          {locations.map((location, key) => (
-            <Tab key={key} eventKey={location.id} title={location.name}>
+        <TabContext value={selectedLocationId}>
+          <TabList
+            onChange={onSelectedLocationChange}
+            items={locationTabItems}
+            selectedItem={selectedLocationId}
+          />
+          {locationTabItems.map((location, key) => (
+            <TabPanel
+              key={key}
+              value={location.value}
+              className={styles.TabPanel}
+            >
               <LocationSchedule
-                locationId={location.id}
-                locationName={location.name}
+                locationId={+location.value}
+                locationName={location.label}
                 monthDate={monthDate}
                 onShiftTypesChange={getDataErrors}
               />
-            </Tab>
+            </TabPanel>
           ))}
-        </Tabs>
+        </TabContext>
       )}
     </div>
   );

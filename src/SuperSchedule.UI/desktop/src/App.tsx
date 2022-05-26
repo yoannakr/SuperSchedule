@@ -17,8 +17,8 @@ import { Login } from "./features/Login/components/Login";
 function App() {
   let navigate = useNavigate();
 
-  const [isLogin, setIsLogin] = useState<boolean>(false);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isLogin, setIsLogin] = useState<boolean>(true);
+  const [isAdmin, setIsAdmin] = useState<boolean>(true);
 
   const onSuccessfulLogin = (isAdmin: boolean) => {
     navigate("/schedule");

@@ -8,9 +8,7 @@ import TableRow from "@material-ui/core/TableRow";
 import EditIcon from "@material-ui/icons/EditOutlined";
 import DoneIcon from "@material-ui/icons/DoneAllTwoTone";
 import RevertIcon from "@material-ui/icons/NotInterestedOutlined";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertProps } from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
+import { makeStyles } from "@material-ui/core/styles";
 
 import styles from "./Schedule.module.scss";
 import {
@@ -23,15 +21,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { updateShiftTypeOfSchedules } from "../api/updateShiftTypeOfSchedules";
 import TableContainer from "@material-ui/core/TableContainer";
 import { getShiftTypesByLocationIncludingDefaultBreak } from "../../ShiftType/api/getShiftTypesByLocationIncludingDefaultBreak";
-
-import { makeStyles } from "@material-ui/core/styles";
-
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  props,
-  ref
-) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import { SnackBar } from "../../../components/Snackbar";
 
 const useStyles = makeStyles({
   tableCell: {
@@ -186,11 +176,11 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
     let isSaved = true;
     await updateShiftTypeOfSchedules({ scheduleModels: schedulesRows }).catch(
       (error) => {
-            if (error.response !== undefined) {
-                setOpen(true);
-                setErrors(error.response.data);
-                isSaved = false;
-            }
+        if (error.response !== undefined) {
+          setOpen(true);
+          setErrors(error.response.data);
+          isSaved = false;
+        }
       }
     );
 
@@ -215,26 +205,20 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
 
   return (
     <div className={styles.LocationSchedule}>
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-          <AlertTitle>Неуспешно записване!</AlertTitle>
-          {errors.map((error, key) => (
-            <p key={key}>{error}</p>
-          ))}
-        </Alert>
-      </Snackbar>
+      <SnackBar
+        isOpen={open}
+        messages={errors}
+        setIsOpen={setOpen}
+        severity={"error"}
+        alertTitle={"Неуспешно записване!"}
+      />
       {isEditMode && (
         <>
           <IconButton aria-label="done" onClick={onDoneEditing}>
-            <DoneIcon />
+            <DoneIcon className={styles.DoneButton} />
           </IconButton>
           <IconButton aria-label="revert" onClick={() => onRevert()}>
-            <RevertIcon />
+            <RevertIcon className={styles.RevertButton} />
           </IconButton>
         </>
       )}

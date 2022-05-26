@@ -169,10 +169,10 @@ export const PersonalSchedule = (props: PersonalScheduleProps) => {
       {isEditMode && (
         <>
           <IconButton aria-label="done" onClick={onDoneEditing}>
-            <DoneIcon />
+            <DoneIcon className={styles.DoneButton} />
           </IconButton>
           <IconButton aria-label="revert" onClick={() => onRevert()}>
-            <RevertIcon />
+            <RevertIcon className={styles.RevertButton} />
           </IconButton>
         </>
       )}
