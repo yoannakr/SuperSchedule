@@ -5,7 +5,11 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import { CreatePosition } from "./features/Position";
 import { CreateLocation } from "./features/Location";
 import { CreateShiftType } from "./features/ShiftType";
-import { CreateEmployee, LeavesAndSickLeave } from "./features/Employee";
+import {
+  CreateEmployee,
+  EmployeeList,
+  LeavesAndSickLeave,
+} from "./features/Employee";
 import { Sidebar } from "./components/Sidebar";
 import { Setting } from "./features/Setting/";
 import { Schedule } from "./features/Schedule/components/Schedule";
@@ -56,6 +60,7 @@ function App() {
         <Route path="/leavesAndSickLeave" element={<LeavesAndSickLeave />} />
         <Route path="/createUser" element={<CreateUser />} />
         <Route path="/personalSchedules" element={<PersonalSchedulesList />} />
+        <Route path="/employees" element={<EmployeeList />} />
       </Routes>
     </div>
   );

@@ -33,12 +33,29 @@ body {
   width: max-content !important;
 }
 
-.Button,
+.Button {
+  background-color: #2f4050 !important;
+  border: none !important;
+  width: max-content !important;
+  margin-top: 40px !important;
+  text-transform: none !important;
+}
+
 .Button:disabled {
-  background-color: #2f4050;
-  border: none;
+  background-color: #8b959e !important;
 }
 
 .Button:hover {
   background-color: #293846;
+}
+
+.ShowFeedback {
+  display: block !important;
+  color: #dc3545;
+  font-family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;";
+  font-size: 80%;
+}
+
+.MuiDialog-paper {
+  min-width: 60%;
 }

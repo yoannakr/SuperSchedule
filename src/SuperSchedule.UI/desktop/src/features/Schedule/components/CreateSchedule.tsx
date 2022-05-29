@@ -1,10 +1,6 @@
 import React, { useState } from "react";
-import { Form, Button } from "react-bootstrap";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import { Form } from "react-bootstrap";
+import SaveIcon from "@mui/icons-material/Save";
 
 import "../../../App.css";
 import TextField from "@mui/material/TextField";
@@ -16,18 +12,19 @@ import { fillSchedulesForMonth } from "../api/fillSchedulesForMonth";
 import moment from "moment";
 import { isScheduleFilled } from "../api/isScheduleFilled";
 import { SnackBar } from "../../../components/Snackbar";
+import { LoadingButton } from "../../../components/Button";
+import { Dialog } from "../../../components/Dialog";
 
 export const CreateSchedule = () => {
   const [monthDate, setMonthDate] = React.useState<Date | null>(new Date());
   const [showErrors, setShowErrors] = useState<boolean>(false);
+  const [showNoConnectionError, setShowNoConnectionError] =
+    useState<boolean>(false);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const onMonthDateChange = (monthDateInput: Date | null) => {
     setMonthDate(monthDateInput);
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const handleClose = () => {
@@ -36,30 +33,39 @@ export const CreateSchedule = () => {
 
   const fillSchedules = () => {
     setShowErrors(false);
+    setIsSaving(true);
     const stringMonthDate = moment(monthDate).format("YYYY-MM-DD");
 
     fillSchedulesForMonth({ monthDate: stringMonthDate })
-      .then((response) => {
+      .then(() => {
         setShowSuccess(true);
+        setIsSaving(false);
       })
-      .catch((error) =>
-        console.log(`FillSchedulesForMonth not successful because: ${error}`)
-      );
+      .catch((error) => {
+        setIsSaving(false);
+        setShowNoConnectionError(true);
+        console.log(`FillSchedulesForMonth not successful because: ${error}`);
+      });
   };
 
   const save = () => {
-    setIsButtonDisabled(true);
+    setIsSaving(true);
     const stringMonthDate = moment(monthDate).format("YYYY-MM-DD");
 
-    isScheduleFilled({ monthDate: stringMonthDate }).then((response) => {
-      const isScheduleFilled: boolean = response.data;
-      if (!isScheduleFilled) {
-        fillSchedules();
-      } else {
-        setShowErrors(isScheduleFilled);
-      }
-      setIsButtonDisabled(false);
-    });
+    isScheduleFilled({ monthDate: stringMonthDate })
+      .then((response) => {
+        const isScheduleFilled: boolean = response.data;
+        if (!isScheduleFilled) {
+          fillSchedules();
+        } else {
+          setShowErrors(isScheduleFilled);
+        }
+        setIsSaving(false);
+      })
+      .catch(() => {
+        setShowNoConnectionError(true);
+        setIsSaving(false);
+      });
   };
 
   return (
@@ -82,26 +88,16 @@ export const CreateSchedule = () => {
       </LocalizationProvider>
 
       <Dialog
-        open={showErrors}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{"Грешка"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {`График за месец ${moment(monthDate).format(
-              "MM.YYYY"
-            )} съществува. Желаете ли да се създаде нов?`}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={fillSchedules}>Да</Button>
-          <Button onClick={handleClose} autoFocus>
-            Не
-          </Button>
-        </DialogActions>
-      </Dialog>
+        showDialog={showErrors}
+        dialogContent={`График за месец ${moment(monthDate).format(
+          "MM.YYYY"
+        )} съществува. Желаете ли да се създаде нов?`}
+        setShowDialog={setShowErrors}
+        dialogTitle={"Грешка"}
+        onAccept={fillSchedules}
+        acceptMessage={"Да"}
+        cancelMessage={"Не"}
+      />
 
       <SnackBar
         isOpen={showSuccess}
@@ -111,14 +107,20 @@ export const CreateSchedule = () => {
         alertTitle={""}
       />
 
-      <Button
-        className="Button"
-        variant="primary"
+      <SnackBar
+        isOpen={showNoConnectionError}
+        messages={["Моля, проверете връзката с интернет."]}
+        setIsOpen={setShowNoConnectionError}
+        severity={"error"}
+        alertTitle={"Възникна грешка със сървъра"}
+      />
+
+      <LoadingButton
         onClick={save}
-        disabled={isButtonDisabled}
-      >
-        Запис
-      </Button>
+        loading={isSaving}
+        icon={<SaveIcon />}
+        content={"Запис"}
+      />
     </Form>
   );
 };

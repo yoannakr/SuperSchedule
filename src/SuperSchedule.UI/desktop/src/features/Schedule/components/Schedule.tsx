@@ -17,6 +17,7 @@ import styles from "./Schedule.module.scss";
 import { ExportExcel } from "./ExportExcel";
 import { getErrorsForMonthSchedule } from "../api/getErrorsForMonthSchedule";
 import { TabItem, TabList } from "./TabList";
+import { UndrawNoLocationsSvg } from "../../../components/Svgs";
 
 export const Schedule = () => {
   const [selectedLocationId, setSelectedLocationId] = useState<string>("1");
@@ -77,53 +78,60 @@ export const Schedule = () => {
 
   return (
     <div className={styles.Schedule}>
-      {errors.length !== 0 && (
-        <Alert severity="error">
-          <AlertTitle>Моля, проверете следните грешки:</AlertTitle>
-          {errors.map((error, key) => (
-            <p key={key}>{error}</p>
-          ))}
-        </Alert>
-      )}
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box m={2}>
-          <DatePicker
-            inputFormat="MM-yyyy"
-            views={["year", "month"]}
-            label="Месец и Година"
-            minDate={new Date("2020-01-01")}
-            value={monthDate}
-            onChange={() => {}}
-            onMonthChange={setMonthDate}
-            renderInput={(params) => (
-              <TextField {...params} helperText={null} />
-            )}
-          />
-          {/* <ExportExcel csvData={schedules} fileName={"test"} /> */}
-        </Box>
-      </LocalizationProvider>
-      {locations.length !== 0 && (
-        <TabContext value={selectedLocationId}>
-          <TabList
-            onChange={onSelectedLocationChange}
-            items={locationTabItems}
-            selectedItem={selectedLocationId}
-          />
-          {locationTabItems.map((location, key) => (
-            <TabPanel
-              key={key}
-              value={location.value}
-              className={styles.TabPanel}
-            >
-              <LocationSchedule
-                locationId={+location.value}
-                locationName={location.label}
-                monthDate={monthDate}
-                onShiftTypesChange={getDataErrors}
+      {locations.length !== 0 ? (
+        <>
+          {errors.length !== 0 && (
+            <Alert severity="error">
+              <AlertTitle>Моля, проверете следните грешки:</AlertTitle>
+              {errors.map((error, key) => (
+                <p key={key}>{error}</p>
+              ))}
+            </Alert>
+          )}
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <Box m={2}>
+              <DatePicker
+                inputFormat="MM-yyyy"
+                views={["year", "month"]}
+                label="Месец и Година"
+                minDate={new Date("2020-01-01")}
+                value={monthDate}
+                onChange={() => {}}
+                onMonthChange={setMonthDate}
+                renderInput={(params) => (
+                  <TextField {...params} helperText={null} />
+                )}
               />
-            </TabPanel>
-          ))}
-        </TabContext>
+              {/* <ExportExcel csvData={schedules} fileName={"test"} /> */}
+            </Box>
+          </LocalizationProvider>
+          <TabContext value={selectedLocationId}>
+            <TabList
+              onChange={onSelectedLocationChange}
+              items={locationTabItems}
+              selectedItem={selectedLocationId}
+            />
+            {locationTabItems.map((location, key) => (
+              <TabPanel
+                key={key}
+                value={location.value}
+                className={styles.TabPanel}
+              >
+                <LocationSchedule
+                  locationId={+location.value}
+                  locationName={location.label}
+                  monthDate={monthDate}
+                  onShiftTypesChange={getDataErrors}
+                />
+              </TabPanel>
+            ))}
+          </TabContext>
+        </>
+      ) : (
+        <div className={styles.Svg}>
+          <UndrawNoLocationsSvg />
+          <h4>Няма налични обекти</h4>
+        </div>
       )}
     </div>
   );

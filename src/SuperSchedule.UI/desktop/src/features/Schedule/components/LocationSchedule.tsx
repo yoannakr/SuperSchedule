@@ -192,17 +192,6 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
     setSchedulesRows(previousScheduleRow);
   };
 
-  const handleClose = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
-
   return (
     <div className={styles.LocationSchedule}>
       <SnackBar

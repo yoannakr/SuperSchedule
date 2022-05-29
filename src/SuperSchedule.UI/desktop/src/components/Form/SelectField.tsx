@@ -13,10 +13,21 @@ type SelectFieldProps = {
   value: any;
   onChange: any;
   options: Option[];
+  isInvalid?: boolean;
+  errorMessage?: string;
 };
 
 export const SelectField = (props: SelectFieldProps) => {
-  const { className, label, ariaLabel, value, onChange, options } = props;
+  const {
+    className,
+    label,
+    ariaLabel,
+    value,
+    onChange,
+    options,
+    isInvalid,
+    errorMessage,
+  } = props;
 
   return (
     <>
@@ -28,6 +39,7 @@ export const SelectField = (props: SelectFieldProps) => {
         onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
           onChange(e.currentTarget.value)
         }
+        isInvalid={isInvalid}
       >
         <option value="0"></option>
         {options.map((option) => (
@@ -36,6 +48,9 @@ export const SelectField = (props: SelectFieldProps) => {
           </option>
         ))}
       </Form.Select>
+      <Form.Control.Feedback type="invalid">
+        {errorMessage}
+      </Form.Control.Feedback>
     </>
   );
 };

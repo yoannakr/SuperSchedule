@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
-import SaveIcon from "@mui/icons-material/Save";
+import { Form, Row, Col } from "react-bootstrap";
 
-import "../../../../App.css";
-import styles from "./CreateEmployee.module.scss";
+import styles from "./EditEmployee.module.scss";
 import {
   DropdownMultiselectField,
   InputField,
@@ -11,166 +9,127 @@ import {
 } from "../../../../components/Form";
 import { Option } from "../../../../components/Form";
 import { Position, Location, ShiftType, Employee } from "../../../../types";
-import { getPositions } from "../../../../api/getPositions";
-import { getLocations } from "../../../../api/getLocations";
-import { getShiftTypes } from "../../../../api/getShiftTypes";
-import { createEmployee } from "../../api/createEmployee";
 import { SnackBar } from "../../../../components/Snackbar";
-import { LoadingButton } from "../../../../components/Button";
+import { updateEmployee } from "../../api/updateEmployee";
 
-export const CreateEmployee = () => {
-  const [firstName, setFirstName] = useState<string>("");
+type EditEmployeeOptions = {
+  employee: Employee | undefined;
+  onSaveEditedEmployee: any;
+  locations: Location[];
+  positions: Position[];
+  shiftTypes: ShiftType[];
+};
+
+export const EditEmployee = (props: EditEmployeeOptions) => {
+  const { employee, onSaveEditedEmployee, locations, positions, shiftTypes } =
+    props;
+
+  const [firstName, setFirstName] = useState<string>(employee?.firstName ?? "");
   const [isInvalidFirstName, setIsInvalidFirstName] = useState<boolean>(false);
 
-  const [middleName, setMiddleName] = useState<string>("");
+  const [middleName, setMiddleName] = useState<string>(
+    employee?.middleName ?? ""
+  );
 
-  const [lastName, setLastName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>(employee?.lastName ?? "");
   const [isInvalidLastName, setIsInvalidLastName] = useState<boolean>(false);
 
-  const [vacationDays, setVacationDays] = useState<number>(20);
+  const [vacationDays, setVacationDays] = useState<number>(
+    employee?.vacationDays ?? 0
+  );
   const [isInvalidVacationDays, setIsInvalidVacationDays] =
     useState<boolean>(false);
 
-  const [positions, setPositions] = useState<Position[]>([]);
-  const [positionId, setPositionId] = useState<number>(0);
+  const [positionId, setPositionId] = useState<number>(
+    employee?.positionId ?? 0
+  );
   const [isInvalidPositionId, setIsInvalidPositionId] =
     useState<boolean>(false);
 
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [selectedLocations, setSelectedLocations] = useState<Option[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<Option[]>(
+    locations
+      .filter((l) => employee?.locationsIds.includes(l.id))
+      .map((location) => {
+        return {
+          label: location.name,
+          value: location.id,
+        };
+      })
+  );
   const [isInvalidSelectedLocations, setIsInvalidSelectedLocations] =
     useState<boolean>(false);
 
-  const [shiftTypes, setShiftTypes] = useState<ShiftType[]>([]);
-  const [selectedShiftTypes, setSelectedShiftTypes] = useState<Option[]>([]);
+  const [selectedShiftTypes, setSelectedShiftTypes] = useState<Option[]>(
+    shiftTypes
+      .filter((s) => employee?.shiftTypesIds.includes(s.id))
+      .map((shiftType) => {
+        return {
+          label: shiftType.name,
+          value: shiftType.id,
+        };
+      })
+  );
   const [isInvalidSelectedShiftTypes, setIsInvalidSelectedShiftTypes] =
     useState<boolean>(false);
 
-  const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
-  const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [showError, setShowError] = useState<boolean>(false);
 
   useEffect(() => {
-    const getDataPositions = () => {
-      getPositions()
-        .then((response) => {
-          const positions: Position[] = response.data;
-          setPositions(positions);
-          positions != null ? setPositionId(positions[0].id) : setPositionId(0);
-        })
-        .catch((error) =>
-          console.log(`GetAllPositions not successful because: ${error}`)
-        );
-    };
-
-    const getDataLocations = () => {
-      getLocations()
-        .then((response) => {
-          const locations: Location[] = response.data;
-          setLocations(locations);
-        })
-        .catch((error) =>
-          console.log(`GetAllLocations not successful because: ${error}`)
-        );
-    };
-
-    const getDataShiftTypes = () => {
-      getShiftTypes()
-        .then((response) => {
-          const shiftTypes: ShiftType[] = response.data;
-          setShiftTypes(shiftTypes);
-        })
-        .catch((error) =>
-          console.log(`GetAllShiftTypes not successful because: ${error}`)
-        );
-    };
-
-    getDataPositions();
-    getDataLocations();
-    getDataShiftTypes();
-  }, []);
+    onSaveEditedEmployee.current = save;
+  }, [
+    firstName,
+    middleName,
+    lastName,
+    vacationDays,
+    positionId,
+    selectedLocations,
+    selectedShiftTypes,
+  ]);
 
   const onFirstNameChange = (firstName: string) => {
     setFirstName(firstName);
     validateFirstName(firstName);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const onMiddleNameChange = (middleName: string) => {
     setMiddleName(middleName);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const onLastNameChange = (lastName: string) => {
     setLastName(lastName);
     validateLastName(lastName);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const onVacationDaysChange = (vacationDaysInput: string) => {
     const vacationDays: number = +vacationDaysInput;
     setVacationDays(vacationDays);
     validateVacationDays(vacationDays);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const onPositionIdChange = (positionIdInput: string) => {
     const positionId: number = +positionIdInput;
     setPositionId(positionId);
     validateSelectedPosition(positionId);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const onSelectLocation = (selectedList: Option[], selectedItem: Option) => {
     setSelectedLocations(selectedList);
     validateSelectedLocations(selectedList);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const onRemoveLocation = (selectedList: Option[], removedItem: Option) => {
     setSelectedLocations(selectedList);
     validateSelectedLocations(selectedList);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const onSelectShiftType = (selectedList: Option[], selectedItem: Option) => {
     setSelectedShiftTypes(selectedList);
     validateSelectedShiftTypes(selectedList);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const onRemoveShiftType = (selectedList: Option[], removedItem: Option) => {
     setSelectedShiftTypes(selectedList);
     validateSelectedShiftTypes(selectedList);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const validateFirstName = (firstNameInput: string): boolean => {
@@ -224,11 +183,14 @@ export const CreateEmployee = () => {
   };
 
   const validateSelectedLocations = (
-    selectedLocationsInput: Option[]
+    selectedLocationsInput: Option[] | undefined
   ): boolean => {
     setIsInvalidSelectedLocations(false);
 
-    if (selectedLocationsInput.length === 0) {
+    if (
+      selectedLocationsInput === undefined ||
+      selectedLocationsInput.length === 0
+    ) {
       setIsInvalidSelectedLocations(true);
       return false;
     }
@@ -270,49 +232,46 @@ export const CreateEmployee = () => {
     );
   };
 
-  const setDefaultValues = () => {
-    setFirstName("");
-    setMiddleName("");
-    setLastName("");
-    setVacationDays(20);
-    setPositionId(0);
-    setSelectedLocations([]);
-    setSelectedShiftTypes([]);
-    setIsButtonDisabled(true);
-  };
-
   const save = () => {
     const isValid = isInputFieldsAreValid();
     if (isValid) {
-      setIsSaving(true);
-      const employee: Employee = {
-        id: 0,
+      const editedEmployee: Employee = {
+        id: employee?.id ?? 0,
         firstName,
         middleName,
         lastName,
         vacationDays,
         positionId,
-        locationsIds: selectedLocations.map((location) => location.value),
+        isDeleted: false,
+        locationsIds:
+          selectedLocations?.map((location) => location.value) ?? [],
         shiftTypesIds: selectedShiftTypes.map((shiftType) => shiftType.value),
       };
+      if (employee !== undefined) {
+        employee.firstName = firstName;
+        employee.middleName = middleName;
+        employee.lastName = lastName;
+        employee.vacationDays = vacationDays;
+        employee.positionId = positionId;
+        employee.positionName = positions.find(
+          (p) => p.id === positionId
+        )?.name;
+        employee.locationsIds =
+          selectedLocations?.map((location) => location.value) ?? [];
+        employee.shiftTypesIds = selectedShiftTypes.map(
+          (shiftType) => shiftType.value
+        );
+      }
 
-      createEmployee({ employee })
-        .then((response) => {
-          setIsSaving(false);
-          setShowSuccess(true);
-          setDefaultValues();
-        })
-        .catch((err) => {
-          setIsSaving(false);
-          setShowError(true);
-          console.log(`CreateEmployee not successful because: ${err}`);
-        });
+      updateEmployee({ employee: editedEmployee }).catch((err) => {
+        setShowError(true);
+        console.log(`CreateEmployee not successful because: ${err}`);
+      });
     }
   };
 
   return (
-    <Form className="Form">
-      <h1>Нов служител</h1>
+    <Form className={styles.Form}>
       <Row className={styles.Row}>
         <Form.Group as={Col}>
           <InputField
@@ -427,27 +386,11 @@ export const CreateEmployee = () => {
       </Row>
 
       <SnackBar
-        isOpen={showSuccess}
-        messages={["Успешно създаване!"]}
-        setIsOpen={setShowSuccess}
-        severity={"success"}
-        alertTitle={""}
-      />
-
-      <SnackBar
         isOpen={showError}
         messages={["Моля, проверете връзката с интернет."]}
         setIsOpen={setShowError}
         severity={"error"}
         alertTitle={"Неуспешно създаване!"}
-      />
-
-      <LoadingButton
-        onClick={save}
-        loading={isSaving}
-        icon={<SaveIcon />}
-        content={"Запис"}
-        disabled={isButtonDisabled}
       />
     </Form>
   );

@@ -12,11 +12,22 @@ type InputFieldProps = {
   min?: number;
   hasHelpIcon: boolean;
   helpButtonTooltip: string;
+  isInvalid?: boolean;
+  errorMessage?: string;
 };
 
 export const InputField = (props: InputFieldProps) => {
-  const { type, label, value, onChange, min, hasHelpIcon, helpButtonTooltip } =
-    props;
+  const {
+    type,
+    label,
+    value,
+    onChange,
+    min,
+    hasHelpIcon,
+    helpButtonTooltip,
+    isInvalid,
+    errorMessage,
+  } = props;
 
   return (
     <>
@@ -37,7 +48,11 @@ export const InputField = (props: InputFieldProps) => {
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           onChange(e.currentTarget.value)
         }
+        isInvalid={isInvalid}
       />
+      <Form.Control.Feedback type="invalid">
+        {errorMessage}
+      </Form.Control.Feedback>
     </>
   );
 };

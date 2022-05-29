@@ -17,6 +17,16 @@ namespace SuperSchedule.Services.Employees
             await employeeRepository.CreateEmployee(employee);
         }
 
+        public async Task DeleteEmployee(int employeeId)
+        {
+            await employeeRepository.DeleteEmployee(employeeId);
+        }
+
+        public IEnumerable<Employee> GetAllCurrentEmployees()
+        {
+            return employeeRepository.GetAllCurrentEmployees();
+        }
+
         public IEnumerable<Employee> GetAllEmployees()
         {
             return employeeRepository.GetAllEmployees();
@@ -35,6 +45,11 @@ namespace SuperSchedule.Services.Employees
         public IEnumerable<Employee> GetEmployeesWithLowestPositionPriority()
         {
             return employeeRepository.GetEmployeesWithLowestPositionPriority();
+        }
+
+        public async Task UpdateEmployee(Employee employee)
+        {
+            await employeeRepository.UpdateEmployee(employee);
         }
     }
 }

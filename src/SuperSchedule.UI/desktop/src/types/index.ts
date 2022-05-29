@@ -40,6 +40,8 @@ export type Employee = {
   fullName?: string;
   vacationDays: number;
   positionId: number;
+  positionName?: string;
+  isDeleted?: boolean;
   locationsIds: number[];
   shiftTypesIds: number[];
 };

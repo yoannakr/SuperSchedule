@@ -13,5 +13,11 @@ namespace SuperSchedule.Database.Repositories.Employees
         IEnumerable<Employee> GetEmployeeByLocation(int locationId);
 
         IEnumerable<Employee> GetEmployeesWithLowestPositionPriority();
+
+        IEnumerable<Employee> GetAllCurrentEmployees();
+
+        Task DeleteEmployee(int employeeId);
+
+        Task UpdateEmployee(Employee employee);
     }
 }

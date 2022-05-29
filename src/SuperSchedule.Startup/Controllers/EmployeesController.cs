@@ -51,9 +51,53 @@ namespace SuperSchedule.Startup.Controllers
                     FullName = employee.FullName,
                     VacationDays = employee.VacationDays,
                     PositionId = employee.Position.Id,
+                    PositionName = employee.Position.Name,
                     LocationsIds = employee.Locations.Select(l => l.Id),
                     ShiftTypesIds = employee.ShiftTypes.Select(sh => sh.Id),
                 });
+        }
+
+        [HttpGet]
+        public IEnumerable<EmployeeModel> GetAllCurrentEmployees()
+        {
+            return employeeService.GetAllCurrentEmployees().Select(employee =>
+                new EmployeeModel
+                {
+                    Id = employee.Id,
+                    FirstName = employee.FirstName,
+                    MiddleName = employee.MiddleName,
+                    LastName = employee.LastName,
+                    FullName = employee.FullName,
+                    VacationDays = employee.VacationDays,
+                    PositionId = employee.Position.Id,
+                    IsDeleted = employee.IsDeleted,
+                    PositionName = employee.Position.Name,
+                    LocationsIds = employee.Locations.Select(l => l.Id),
+                    ShiftTypesIds = employee.ShiftTypes.Select(sh => sh.Id),
+                });
+        }
+
+
+        [HttpDelete]
+        public async Task DeleteEmployee(int employeeId)
+        {
+            await employeeService.DeleteEmployee(employeeId);
+        }
+
+        [HttpPost]
+        public async Task UpdateEmployee(EmployeeModel employee)
+        {
+            await employeeService.UpdateEmployee(new Employee
+            {
+                Id=employee.Id,
+                FirstName=employee.FirstName,
+                MiddleName=employee.MiddleName,
+                LastName=employee.LastName,
+                VacationDays=employee.VacationDays,
+                Position = positionService.GetPositionById(employee.PositionId),
+                Locations = employee.LocationsIds.Select(id => locationService.GetLocationById(id)).ToList(),
+                ShiftTypes = employee.ShiftTypesIds.Select(id => shiftTypeService.GetShiftTypeById(id)).ToList()
+            });
         }
 
     }

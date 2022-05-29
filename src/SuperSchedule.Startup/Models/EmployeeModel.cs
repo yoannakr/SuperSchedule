@@ -16,6 +16,10 @@
 
         public int PositionId { get; set; }
 
+        public bool IsDeleted { get; set; }
+
+        public string? PositionName { get; set; }
+
         public IEnumerable<int>? LocationsIds { get; set; }
 
         public IEnumerable<int>? ShiftTypesIds { get; set; }

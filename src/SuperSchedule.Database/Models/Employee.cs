@@ -32,6 +32,8 @@ namespace SuperSchedule.Database.Models
 
         public Position Position { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         public ICollection<Location> Locations { get; set; } = new HashSet<Location>();
 
         public ICollection<ShiftType> ShiftTypes { get; set; } = new HashSet<ShiftType>();

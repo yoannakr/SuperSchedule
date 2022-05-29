@@ -12,6 +12,7 @@ import styles from "./Schedule.module.scss";
 import { getAllEmployees } from "../../Employee/api/getAllEmployees";
 import { PersonalSchedule } from "./PersonalSchedule";
 import { TabItem, TabList } from "./TabList";
+import { UndrawNoEmployeesSvg } from "../../../components/Svgs";
 
 export const PersonalSchedulesList = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("1");
@@ -50,42 +51,49 @@ export const PersonalSchedulesList = () => {
 
   return (
     <div className={styles.Schedule}>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box m={2}>
-          <DatePicker
-            inputFormat="MM-yyyy"
-            views={["year", "month"]}
-            label="Месец и Година"
-            minDate={new Date("2020-01-01")}
-            value={monthDate}
-            onChange={setMonthDate}
-            renderInput={(params) => (
-              <TextField {...params} helperText={null} />
-            )}
-          />
-          {/* <ExportExcel csvData={schedules} fileName={"test"} /> */}
-        </Box>
-      </LocalizationProvider>
-      {employeeTabItems.length !== 0 && (
-        <TabContext value={selectedEmployeeId}>
-          <TabList
-            onChange={onSelectedEmployeeChange}
-            items={employeeTabItems}
-            selectedItem={selectedEmployeeId}
-          />
-          {employeeTabItems.map((employee, key) => (
-            <TabPanel
-              key={key}
-              value={employee.value}
-              className={styles.TabPanel}
-            >
-              <PersonalSchedule
-                employeeId={+employee.value}
-                monthDate={monthDate}
+      {employeeTabItems.length !== 0 ? (
+        <>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <Box m={2}>
+              <DatePicker
+                inputFormat="MM-yyyy"
+                views={["year", "month"]}
+                label="Месец и Година"
+                minDate={new Date("2020-01-01")}
+                value={monthDate}
+                onChange={setMonthDate}
+                renderInput={(params) => (
+                  <TextField {...params} helperText={null} />
+                )}
               />
-            </TabPanel>
-          ))}
-        </TabContext>
+              {/* <ExportExcel csvData={schedules} fileName={"test"} /> */}
+            </Box>
+          </LocalizationProvider>
+          <TabContext value={selectedEmployeeId}>
+            <TabList
+              onChange={onSelectedEmployeeChange}
+              items={employeeTabItems}
+              selectedItem={selectedEmployeeId}
+            />
+            {employeeTabItems.map((employee, key) => (
+              <TabPanel
+                key={key}
+                value={employee.value}
+                className={styles.TabPanel}
+              >
+                <PersonalSchedule
+                  employeeId={+employee.value}
+                  monthDate={monthDate}
+                />
+              </TabPanel>
+            ))}
+          </TabContext>
+        </>
+      ) : (
+        <div className={styles.Svg}>
+          <UndrawNoEmployeesSvg />
+          <h5>Няма съществуващи служители</h5>
+        </div>
       )}
     </div>
   );
