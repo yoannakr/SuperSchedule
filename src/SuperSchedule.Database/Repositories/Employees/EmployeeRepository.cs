@@ -107,5 +107,18 @@ namespace SuperSchedule.Database.Repositories.Employees
             superScheduleDbContext.Employees.Update(contextEmployee);
             await superScheduleDbContext.SaveChangesAsync();
         }
+
+        public async Task UpdateEmployeeVacationDays(Employee employee, int totalNewLeaveDays)
+        {
+            var contextEmployee = superScheduleDbContext.Employees.FirstOrDefault(e => e.Id == employee.Id);
+            if (contextEmployee == null)
+            {
+                return;
+            }
+
+            contextEmployee.VacationDays = totalNewLeaveDays;
+            superScheduleDbContext.Employees.Update(contextEmployee);
+            await superScheduleDbContext.SaveChangesAsync();
+        }
     }
 }

@@ -5,22 +5,14 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import {
-  DataGrid,
-  GridRowId,
-  bgBG,
-  GridActionsCellItem,
-  GridColumns,
-} from "@mui/x-data-grid";
-import { bgBG as coreBgBG } from "@mui/material/locale";
+import { GridRowId, GridActionsCellItem, GridColumns } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
 import styles from "./EmployeeList.module.scss";
-import { deleteEmployee } from "../../api/deleteEmployee";
+import { deleteEmployee } from "../../api/employee/deleteEmployee";
 import { Dialog } from "../../../../components/Dialog";
-import { getAllCurrentEmployees } from "../../api/getAllCurrentEmployees";
+import { getAllCurrentEmployees } from "../../api/employee/getAllCurrentEmployees";
 import { EditEmployee } from "../EditEmployee/EditEmployee";
 import { Position, Location, ShiftType, Employee } from "../../../../types";
 import { getPositions } from "../../../../api/getPositions";
@@ -28,6 +20,7 @@ import { getLocations } from "../../../../api/getLocations";
 import { getShiftTypes } from "../../../../api/getShiftTypes";
 import { SnackBar } from "../../../../components/Snackbar";
 import { UndrawNoEmployeesSvg } from "../../../../components/Svgs";
+import { DataGrid } from "../../../../components/DataGrid";
 
 export const EmployeeList = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -42,7 +35,9 @@ export const EmployeeList = () => {
   const [showSuccessEditing, setShowSuccessEditing] = useState<boolean>(false);
   const [showSuccessDeleted, setShowSuccessDeleted] = useState<boolean>(false);
 
-  const onSaveEditedEmployee = useRef(() => {});
+  const onSaveEditedEmployee = useRef((): boolean => {
+    return false;
+  });
 
   useEffect(() => {
     const getDataAllEmployees = () => {
@@ -161,16 +156,6 @@ export const EmployeeList = () => {
     [onShowEditDialog, onShowDeleteAlertMessage]
   );
 
-  const theme = createTheme(
-    {
-      palette: {
-        primary: { main: "#1976d2" },
-      },
-    },
-    bgBG, // x-data-grid translations
-    coreBgBG // core translations
-  );
-
   return (
     <div className={styles.List}>
       <Dialog
@@ -198,9 +183,11 @@ export const EmployeeList = () => {
         setShowDialog={setShowEditDialog}
         dialogTitle={"Редакция"}
         onAccept={() => {
-          onSaveEditedEmployee.current();
-          setShowEditDialog(false);
-          setShowSuccessEditing(true);
+          const isValid = onSaveEditedEmployee.current();
+          if (isValid) {
+            setShowEditDialog(false);
+            setShowSuccessEditing(true);
+          }
         }}
         acceptMessage={"Запис"}
         cancelMessage={"Отказ"}
@@ -222,13 +209,11 @@ export const EmployeeList = () => {
         alertTitle={"Успешно изтриване!"}
       />
       {employees.length !== 0 ? (
-        <ThemeProvider theme={theme}>
-          <DataGrid
-            className={styles.DataGrid}
-            columns={columns}
-            rows={employees}
-          />
-        </ThemeProvider>
+        <DataGrid
+          className={styles.DataGrid}
+          columns={columns}
+          rows={employees}
+        />
       ) : (
         <div className={styles.NoEmployees}>
           <UndrawNoEmployeesSvg />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
+import { Form, Row, Col } from "react-bootstrap";
 import SaveIcon from "@mui/icons-material/Save";
 
 import "../../../../App.css";
@@ -14,7 +14,7 @@ import { Position, Location, ShiftType, Employee } from "../../../../types";
 import { getPositions } from "../../../../api/getPositions";
 import { getLocations } from "../../../../api/getLocations";
 import { getShiftTypes } from "../../../../api/getShiftTypes";
-import { createEmployee } from "../../api/createEmployee";
+import { createEmployee } from "../../api/employee/createEmployee";
 import { SnackBar } from "../../../../components/Snackbar";
 import { LoadingButton } from "../../../../components/Button";
 

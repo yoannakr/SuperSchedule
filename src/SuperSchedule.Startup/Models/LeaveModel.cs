@@ -10,6 +10,8 @@
 
         public int LeaveTypeId { get; set; }
 
+        public string? LeaveTypeName { get; set; }
+
         public string Comment { get; set; }
 
         public int EmployeeId { get; set; }

@@ -59,3 +59,9 @@ body {
 .MuiDialog-paper {
   min-width: 60%;
 }
+
+.list-group-item.active {
+  background-color: #40566a;
+  border-color: #293846;
+  border-radius: 5%;
+}

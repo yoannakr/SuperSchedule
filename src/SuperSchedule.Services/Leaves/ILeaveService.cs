@@ -6,9 +6,11 @@ namespace SuperSchedule.Services.Leaves
     {
         IEnumerable<Leave> GetLeavesForEmployee(int employeeId, DateTime startDate, DateTime endDate);
 
+        IEnumerable<Leave> GetAllLeavesForEmployee(int employeeId, DateTime startDate, DateTime endDate);
+
         IEnumerable<Leave> GetSickLeavesForEmployee(int employeeId, DateTime startDate, DateTime endDate);
 
-        Task CreateLeave(Leave leave);
+        Task<(bool, IEnumerable<string>)> CreateLeave(Leave leave);
 
         bool IsEmployeeHasLeavesForPeriod(int employeeId, DateTime startDate, DateTime endDate);
 
@@ -17,5 +19,11 @@ namespace SuperSchedule.Services.Leaves
         bool IsEmployeeHasLeavesForDate(int employeeId, DateTime date);
 
         bool IsEmployeeHasSickLeavesForDate(int employeeId, DateTime date);
+
+        IEnumerable<DateTime> GetLeaveDatesForEmployee(int employeeId, DateTime startDate, DateTime endDate);
+
+        Task UpdateLeave(Leave leave);
+
+        Task DeleteLeave(int leaveId);
     }
 }

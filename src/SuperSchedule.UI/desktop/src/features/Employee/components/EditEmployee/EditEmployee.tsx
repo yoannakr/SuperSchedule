@@ -10,7 +10,7 @@ import {
 import { Option } from "../../../../components/Form";
 import { Position, Location, ShiftType, Employee } from "../../../../types";
 import { SnackBar } from "../../../../components/Snackbar";
-import { updateEmployee } from "../../api/updateEmployee";
+import { updateEmployee } from "../../api/employee/updateEmployee";
 
 type EditEmployeeOptions = {
   employee: Employee | undefined;
@@ -232,8 +232,8 @@ export const EditEmployee = (props: EditEmployeeOptions) => {
     );
   };
 
-  const save = () => {
-    const isValid = isInputFieldsAreValid();
+  const save = (): boolean => {
+    let isValid = isInputFieldsAreValid();
     if (isValid) {
       const editedEmployee: Employee = {
         id: employee?.id ?? 0,
@@ -266,8 +266,12 @@ export const EditEmployee = (props: EditEmployeeOptions) => {
       updateEmployee({ employee: editedEmployee }).catch((err) => {
         setShowError(true);
         console.log(`CreateEmployee not successful because: ${err}`);
+          isValid = false;
+          //трябва да се await-ва
       });
     }
+
+    return isValid;
   };
 
   return (

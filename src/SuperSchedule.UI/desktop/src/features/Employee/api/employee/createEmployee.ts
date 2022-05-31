@@ -1,5 +1,5 @@
-import { axios } from "../../../lib/axios";
-import { Employee } from "../../../types";
+import { axios } from "../../../../lib/axios";
+import { Employee } from "../../../../types";
 
 type CreateEmployeeOptions = {
   employee: Employee;

@@ -60,6 +60,7 @@ export type Leave = {
   fromDate: moment.Moment;
   toDate: moment.Moment;
   leaveTypeId: number;
+  leaveTypeName?: string;
   comment: string;
   employeeId: number;
 };

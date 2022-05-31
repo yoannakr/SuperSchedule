@@ -51,5 +51,10 @@ namespace SuperSchedule.Services.Employees
         {
             await employeeRepository.UpdateEmployee(employee);
         }
+
+        public async Task UpdateEmployeeVacationDays(Employee contextEmployee, int totalNewLeaveDays)
+        {
+            await employeeRepository.UpdateEmployeeVacationDays(contextEmployee, totalNewLeaveDays);
+        }
     }
 }

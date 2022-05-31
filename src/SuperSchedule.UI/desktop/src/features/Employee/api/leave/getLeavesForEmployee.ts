@@ -1,5 +1,5 @@
 import moment from "moment";
-import { axios } from "../../../lib/axios";
+import { axios } from "../../../../lib/axios";
 
 type GetLeavesForEmployeeOptions = {
   employeeId: number;

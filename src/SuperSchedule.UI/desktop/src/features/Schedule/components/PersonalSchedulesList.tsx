@@ -9,7 +9,7 @@ import DatePicker from "@mui/lab/DatePicker";
 import Box from "@mui/material/Box";
 
 import styles from "./Schedule.module.scss";
-import { getAllEmployees } from "../../Employee/api/getAllEmployees";
+import { getAllEmployees } from "../../Employee/api/employee/getAllEmployees";
 import { PersonalSchedule } from "./PersonalSchedule";
 import { TabItem, TabList } from "./TabList";
 import { UndrawNoEmployeesSvg } from "../../../components/Svgs";

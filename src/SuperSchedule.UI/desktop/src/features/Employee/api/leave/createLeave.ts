@@ -1,5 +1,5 @@
-import { axios } from "../../../lib/axios";
-import { Leave } from "../../../types";
+import { axios } from "../../../../lib/axios";
+import { Leave } from "../../../../types";
 
 type CreateLeaveOptions = {
   leave: Leave;

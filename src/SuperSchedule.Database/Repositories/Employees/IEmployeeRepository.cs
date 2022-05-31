@@ -19,5 +19,7 @@ namespace SuperSchedule.Database.Repositories.Employees
         Task DeleteEmployee(int employeeId);
 
         Task UpdateEmployee(Employee employee);
+
+        Task UpdateEmployeeVacationDays(Employee contextEmployee, int totalNewLeaveDays);
     }
 }

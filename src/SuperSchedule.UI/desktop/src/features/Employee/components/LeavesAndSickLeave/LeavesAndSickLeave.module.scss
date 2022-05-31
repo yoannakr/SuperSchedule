@@ -1,3 +1,113 @@
-.List {
+.ListGroup {
+  width: 100%;
+}
+
+.Container {
+  width: 100vw;
   margin-left: 250px;
+}
+
+.NoEmployees {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  font-style: italic;
+}
+
+.Loading {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  flex-grow: 1;
+  width: calc(100vw - 290px);
+}
+
+.LoadingLines {
+  width: 50%;
+}
+
+.DatesContainer {
+  display: flex;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+.DatePicker {
+  margin-right: 20px !important;
+}
+
+.DataGrid {
+  width: 100%;
+  min-height: 400px;
+  padding: 20px;
+}
+
+.Buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.LeavesContainer {
+  display: flex;
+  height: 100%;
+}
+
+.StaticDatePickerContainer {
+  display: flex;
+}
+
+.Row {
+  margin-left: 2px;
+  margin-right: 2px;
+  margin-top: 5px;
+}
+
+.ListGroupContainer {
+  margin: 0 !important;
+  width: calc(100vw - 270px);
+}
+
+.Legend {
+  margin: 20px;
+  width: 155px;
+}
+
+.Fieldset {
+  border: 3px solid;
+}
+
+fieldset,
+legend {
+  all: revert;
+}
+
+fieldset {
+  // margin: 8px;
+  border: 1px solid silver;
+  // padding: 8px;
+  border-radius: 4px;
+}
+
+legend {
+  font-size: 0.75em;
+}
+
+.AddButtonWithCaption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.StaticDatePicker {
+  width: 900px !important;
 }
