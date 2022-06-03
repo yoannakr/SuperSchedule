@@ -5,10 +5,11 @@ type CheckboxFieldProps = {
   label: string;
   value: number | string;
   onChange: Function;
+  isChecked: boolean;
 };
 
 export const CheckboxField = (props: CheckboxFieldProps) => {
-  const { label, value, onChange } = props;
+  const { label, value, onChange, isChecked } = props;
 
   return (
     <>
@@ -20,6 +21,7 @@ export const CheckboxField = (props: CheckboxFieldProps) => {
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           onChange(e.currentTarget.value)
         }
+        checked={isChecked}
       />
     </>
   );

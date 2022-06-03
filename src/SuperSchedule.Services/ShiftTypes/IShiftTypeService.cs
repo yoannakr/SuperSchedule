@@ -29,5 +29,11 @@ namespace SuperSchedule.Services.ShiftTypes
         bool IsShiftTypeLeave(ShiftType shiftType);
 
         IEnumerable<ShiftType> GetAllShiftTypesForEmployee(int employeeId);
+
+        IEnumerable<ShiftType> GetAllCurrentShiftTypes();
+
+        Task DeleteShiftType(int shiftTypeId);
+
+        Task UpdateShiftType(ShiftType shiftType);
     }
 }

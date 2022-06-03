@@ -57,10 +57,7 @@ export const EmployeeLeavesAndSickLeave = (
     moment().add(1, "days").toDate()
   );
 
-  const [days, setDays] = useState<Date[]>([
-    moment(new Date()).startOf("day").toDate(),
-    moment(new Date(2022, 4, 8)).startOf("day").toDate(),
-  ]);
+  const [days, setDays] = useState<Date[]>([]);
   const [leaves, setLeaves] = useState<LeaveRow[]>([]);
 
   const [showCreate, setShowCreate] = useState<boolean>(false);
@@ -306,7 +303,6 @@ export const EmployeeLeavesAndSickLeave = (
         dialogTitle={"Редактиране на отпуска/болничен"}
         onAccept={async () => {
           const isValid: boolean = await onSaveEditedLeave.current();
-          console.log("Waited", isValid);
           if (isValid) {
             setShowEditDialog(false);
             setShowSuccessEditing(true);

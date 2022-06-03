@@ -17,6 +17,7 @@ import { CreateSchedule } from "./features/Schedule/components/CreateSchedule";
 import { PersonalSchedulesList } from "./features/Schedule/components/PersonalSchedulesList";
 import { CreateUser } from "./features/User/components/CreateUser/CreateUser";
 import { Login } from "./features/Login/components/Login";
+import { ShiftTypeList } from "./features/ShiftType/components/ShiftTypeList/ShiftTypeList";
 
 function App() {
   let navigate = useNavigate();
@@ -61,6 +62,7 @@ function App() {
         <Route path="/createUser" element={<CreateUser />} />
         <Route path="/personalSchedules" element={<PersonalSchedulesList />} />
         <Route path="/employees" element={<EmployeeList />} />
+        <Route path="/shiftTypes" element={<ShiftTypeList />} />
       </Routes>
     </div>
   );

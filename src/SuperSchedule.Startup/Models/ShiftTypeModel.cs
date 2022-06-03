@@ -18,6 +18,8 @@ namespace SuperSchedule.Startup.Models
 
         public int Priority { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         public int LocationId { get; set; }
 
         public int? NightHours { get; set; }

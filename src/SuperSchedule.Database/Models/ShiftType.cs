@@ -23,6 +23,8 @@ namespace SuperSchedule.Database.Models
 
         public int Priority { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         public Location? Location { get; set; }
 
         public ICollection<Day> Days { get; set; } = new HashSet<Day>();

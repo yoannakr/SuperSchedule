@@ -35,6 +35,27 @@ namespace SuperSchedule.Startup.Controllers
                     EndTime = new DateTime(sh.EndTime.Ticks),
                     RotationDays = sh.RotationDays,
                     Priority = sh.Priority,
+                    IsDeleted = sh.IsDeleted,
+                    LocationId = sh.Location?.Id ?? 0,
+                    DaysIds = sh.Days.Select(d => d.Id)
+                });
+        }
+
+        [HttpGet]
+        public IEnumerable<ShiftTypeModel> GetAllCurrentShiftTypes()
+        {
+            return shiftTypeService.GetAllCurrentShiftTypes().Select(sh =>
+                new ShiftTypeModel
+                {
+                    Id = sh.Id,
+                    Name = sh.Name,
+                    Abbreviation = sh.Abbreviation,
+                    StartTime = new DateTime(sh.StartTime.Ticks),
+                    EndTime = new DateTime(sh.EndTime.Ticks),
+                    RotationDays = sh.RotationDays,
+                    Priority = sh.Priority,
+                    NightHours = sh.NightHours,
+                    IsDeleted = sh.IsDeleted,
                     LocationId = sh.Location?.Id ?? 0,
                     DaysIds = sh.Days.Select(d => d.Id)
                 });
@@ -53,10 +74,11 @@ namespace SuperSchedule.Startup.Controllers
                 EndTime = TimeOnly.FromDateTime(shiftTypeInputModel.EndTime.ToLocalTime()),
                 RotationDays = shiftTypeInputModel.RotationDays,
                 Priority = shiftTypeInputModel.Priority,
+                IsDeleted = false,
                 Location = locationService.GetLocationById(shiftTypeInputModel.LocationId),
                 NightHours = shiftTypeInputModel.NightHours,
                 Days = shiftTypeInputModel.DaysIds.Select(id => dayService.GetDayById(id)).ToList()
-            }) ;
+            });
 
             logger.LogInformation("Created Shift Type");
         }
@@ -112,6 +134,32 @@ namespace SuperSchedule.Startup.Controllers
                     LocationId = sh.Location?.Id ?? 0,
                     DaysIds = sh.Days.Select(d => d.Id)
                 });
+        }
+
+
+        [HttpDelete]
+        public async Task DeleteShiftType(int shiftTypeId)
+        {
+            await shiftTypeService.DeleteShiftType(shiftTypeId);
+        }
+
+        [HttpPost]
+        public async Task UpdateShiftType(ShiftTypeModel shiftTypeInputModel)
+        {
+            await shiftTypeService.UpdateShiftType(new ShiftType
+            {
+                Id = shiftTypeInputModel.Id,
+                Name = shiftTypeInputModel.Name,
+                Abbreviation = shiftTypeInputModel.Abbreviation,
+                StartTime = TimeOnly.FromDateTime(shiftTypeInputModel.StartTime.ToLocalTime()),
+                EndTime = TimeOnly.FromDateTime(shiftTypeInputModel.EndTime.ToLocalTime()),
+                RotationDays = shiftTypeInputModel.RotationDays,
+                Priority = shiftTypeInputModel.Priority,
+                IsDeleted = false,
+                Location = locationService.GetLocationById(shiftTypeInputModel.LocationId),
+                NightHours = shiftTypeInputModel.NightHours,
+                Days = shiftTypeInputModel.DaysIds.Select(id => dayService.GetDayById(id)).ToList()
+            });
         }
     }
 }

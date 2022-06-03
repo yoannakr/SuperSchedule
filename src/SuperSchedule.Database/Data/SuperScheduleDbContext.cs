@@ -81,7 +81,8 @@ namespace SuperSchedule.Database.Data
                     StartTime = new TimeOnly(6, 0),
                     EndTime = new TimeOnly(14, 0),
                     RotationDays = 0,
-                    Priority = 1
+                    Priority = 1,
+                    IsDeleted = false
                 },
                 new ShiftType
                 {
@@ -90,7 +91,8 @@ namespace SuperSchedule.Database.Data
                     StartTime = new TimeOnly(0, 0),
                     EndTime = new TimeOnly(0, 0),
                     RotationDays = 0,
-                    Priority = 2
+                    Priority = 2,
+                    IsDeleted = false
                 },
                 new ShiftType
                 {
@@ -99,7 +101,9 @@ namespace SuperSchedule.Database.Data
                     StartTime = new TimeOnly(0, 0),
                     EndTime = new TimeOnly(0, 0),
                     RotationDays = 0,
-                    Priority = 3
+                    Priority = 3,
+                    IsDeleted = false
+
                 },
                  new ShiftType
                  {
@@ -108,7 +112,8 @@ namespace SuperSchedule.Database.Data
                      StartTime = new TimeOnly(6, 0),
                      EndTime = new TimeOnly(14, 0),
                      RotationDays = 0,
-                     Priority = 4
+                     Priority = 4,
+                     IsDeleted = false
                  },
                   new ShiftType
                   {
@@ -117,7 +122,8 @@ namespace SuperSchedule.Database.Data
                       StartTime = new TimeOnly(0, 0),
                       EndTime = new TimeOnly(0, 0),
                       RotationDays = 0,
-                      Priority = 5
+                      Priority = 5,
+                      IsDeleted = false
                   }
             );
 

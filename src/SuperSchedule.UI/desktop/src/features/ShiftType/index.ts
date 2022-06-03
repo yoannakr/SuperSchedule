@@ -1,1 +1,1 @@
-export * from "./components/CreateShiftType";
+export * from "./components/CreateShiftType/CreateShiftType";

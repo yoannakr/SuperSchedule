@@ -4,6 +4,7 @@ import styles from "./Schedule.module.scss";
 import TableCell from "@material-ui/core/TableCell";
 import { SelectField } from "../../../components/Form";
 import { Employee, ShiftType } from "../../../types";
+import { isShiftTypeDefaultType } from "../../../utils";
 
 export type ShiftTypeEditableCell = {
   scheduleId: number;
@@ -30,12 +31,7 @@ export const EditScheduleTableCell = (props: EditScheduleTableCellProps) => {
   const shiftTypesEmployeeCanHave = shiftTypes.filter(
     (s) =>
       employeeShiftTypes.includes(s.id) ||
-      (s.locationId === 0 &&
-        (s.priority === 1 ||
-          s.priority === 2 ||
-          s.priority === 3 ||
-          s.priority === 4 ||
-          s.priority === 5))
+      isShiftTypeDefaultType(s.locationId ?? 0, s.priority ?? 0)
   );
 
   useEffect(() => {

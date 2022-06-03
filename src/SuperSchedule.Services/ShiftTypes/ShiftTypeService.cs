@@ -76,5 +76,20 @@ namespace SuperSchedule.Services.ShiftTypes
         {
             return shiftTypeRepository.GetAllShiftTypesForEmployee(employeeId);
         }
+
+        public IEnumerable<ShiftType> GetAllCurrentShiftTypes()
+        {
+            return shiftTypeRepository.GetAllCurrentShiftTypes().ToList();
+        }
+
+        public async Task DeleteShiftType(int shiftTypeId)
+        {
+            await shiftTypeRepository.DeleteShiftType(shiftTypeId);
+        }
+
+        public async Task UpdateShiftType(ShiftType shiftType)
+        {
+            await shiftTypeRepository.UpdateShiftType(shiftType);
+        }
     }
 }
