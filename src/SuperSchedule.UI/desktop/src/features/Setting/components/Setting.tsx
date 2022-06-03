@@ -2,6 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Form, Row, Col, Table, Button } from "react-bootstrap";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import SaveIcon from "@mui/icons-material/Save";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import Box from "@mui/material/Box";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import TextField from "@mui/material/TextField";
 
 import "../../../App.css";
 import styles from "./Setting.module.scss";
@@ -9,6 +15,8 @@ import { IconButton, Input } from "@material-ui/core";
 import moment from "moment";
 import { getSettings } from "../api/getSettings";
 import { updateSetting } from "../api/updateSetting";
+import { SnackBar } from "../../../components/Snackbar";
+import { LoadingButton } from "../../../components/Button";
 
 export type Setting = {
   id: number;
@@ -44,6 +52,11 @@ export const Setting = () => {
   const [setting, setSetting] = useState<Setting>(defaultSetting);
   const [holidays, setHolidays] = useState<Holiday[]>([]);
 
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [showError, setShowError] = useState<boolean>(false);
+
   useEffect(() => {
     const getDataSettings = () => {
       getSettings()
@@ -74,11 +87,19 @@ export const Setting = () => {
       ...holidays,
       { id: 0, name: "", date: moment().format("YYYY-MM-DD") },
     ]);
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
+    }
   };
 
   const onDeleteHoliday = (holiday: Holiday) => {
     const newHolidays = holidays.filter((h) => h !== holiday);
     setHolidays(newHolidays);
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
+    }
   };
 
   const onNameChange = (name: string, holiday: Holiday) => {
@@ -89,16 +110,25 @@ export const Setting = () => {
     item.name = name;
     items[index] = item;
     setHolidays(items);
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
+    }
   };
 
-  const onDateChange = (date: string, holiday: Holiday) => {
+  const onDateChange = (date: Date | null, holiday: Holiday) => {
     const index = holidays.indexOf(holiday);
     const items = [...holidays];
     const item = { ...items[index] };
 
-    item.date = moment(date).format("YYYY-MM-DD");
+    item.date =
+      moment(date)?.format("YYYY-MM-DD") ?? moment().format("YYYY-MM-DD");
     items[index] = item;
     setHolidays(items);
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
+    }
   };
 
   const onMaxOvertimeHoursPerYearChange = (maxOvertimeHoursPerYear: string) => {
@@ -109,6 +139,10 @@ export const Setting = () => {
         ...newSetting,
         [maxOvertimeHoursPerYear]: +maxOvertimeHoursPerYear,
       });
+    }
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
     }
   };
 
@@ -123,6 +157,10 @@ export const Setting = () => {
         [maxOvertimeHoursPerMonth]: +maxOvertimeHoursPerMonth,
       });
     }
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
+    }
   };
 
   const onMaxHoursPerWeekChange = (maxHoursPerWeek: string) => {
@@ -133,6 +171,10 @@ export const Setting = () => {
         ...newSetting,
         [maxHoursPerWeek]: +maxHoursPerWeek,
       });
+    }
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
     }
   };
 
@@ -145,20 +187,32 @@ export const Setting = () => {
         [nightWorkRate]: +nightWorkRate,
       });
     }
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
+    }
   };
 
-  const save = () => {
+  const save = async () => {
+    setIsSaving(true);
     if (setting != undefined) {
       setting.holidays = holidays;
     }
 
-    updateSetting({ setting }).catch((error) =>
-      console.log(`UpdateSetting not successful because: ${error}`)
-    );
+    await updateSetting({ setting })
+      .then(() => {
+        setShowSuccess(true);
+        setIsButtonDisabled(true);
+      })
+      .catch((error) => {
+        setShowError(true);
+        console.log(`UpdateSetting not successful because: ${error}`);
+      })
+      .finally(() => setIsSaving(false));
   };
 
   return (
-    <Form className="Form">
+    <Form className={styles.Form}>
       <Form.Group as={Row} className={styles.Row}>
         <Form.Label column>Коефицент на нощен труд:</Form.Label>
         <Col>
@@ -244,13 +298,22 @@ export const Setting = () => {
                     />
                   </td>
                   <td>
-                    <Form.Control
-                      type="date"
-                      value={holiday.date}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        onDateChange(e.currentTarget.value, holiday)
-                      }
-                    />
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <Box>
+                        <DatePicker
+                          inputFormat="dd.MM.yyyy"
+                          minDate={new Date("2020-01-01")}
+                          mask="__.__.____"
+                          value={holiday.date}
+                          onChange={(date: Date | null) =>
+                            onDateChange(date, holiday)
+                          }
+                          renderInput={(params) => (
+                            <TextField {...params} helperText={null} />
+                          )}
+                        />
+                      </Box>
+                    </LocalizationProvider>
                   </td>
                   <td>
                     <IconButton onClick={() => onDeleteHoliday(holiday)}>
@@ -263,9 +326,30 @@ export const Setting = () => {
           </Table>
         </Col>
       </Form.Group>
-      <Button className="mt-4" variant="primary" onClick={save}>
-        Запис
-      </Button>
+
+      <SnackBar
+        isOpen={showSuccess}
+        messages={["Успешна редакция!"]}
+        setIsOpen={setShowSuccess}
+        severity={"success"}
+        alertTitle={""}
+      />
+
+      <SnackBar
+        isOpen={showError}
+        messages={["Моля, проверете връзката с интернет."]}
+        setIsOpen={setShowError}
+        severity={"error"}
+        alertTitle={"Неуспешна редакция!"}
+      />
+
+      <LoadingButton
+        onClick={save}
+        loading={isSaving}
+        icon={<SaveIcon />}
+        content={"Запис"}
+        disabled={isButtonDisabled}
+      />
     </Form>
   );
 };
