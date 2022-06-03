@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { Route, Routes, useNavigate } from "react-router-dom";
 
@@ -22,8 +22,12 @@ import { ShiftTypeList } from "./features/ShiftType/components/ShiftTypeList/Shi
 function App() {
   let navigate = useNavigate();
 
-  const [isLogin, setIsLogin] = useState<boolean>(true);
-  const [isAdmin, setIsAdmin] = useState<boolean>(true);
+  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+  useEffect(() => {
+    navigate("/");
+  }, []);
 
   const onSuccessfulLogin = (isAdmin: boolean) => {
     navigate("/schedule");

@@ -139,6 +139,18 @@ namespace SuperSchedule.Database.Data
                 Holidays = new List<Holiday>(publicHolidaysDates)
             });
 
+            Users.Add(new User
+            {
+                Username = "admin",
+                Password = "admin1234",
+                Role = Enums.Role.Administrator
+            }, new User
+            {
+                Username="editor",
+                Password = "1234",
+                Role= Enums.Role.Editor
+            });
+
             SaveChanges();
         }
     }

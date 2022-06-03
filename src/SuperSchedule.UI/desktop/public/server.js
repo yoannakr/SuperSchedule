@@ -6,12 +6,12 @@ function startServer() {
   myConsole.log("Server connecting......");
 
   // Change working directory
-  process.chdir("../../");
+  //process.chdir("../../");
 
   let backend;
   backend = path.join(
-    process.cwd() +
-      "\\SuperSchedule.Startup\\bin\\Release\\net6.0\\publish\\SuperSchedule.Startup.exe"
+    __dirname,
+    "../build/api/net6.0/publish/SuperSchedule.Startup.exe"
   );
 
   var execfile = require("child_process").execFile;

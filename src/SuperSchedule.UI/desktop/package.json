@@ -8,6 +8,13 @@
   "build": {
     "appId": "com.superSchedule.app",
     "productName": "Super Schedule",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "public"
+    },
     "target": "NSIS",
     "nsis": {
       "allowToChangeInstallationDirectory": true,
@@ -70,14 +77,10 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "last 1 electron version"
     ],
     "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      "last 1 electron version"
     ]
   },
   "devDependencies": {
