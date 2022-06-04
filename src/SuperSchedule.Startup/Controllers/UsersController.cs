@@ -15,6 +15,21 @@ namespace SuperSchedule.Startup.Controllers
             this.userService = userService;
         }
 
+
+        [HttpGet]
+        public IEnumerable<UserModel> GetAllUsers()
+        {
+            return userService.GetAllUsers().Select(user =>
+                new UserModel
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Password = user.Password,
+                    Role = (int)user.Role,
+                    RoleName = user.Role.GetDisplayName()
+                });
+        }
+
         [HttpPost]
         public async Task CreateUser(UserModel user)
         {
@@ -37,6 +52,24 @@ namespace SuperSchedule.Startup.Controllers
             }
 
             return Ok(isAdmin);
+        }
+
+        [HttpDelete]
+        public async Task DeleteUser(int userId)
+        {
+            await userService.DeleteUser(userId);
+        }
+
+        [HttpPost]
+        public async Task UpdateUser(UserModel userInputModel)
+        {
+            await userService.UpdateUser(new User
+            {
+                Id = userInputModel.Id,
+                Username = userInputModel.Username,
+                Password = userInputModel.Password,
+                Role = (Role)userInputModel.Role
+            });
         }
     }
 }

@@ -20,6 +20,7 @@ import { Login } from "./features/Login/components/Login";
 import { ShiftTypeList } from "./features/ShiftType/components/ShiftTypeList/ShiftTypeList";
 import { PositionList } from "./features/Position/components/PositionList/PositionList";
 import { LocationList } from "./features/Location/components/LocationList/LocationList";
+import { UserList } from "./features/User/components/UserList/UserList";
 
 function App() {
   let navigate = useNavigate();
@@ -71,6 +72,7 @@ function App() {
         <Route path="/shiftTypes" element={<ShiftTypeList />} />
         <Route path="/positions" element={<PositionList />} />
         <Route path="/locations" element={<LocationList />} />
+        <Route path="/users" element={<UserList />} />
       </Routes>
     </div>
   );

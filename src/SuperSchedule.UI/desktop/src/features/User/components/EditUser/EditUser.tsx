@@ -1,15 +1,20 @@
-import React, { useState } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
-import SaveIcon from "@mui/icons-material/Save";
+import React, { useState, useEffect } from "react";
+import { Form, Row, Col } from "react-bootstrap";
 
-import styles from "./CreateUser.module.scss";
-import { User } from "../../../../types";
+import styles from "./EditUser.module.scss";
 import { InputField, SelectField } from "../../../../components/Form";
-import { createUser } from "../../api/createUser";
+import { User } from "../../../../types";
 import { SnackBar } from "../../../../components/Snackbar";
-import { LoadingButton } from "../../../../components/Button";
+import { updateUser } from "../../api/updateUser";
 
-export const CreateUser = () => {
+type EditUserOptions = {
+  user: User | undefined;
+  onSaveEditedUser: any;
+};
+
+export const EditUser = (props: EditUserOptions) => {
+  const { user, onSaveEditedUser } = props;
+
   const roles = [
     {
       id: 1,
@@ -20,27 +25,25 @@ export const CreateUser = () => {
       name: "Редактор",
     },
   ];
-  const [username, setUsername] = useState<string>("");
+
+  const [username, setUsername] = useState<string>(user?.username ?? "");
   const [isInvalidUsername, setIsInvalidUsername] = useState<boolean>(false);
 
-  const [password, setPassword] = useState<string>("");
+  const [password, setPassword] = useState<string>(user?.password ?? "");
   const [isInvalidPassword, setIsInvalidPassword] = useState<boolean>(false);
 
-  const [roleId, setRoleId] = useState<number>(1);
+  const [roleId, setRoleId] = useState<number>(user?.role ?? 1);
   const [isInvalidRoleId, setIsInvalidRoleId] = useState<boolean>(false);
 
-  const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
-  const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [showError, setShowError] = useState<boolean>(false);
+
+  useEffect(() => {
+    onSaveEditedUser.current = save;
+  }, [username, password, roleId]);
 
   const onUsernameChange = (name: string) => {
     setUsername(name);
     validateUsername(name);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const validateUsername = (nameInput: string): boolean => {
@@ -58,10 +61,6 @@ export const CreateUser = () => {
   const onPasswordChange = (password: string) => {
     setPassword(password);
     validatePassword(password);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const validatePassword = (passwordInput: string): boolean => {
@@ -81,10 +80,6 @@ export const CreateUser = () => {
   const onRoleIdChange = (roleIdInput: string) => {
     setRoleId(+roleIdInput);
     validateRoleId(+roleIdInput);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const validateRoleId = (numberInput: number): boolean => {
@@ -106,40 +101,34 @@ export const CreateUser = () => {
     return isValidUsername && isValidPassword && isValidRoleId;
   };
 
-  const setDefaultValues = () => {
-    setUsername("");
-    setPassword("");
-    setRoleId(1);
-    setIsButtonDisabled(true);
-  };
-
-  const save = async () => {
-    const isValid = isInputFieldsAreValid();
+  const save = async (): Promise<boolean> => {
+    let isValid = isInputFieldsAreValid();
     if (isValid) {
-      setIsSaving(true);
-      const user: User = {
-        id: 0,
-        username: username,
-        password: password,
+      const editedUser: User = {
+        id: user?.id ?? 0,
+        username,
+        password,
         role: roleId,
       };
 
-      await createUser({ user })
-        .then(() => {
-          setShowSuccess(true);
-          setDefaultValues();
-        })
-        .catch((error) => {
-          setShowError(true);
-          console.log(`CreateUser not successful because: ${error}`);
-        })
-        .finally(() => setIsSaving(false));
+      if (user !== undefined) {
+        user.username = username;
+        user.password = password;
+        user.role = roleId;
+      }
+
+      await updateUser({ user: editedUser }).catch((error) => {
+        isValid = false;
+        setShowError(true);
+        console.log(`UpdateUser not successful because: ${error}`);
+      });
     }
+
+    return isValid;
   };
 
   return (
     <Form className={styles.Form}>
-      <h1>Нов потребител</h1>
       <Row className={styles.Row}>
         <Form.Group as={Col}>
           <InputField
@@ -188,27 +177,11 @@ export const CreateUser = () => {
       </Row>
 
       <SnackBar
-        isOpen={showSuccess}
-        messages={["Успешно създаване!"]}
-        setIsOpen={setShowSuccess}
-        severity={"success"}
-        alertTitle={""}
-      />
-
-      <SnackBar
         isOpen={showError}
         messages={["Моля, проверете връзката с интернет."]}
         setIsOpen={setShowError}
         severity={"error"}
-        alertTitle={"Неуспешно създаване!"}
-      />
-
-      <LoadingButton
-        onClick={save}
-        loading={isSaving}
-        icon={<SaveIcon />}
-        content={"Запис"}
-        disabled={isButtonDisabled}
+        alertTitle={"Неуспешна редакция!"}
       />
     </Form>
   );

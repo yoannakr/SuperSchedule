@@ -9,86 +9,92 @@ import { GridRowId, GridActionsCellItem, GridColumns } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
-import styles from "./PositionList.module.scss";
+import styles from "./UserList.module.scss";
 import { Dialog } from "../../../../components/Dialog";
-import { Position } from "../../../../types";
+import { User } from "../../../../types";
 import { SnackBar } from "../../../../components/Snackbar";
 import { DataGrid } from "../../../../components/DataGrid";
-import { getPositions } from "../../../../api/getPositions";
-import { EditPosition } from "../EditPosition/EditPosition";
-import { deletePosition } from "../../api/deletePosition";
-import { UndrawNoPositionsSvg } from "../../../../components/Svgs";
+import { UndrawNoUsersSvg } from "../../../../components/Svgs";
+import { getAllUsers } from "../../api/getAllUsers";
+import { deleteUser } from "../../api/deleteUser";
+import { EditUser } from "../EditUser/EditUser";
 
-export const PositionList = () => {
-  const [positions, setPositions] = useState<Position[]>([]);
-  const [selectedPosition, setSelectedPosition] = useState<Position>();
-  const [positionId, setShiftTypeId] = useState<number>(0);
-  const [positionName, setShiftTypeName] = useState<string>("");
+type UserRow = {
+  id: number;
+  username: string;
+  roleId: number;
+  roleName: string;
+  password: string;
+};
+
+export const UserList = () => {
+  const [users, setUsers] = useState<UserRow[]>([]);
+  const [selectedUser, setSelectedUser] = useState<UserRow>();
+  const [userId, setUserId] = useState<number>(0);
+  const [username, setUsername] = useState<string>("");
   const [showDeleteAlert, setShowDeleteAlert] = useState<boolean>(false);
   const [showEditDialog, setShowEditDialog] = useState<boolean>(false);
   const [showSuccessEditing, setShowSuccessEditing] = useState<boolean>(false);
   const [showSuccessDeleted, setShowSuccessDeleted] = useState<boolean>(false);
 
-  const onSaveEditedPosition = useRef(async (): Promise<boolean> => {
+  const onSaveEditedUser = useRef(async (): Promise<boolean> => {
     return false;
   });
 
-  const getDataAllPositions = () => {
-    getPositions()
-      .then((response) => {
-        const positions: Position[] = response.data;
-        setPositions(positions);
-      })
-      .catch((error) =>
-        console.log(`GetAllCurrentShiftTypes not successful because: ${error}`)
-      );
-  };
-
   useEffect(() => {
-    getDataAllPositions();
+    const getDataUsers = () => {
+      getAllUsers()
+        .then((response) => {
+          const users: User[] = response.data;
+          const usersRows: UserRow[] = users.map((user) => ({
+            id: user.id,
+            username: user.username,
+            password: user.password,
+            roleId: user.role,
+            roleName: user?.roleName ?? "",
+          }));
+          setUsers(usersRows);
+        })
+        .catch((error) =>
+          console.log(`GetAllUsers not successful because: ${error}`)
+        );
+    };
+    getDataUsers();
   }, [showSuccessEditing]);
 
   const onShowDeleteAlertMessage = useCallback(
-    (id: GridRowId, row: Position) => () => {
-      setShiftTypeId(+id);
-      setShiftTypeName(row.name);
+    (id: GridRowId, row: UserRow) => () => {
+      setUserId(+id);
+      setUsername(row.username);
       setShowDeleteAlert(true);
     },
     []
   );
 
   const onShowEditDialog = useCallback(
-    (id: GridRowId, row: Position) => () => {
-      setShiftTypeId(+id);
-      setSelectedPosition(row);
-      setShiftTypeName(row.name);
+    (id: GridRowId, row: UserRow) => () => {
+      setUserId(+id);
+      setSelectedUser(row);
+      setUsername(row.username);
       setShowEditDialog(true);
     },
     []
   );
 
-  const deleteDataPosition = () => {
-    deletePosition({ positionId }).then(() => {});
-    setPositions((prevPositions) =>
-      prevPositions.filter((position) => position.id !== positionId)
-    );
+  const deleteDataUser = () => {
+    deleteUser({ userId }).then(() => {});
+    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
     setShowDeleteAlert(false);
     setShowSuccessDeleted(true);
   };
 
-  const columns = useMemo<GridColumns<Position>>(
+  const columns = useMemo<GridColumns<UserRow>>(
     () => [
-      { field: "name", type: "string", headerName: "Име", flex: 1 },
+      { field: "username", type: "string", headerName: "Име", flex: 1 },
       {
-        field: "abbreviation",
+        field: "roleName",
         type: "string",
-        headerName: "Абревиатура",
-        flex: 1,
-      },
-      {
-        field: "priority",
-        type: "string",
-        headerName: "Приоритет",
+        headerName: "Потребителска роля",
         flex: 1,
       },
       {
@@ -105,21 +111,22 @@ export const PositionList = () => {
             icon={<DeleteIcon />}
             label="Изтрий"
             onClick={onShowDeleteAlertMessage(params.id, params.row)}
+            disabled={users.length <= 1}
           />,
         ],
       },
     ],
-    [onShowEditDialog, onShowDeleteAlertMessage]
+    [onShowEditDialog, onShowDeleteAlertMessage, users]
   );
 
   return (
     <div className={styles.List}>
       <Dialog
         showDialog={showDeleteAlert}
-        dialogContent={`Сигурни ли сте, че искате да изтриете позиция ${positionName}?`}
+        dialogContent={`Сигурни ли сте, че искате да изтриете потребител ${username}?`}
         setShowDialog={setShowDeleteAlert}
         dialogTitle={"Внимание"}
-        onAccept={deleteDataPosition}
+        onAccept={deleteDataUser}
         acceptMessage={"Да"}
         cancelMessage={"Не"}
       />
@@ -128,15 +135,20 @@ export const PositionList = () => {
         className="MuiDialog-paper"
         showDialog={showEditDialog}
         dialogContent={
-          <EditPosition
-            position={selectedPosition}
-            onSaveEditedPosition={onSaveEditedPosition}
+          <EditUser
+            user={{
+              id: selectedUser?.id ?? 0,
+              username: selectedUser?.username ?? "",
+              password: selectedUser?.password ?? "",
+              role: selectedUser?.roleId ?? 1,
+            }}
+            onSaveEditedUser={onSaveEditedUser}
           />
         }
         setShowDialog={setShowEditDialog}
         dialogTitle={"Редакция"}
         onAccept={async () => {
-          const isValid: boolean = await onSaveEditedPosition.current();
+          const isValid: boolean = await onSaveEditedUser.current();
           if (isValid) {
             setShowEditDialog(false);
             setShowSuccessEditing(true);
@@ -156,21 +168,17 @@ export const PositionList = () => {
 
       <SnackBar
         isOpen={showSuccessDeleted}
-        messages={[`${positionName} е успешно премахнатa.`]}
+        messages={[`${username} е успешно премахнат.`]}
         setIsOpen={setShowSuccessDeleted}
         severity={"success"}
         alertTitle={"Успешно изтриване!"}
       />
-      {positions.length !== 0 ? (
-        <DataGrid
-          className={styles.DataGrid}
-          columns={columns}
-          rows={positions}
-        />
+      {users.length !== 0 ? (
+        <DataGrid className={styles.DataGrid} columns={columns} rows={users} />
       ) : (
-        <div className={styles.NoPositions}>
-          <UndrawNoPositionsSvg />
-          <h5>Няма съществуващи позиции</h5>
+        <div className={styles.NoUsers}>
+          <UndrawNoUsersSvg />
+          <h5>Няма съществуващи потребители</h5>
         </div>
       )}
     </div>

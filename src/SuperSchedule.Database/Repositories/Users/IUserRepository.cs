@@ -7,5 +7,11 @@ namespace SuperSchedule.Database.Repositories.Users
         Task CreateUser(User user);
 
         (bool isUserExist, bool isAdmin) Login(string username, string password);
+        
+        Task DeleteUser(int userId);
+
+        IEnumerable<User> GetAllUsers();
+
+        Task UpdateUser(User user);
     }
 }

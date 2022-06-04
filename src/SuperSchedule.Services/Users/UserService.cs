@@ -17,9 +17,24 @@ namespace SuperSchedule.Services.Users
             await userRepository.CreateUser(user);
         }
 
+        public async Task DeleteUser(int userId)
+        {
+            await userRepository.DeleteUser(userId);
+        }
+
+        public IEnumerable<User> GetAllUsers()
+        {
+            return userRepository.GetAllUsers();
+        }
+
         public (bool isUserExist, bool isAdmin) Login(string username, string password)
         {
             return userRepository.Login(username, password);
+        }
+
+        public async Task UpdateUser(User user)
+        {
+            await userRepository.UpdateUser(user);
         }
     }
 }
