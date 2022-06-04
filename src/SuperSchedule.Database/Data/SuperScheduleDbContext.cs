@@ -139,7 +139,7 @@ namespace SuperSchedule.Database.Data
                 Holidays = new List<Holiday>(publicHolidaysDates)
             });
 
-            Users.Add(new User
+            Users.AddRange(new User
             {
                 Username = "admin",
                 Password = "admin1234",

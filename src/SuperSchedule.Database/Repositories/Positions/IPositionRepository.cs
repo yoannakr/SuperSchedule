@@ -9,5 +9,9 @@ namespace SuperSchedule.Database.Repositories.Positions
         IEnumerable<Position> GetAllPositions();
 
         Position GetPositionById(int id);
+
+        Task DeletePosition(int positionId);
+
+        Task UpdatePosition(Position position);
     }
 }

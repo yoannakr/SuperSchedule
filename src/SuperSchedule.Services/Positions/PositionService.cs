@@ -15,6 +15,11 @@ namespace SuperSchedule.Services.Positions
         public Task CreatePosition(Position position)
         {
             return positionRepository.CreatePosition(position);
+        }   
+
+        public async Task DeletePosition(int positionId)
+        {
+            await positionRepository.DeletePosition(positionId);
         }
 
         public IEnumerable<Position> GetAllPositions()
@@ -25,6 +30,11 @@ namespace SuperSchedule.Services.Positions
         public Position GetPositionById(int id)
         {
             return positionRepository.GetPositionById(id);
+        }
+
+        public async Task UpdatePosition(Position position)
+        {
+            await positionRepository.UpdatePosition(position);
         }
     }
 }

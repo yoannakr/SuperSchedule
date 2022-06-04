@@ -31,6 +31,7 @@ export type Position = {
   id: number;
   name: string;
   abbreviation: string;
+  priority?: number;
 };
 
 export type Employee = {

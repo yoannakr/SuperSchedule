@@ -27,7 +27,7 @@ namespace SuperSchedule.Database.Repositories.Locations
 
         public Location GetLocationById(int id)
         {
-            return superScheduleDbContext.Locations.First(location => location.Id == id);
+            return superScheduleDbContext.Locations.FirstOrDefault(location => location.Id == id);
         }
     }
 }

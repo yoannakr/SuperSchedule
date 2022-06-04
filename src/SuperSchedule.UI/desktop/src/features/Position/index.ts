@@ -1,1 +1,1 @@
-export * from "./components/CreatePosition";
+export * from "./components/CreatePosition/CreatePosition";

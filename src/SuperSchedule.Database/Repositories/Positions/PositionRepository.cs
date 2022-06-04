@@ -19,6 +19,19 @@ namespace SuperSchedule.Database.Repositories.Positions
             await superScheduleDbContext.SaveChangesAsync();
         }
 
+        public async Task DeletePosition(int positionId)
+        {
+            var contextPosition = superScheduleDbContext.Positions.FirstOrDefault(e => e.Id == positionId);
+            if (contextPosition == null)
+            {
+                return;
+            }
+
+            superScheduleDbContext.Positions.Remove(contextPosition);
+
+            await superScheduleDbContext.SaveChangesAsync();
+        }
+
         public IEnumerable<Position> GetAllPositions()
         {
             return superScheduleDbContext.Positions.ToList();
@@ -27,6 +40,22 @@ namespace SuperSchedule.Database.Repositories.Positions
         public Position GetPositionById(int id)
         {
             return superScheduleDbContext.Positions.First(position => position.Id == id);
+        }
+
+        public async Task UpdatePosition(Position position)
+        {
+            var contextPosition = superScheduleDbContext.Positions.FirstOrDefault(e => e.Id == position.Id);
+            if (contextPosition == null)
+            {
+                return;
+            }
+
+            contextPosition.Name = position.Name;
+            contextPosition.Abbreviation = position.Abbreviation;
+            contextPosition.Priority = position.Priority;
+
+            superScheduleDbContext.Positions.Update(contextPosition);
+            await superScheduleDbContext.SaveChangesAsync();
         }
     }
 }

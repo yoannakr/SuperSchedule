@@ -26,7 +26,26 @@ namespace SuperSchedule.Startup.Controllers
             await positionService.CreatePosition(new Position
             {
                 Name = positionModel.Name,
-                Abbreviation = positionModel.Abbreviation
+                Abbreviation = positionModel.Abbreviation,
+                Priority = positionModel.Priority
+            });
+        }
+
+        [HttpDelete]
+        public async Task DeletePosition(int positionId)
+        {
+            await positionService.DeletePosition(positionId);
+        }
+
+        [HttpPost]
+        public async Task UpdatePosition(PositionModel positionInputModel)
+        {
+            await positionService.UpdatePosition(new Position
+            {
+                Id = positionInputModel.Id,
+                Name = positionInputModel.Name,
+                Abbreviation = positionInputModel.Abbreviation,
+                Priority = positionInputModel.Priority
             });
         }
     }

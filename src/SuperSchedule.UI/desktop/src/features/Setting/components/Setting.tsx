@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Row, Col, Table, Button } from "react-bootstrap";
+import { Form, Row, Col, Table } from "react-bootstrap";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import SaveIcon from "@mui/icons-material/Save";
@@ -65,12 +65,12 @@ export const Setting = () => {
           setSetting(setting);
           let holidays: Holiday[] = [];
           setting.holidays.map((holiday) => {
-            const test: Holiday = {
+            const holidayModel: Holiday = {
               id: holiday.id,
               name: holiday.name,
               date: moment(holiday.date).format("YYYY-MM-DD"),
             };
-            holidays.push(test);
+            holidays.push(holidayModel);
           });
           setHolidays(holidays);
         })
@@ -195,7 +195,7 @@ export const Setting = () => {
 
   const save = async () => {
     setIsSaving(true);
-    if (setting != undefined) {
+    if (setting !== undefined) {
       setting.holidays = holidays;
     }
 

@@ -3,7 +3,7 @@ export const UndrawNoShiftTypesSvg = () => {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       data-name="Layer 1"
-      width="626.47693"
+      width="526.47693"
       height="457.63821"
       viewBox="0 0 626.47693 457.63821"
       xmlnsXlink="http://www.w3.org/1999/xlink"
