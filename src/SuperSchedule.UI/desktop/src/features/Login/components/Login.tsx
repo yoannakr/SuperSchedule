@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
+import { Form, Row, Col } from "react-bootstrap";
+import SaveIcon from "@mui/icons-material/Save";
 
 import "../../../App.css";
 import { InputField } from "../../../components/Form";
 import { login } from "../api/login";
 import { SnackBar } from "../../../components/Snackbar";
+import { LoadingButton } from "../../../components/Button";
 
 type LoginOptions = {
   onSuccessfulLogin: any;
@@ -13,20 +15,13 @@ type LoginOptions = {
 export const Login = (props: LoginOptions) => {
   const { onSuccessfulLogin } = props;
 
-  const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const handleClose = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setShowErrorMessage(false);
-  };
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false);
+  const [showNoConnectionError, setShowNoConnectionError] =
+    useState<boolean>(false);
 
   const onUsernameChange = (username: string) => {
     setUsername(username);
@@ -37,16 +32,20 @@ export const Login = (props: LoginOptions) => {
   };
 
   const onLogin = () => {
+    setIsSaving(true);
     login({ username, password })
       .then((response) => {
         const isAdmin = response.data;
         onSuccessfulLogin(isAdmin);
       })
       .catch((error) => {
-        if (error.response.status === 400) {
+        if (error.response?.status === 400) {
           setShowErrorMessage(true);
+        } else {
+          setShowNoConnectionError(true);
         }
-      });
+      })
+      .finally(() => setIsSaving(false));
   };
 
   return (
@@ -58,6 +57,13 @@ export const Login = (props: LoginOptions) => {
         severity={"error"}
         alertTitle={"Неуспешно влизане"}
       />
+      <SnackBar
+        isOpen={showNoConnectionError}
+        messages={["Моля, проверете връзката с интернет."]}
+        setIsOpen={setShowNoConnectionError}
+        severity={"error"}
+        alertTitle={"Неуспешно влизане!"}
+      />
       <h1>Вход</h1>
       <Row>
         <Form.Group as={Col}>
@@ -68,6 +74,7 @@ export const Login = (props: LoginOptions) => {
             onChange={onUsernameChange}
             hasHelpIcon={false}
             helpButtonTooltip={""}
+            disabled={isSaving}
           />
         </Form.Group>
       </Row>
@@ -81,13 +88,17 @@ export const Login = (props: LoginOptions) => {
             onChange={onPasswordChange}
             hasHelpIcon={false}
             helpButtonTooltip={""}
+            disabled={isSaving}
           />
         </Form.Group>
       </Row>
 
-      <Button className="mt-4" variant="primary" onClick={onLogin}>
-        Запис
-      </Button>
+      <LoadingButton
+        onClick={onLogin}
+        loading={isSaving}
+        icon={<SaveIcon />}
+        content={"Вход"}
+      />
     </Form>
   );
 };

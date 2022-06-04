@@ -14,6 +14,7 @@ type InputFieldProps = {
   helpButtonTooltip: string;
   isInvalid?: boolean;
   errorMessage?: string;
+  disabled?: boolean;
 };
 
 export const InputField = (props: InputFieldProps) => {
@@ -27,6 +28,7 @@ export const InputField = (props: InputFieldProps) => {
     helpButtonTooltip,
     isInvalid,
     errorMessage,
+    disabled,
   } = props;
 
   return (
@@ -49,6 +51,7 @@ export const InputField = (props: InputFieldProps) => {
           onChange(e.currentTarget.value)
         }
         isInvalid={isInvalid}
+        disabled={disabled}
       />
       <Form.Control.Feedback type="invalid">
         {errorMessage}
