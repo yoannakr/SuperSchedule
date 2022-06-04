@@ -16,9 +16,31 @@ namespace SuperSchedule.Startup.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Location> GetAllLocations()
+        public IEnumerable<LocationModel> GetAllLocations()
         {
-            return locationService.GetAllLocations();
+            return locationService.GetAllLocations().Select(l => new LocationModel
+            {
+                Id = l.Id,
+                Name = l.Name,
+                Abbreviation = l.Abbreviation,
+                Priority = l.Priority,
+                ShiftTypesTemplate = (int)l.ShiftTypesTemplate,
+                ShiftTypesTemplateName = l.ShiftTypesTemplate.GetDisplayName()
+            }).OrderBy(l => l.Priority);
+        }
+
+        [HttpGet]
+        public IEnumerable<LocationModel> GetAllCurrentLocations()
+        {
+            return locationService.GetAllCurrentLocations().Select(l => new LocationModel
+            {
+                Id = l.Id,
+                Name = l.Name,
+                Abbreviation = l.Abbreviation,
+                Priority = l.Priority,
+                ShiftTypesTemplate = (int)l.ShiftTypesTemplate,
+                ShiftTypesTemplateName = l.ShiftTypesTemplate.GetDisplayName()
+            }).OrderBy(l => l.Priority);
         }
 
         [HttpPost]
@@ -30,6 +52,25 @@ namespace SuperSchedule.Startup.Controllers
                 Abbreviation = locationInputModel.Abbreviation,
                 Priority = locationInputModel.Priority,
                 ShiftTypesTemplate = (ShiftTypesTemplate)locationInputModel.ShiftTypesTemplate,
+            });
+        }
+
+        [HttpDelete]
+        public async Task DeleteLocation(int locationId)
+        {
+            await locationService.DeleteLocation(locationId);
+        }
+
+        [HttpPost]
+        public async Task UpdateLocation([FromBody] LocationModel locationModel)
+        {
+            await locationService.UpdateLocation(new Location
+            {
+                Id = locationModel.Id,
+                Name = locationModel.Name,
+                Abbreviation = locationModel.Abbreviation,
+                Priority = locationModel.Priority,
+                ShiftTypesTemplate = (ShiftTypesTemplate)locationModel.ShiftTypesTemplate,
             });
         }
     }

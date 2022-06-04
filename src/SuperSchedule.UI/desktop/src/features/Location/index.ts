@@ -1,1 +1,1 @@
-export * from "./components/CreateLocation";
+export * from "./components/CreateLocation/CreateLocation";

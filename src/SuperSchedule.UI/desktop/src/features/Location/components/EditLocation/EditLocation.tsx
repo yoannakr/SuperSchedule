@@ -1,39 +1,62 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Row, Col } from "react-bootstrap";
-import SaveIcon from "@mui/icons-material/Save";
 
-import styles from "./CreatePosition.module.scss";
-import { InputField } from "../../../../components/Form";
-import { Position } from "../../../../types";
-import { createPosition } from "../../api/createPosition";
+import styles from "./EditLocation.module.scss";
+import { InputField, SelectField } from "../../../../components/Form";
+import { Location } from "../../../../types";
 import { SnackBar } from "../../../../components/Snackbar";
-import { LoadingButton } from "../../../../components/Button";
+import { updateLocation } from "../../api/updateLocation";
 
-export const CreatePosition = () => {
-  const [name, setName] = useState<string>("");
+type EditLocationOptions = {
+  location: Location | undefined;
+  onSaveEditedLocation: any;
+};
+
+export const EditLocation = (props: EditLocationOptions) => {
+  const { location, onSaveEditedLocation } = props;
+
+  const shiftTypesTemplate = [
+    {
+      id: 1,
+      name: "12 часови смени",
+    },
+    {
+      id: 2,
+      name: "първа и втора смяна",
+    },
+    {
+      id: 3,
+      name: "една смяна",
+    },
+  ];
+  const [name, setName] = useState<string>(location?.name ?? "");
   const [isInvalidName, setIsInvalidName] = useState<boolean>(false);
 
-  const [abbreviation, setAbbreviation] = useState<string>("");
+  const [abbreviation, setAbbreviation] = useState<string>(
+    location?.abbreviation ?? ""
+  );
   const [isInvalidAbbreviation, setIsInvalidAbbreviation] =
     useState<boolean>(false);
 
-  const [priority, setPriority] = useState<number>(1);
+  const [priority, setPriority] = useState<number>(location?.priority ?? 1);
   const [isInvalidPriority, setIsInvalidPriority] = useState<boolean>(false);
 
-  const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
-  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [shiftTypesTemplateId, setShiftTypesTemplateId] = useState<number>(
+    location?.shiftTypesTemplate ?? 1
+  );
+  const [isInvalidShiftTypesTemplateId, setIsInvalidShiftTypesTemplateId] =
+    useState<boolean>(false);
+
   const [showError, setShowError] = useState<boolean>(false);
+
+  useEffect(() => {
+    onSaveEditedLocation.current = save;
+  }, [name, abbreviation, priority, shiftTypesTemplateId]);
 
   const onNameChange = (name: string) => {
     setName(name);
     validateName(name);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
-
   const validateName = (nameInput: string): boolean => {
     setIsInvalidName(false);
     const nameWithoutNamespaces: string = nameInput.trimEnd().trimStart();
@@ -49,10 +72,6 @@ export const CreatePosition = () => {
   const onAbbreviationChange = (abbreviation: string) => {
     setAbbreviation(abbreviation);
     validateAbbreviation(abbreviation);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const validateAbbreviation = (abbreviationInput: string): boolean => {
@@ -73,10 +92,6 @@ export const CreatePosition = () => {
     const priority: number = +priorityInput;
     setPriority(priority);
     validatePriority(priority);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const validatePriority = (numberInput: number): boolean => {
@@ -90,48 +105,67 @@ export const CreatePosition = () => {
     return true;
   };
 
+  const onShiftTypesTemplateIdChange = (shiftTypeTemplateIdInput: string) => {
+    setShiftTypesTemplateId(+shiftTypeTemplateIdInput);
+    validateShiftTypesTemplateId(+shiftTypeTemplateIdInput);
+  };
+
+  const validateShiftTypesTemplateId = (numberInput: number): boolean => {
+    setIsInvalidShiftTypesTemplateId(false);
+
+    if (numberInput <= 0) {
+      setIsInvalidShiftTypesTemplateId(true);
+      return false;
+    }
+
+    return true;
+  };
+
   const isInputFieldsAreValid = (): boolean => {
     const isValidName: boolean = validateName(name);
     const isValidAbbreviation: boolean = validateAbbreviation(abbreviation);
     const isValidPriority: boolean = validatePriority(priority);
+    const isValidShiftTypesTemplateId: boolean =
+      validateShiftTypesTemplateId(shiftTypesTemplateId);
 
-    return isValidName && isValidAbbreviation && isValidPriority;
+    return (
+      isValidName &&
+      isValidAbbreviation &&
+      isValidPriority &&
+      isValidShiftTypesTemplateId
+    );
   };
 
-  const setDefaultValues = () => {
-    setName("");
-    setAbbreviation("");
-    setPriority(1);
-    setIsButtonDisabled(true);
-  };
-
-  const save = async () => {
-    const isValid = isInputFieldsAreValid();
+  const save = async (): Promise<boolean> => {
+    let isValid = isInputFieldsAreValid();
     if (isValid) {
-      setIsSaving(true);
-      const position: Position = {
-        id: 0,
+      const editedLocation: Location = {
+        id: location?.id ?? 0,
         name,
         abbreviation,
         priority,
+        shiftTypesTemplate: shiftTypesTemplateId,
       };
 
-      await createPosition({ position })
-        .then(() => {
-          setShowSuccess(true);
-          setDefaultValues();
-        })
-        .catch((error) => {
-          setShowError(true);
-          console.log(`CreatePosition not successful because: ${error}`);
-        })
-        .finally(() => setIsSaving(false));
+      if (location !== undefined) {
+        location.name = name;
+        location.abbreviation = abbreviation;
+        location.priority = priority;
+        location.shiftTypesTemplate = shiftTypesTemplateId;
+      }
+
+      await updateLocation({ location: editedLocation }).catch((error) => {
+        isValid = false;
+        setShowError(true);
+        console.log(`UpdateLocation not successful because: ${error}`);
+      });
     }
+
+    return isValid;
   };
 
   return (
     <Form className={styles.Form}>
-      <h1>Нова позиция</h1>
       <Row className={styles.Row}>
         <Form.Group as={Col}>
           <InputField
@@ -164,6 +198,23 @@ export const CreatePosition = () => {
 
       <Row className={styles.Row}>
         <Form.Group as={Col}>
+          <SelectField
+            label="Тип на смените"
+            ariaLabel="Изберете тип на смените:"
+            value={shiftTypesTemplateId}
+            onChange={onShiftTypesTemplateIdChange}
+            options={shiftTypesTemplate.map((shiftTypeTemplate) => ({
+              label: shiftTypeTemplate.name,
+              value: shiftTypeTemplate.id,
+            }))}
+            isInvalid={isInvalidShiftTypesTemplateId}
+            errorMessage={"Моля, изберете тип на смените"}
+          />
+        </Form.Group>
+      </Row>
+
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
           <InputField
             type="number"
             label="Приоритет"
@@ -172,7 +223,7 @@ export const CreatePosition = () => {
             onChange={onPriorityChange}
             hasHelpIcon={true}
             helpButtonTooltip={
-              "Приоритетът е определящ за създаването на графика."
+              "Спрямо приоритета се попълва графика. Започва се от най-високия приоритет."
             }
             isInvalid={isInvalidPriority}
             errorMessage={"Моля, въведете число по-голямо от 0"}
@@ -181,27 +232,11 @@ export const CreatePosition = () => {
       </Row>
 
       <SnackBar
-        isOpen={showSuccess}
-        messages={["Успешно създаване!"]}
-        setIsOpen={setShowSuccess}
-        severity={"success"}
-        alertTitle={""}
-      />
-
-      <SnackBar
         isOpen={showError}
         messages={["Моля, проверете връзката с интернет."]}
         setIsOpen={setShowError}
         severity={"error"}
-        alertTitle={"Неуспешно създаване!"}
-      />
-
-      <LoadingButton
-        onClick={save}
-        loading={isSaving}
-        icon={<SaveIcon />}
-        content={"Запис"}
-        disabled={isButtonDisabled}
+        alertTitle={"Неуспешна редакция!"}
       />
     </Form>
   );

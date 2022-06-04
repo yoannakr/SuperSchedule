@@ -20,6 +20,8 @@ export type Location = {
   abbreviation: string;
   priority: number;
   shiftTypesTemplate: number;
+  shiftTypesTemplateName?: string;
+  isDeleted?: boolean;
 };
 
 export type Day = {

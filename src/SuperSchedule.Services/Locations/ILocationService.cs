@@ -9,5 +9,11 @@ namespace SuperSchedule.Services.Locations
         IEnumerable<Location> GetAllLocations();
 
         Location GetLocationById(int id);
+
+        Task DeleteLocation(int locationId);
+
+        Task UpdateLocation(Location location);
+
+        IEnumerable<Location> GetAllCurrentLocations();
     }
 }

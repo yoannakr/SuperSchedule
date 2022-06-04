@@ -14,6 +14,8 @@ namespace SuperSchedule.Database.Models
 
         public ShiftTypesTemplate ShiftTypesTemplate { get; set; } = ShiftTypesTemplate.TwelveHours;
 
+        public bool IsDeleted { get; set; }
+
         public ICollection<ShiftType> ShiftTypes { get; set; } = new HashSet<ShiftType>();
 
         public ICollection<Employee> Employees { get; set; } = new HashSet<Employee>();

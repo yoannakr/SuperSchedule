@@ -1,15 +1,30 @@
 import React, { useState } from "react";
-import { Form, Row, Col } from "react-bootstrap";
+import { Form, Row, Col, Button } from "react-bootstrap";
 import SaveIcon from "@mui/icons-material/Save";
 
-import styles from "./CreatePosition.module.scss";
-import { InputField } from "../../../../components/Form";
-import { Position } from "../../../../types";
-import { createPosition } from "../../api/createPosition";
+import "../../../../App.css";
+import styles from "./CreateLocation.module.scss";
+import { InputField, SelectField } from "../../../../components/Form";
+import { Location } from "../../../../types";
+import { createLocation } from "../../api/createLocation";
 import { SnackBar } from "../../../../components/Snackbar";
 import { LoadingButton } from "../../../../components/Button";
 
-export const CreatePosition = () => {
+export const CreateLocation = () => {
+  const shiftTypesTemplate = [
+    {
+      id: 1,
+      name: "12 часови смени",
+    },
+    {
+      id: 2,
+      name: "първа и втора смяна",
+    },
+    {
+      id: 3,
+      name: "една смяна",
+    },
+  ];
   const [name, setName] = useState<string>("");
   const [isInvalidName, setIsInvalidName] = useState<boolean>(false);
 
@@ -19,6 +34,10 @@ export const CreatePosition = () => {
 
   const [priority, setPriority] = useState<number>(1);
   const [isInvalidPriority, setIsInvalidPriority] = useState<boolean>(false);
+
+  const [shiftTypesTemplateId, setShiftTypesTemplateId] = useState<number>(1);
+  const [isInvalidShiftTypesTemplateId, setIsInvalidShiftTypesTemplateId] =
+    useState<boolean>(false);
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
@@ -33,7 +52,6 @@ export const CreatePosition = () => {
       setIsButtonDisabled(false);
     }
   };
-
   const validateName = (nameInput: string): boolean => {
     setIsInvalidName(false);
     const nameWithoutNamespaces: string = nameInput.trimEnd().trimStart();
@@ -90,18 +108,46 @@ export const CreatePosition = () => {
     return true;
   };
 
+  const onShiftTypesTemplateIdChange = (shiftTypeTemplateIdInput: string) => {
+    setShiftTypesTemplateId(+shiftTypeTemplateIdInput);
+    validateShiftTypesTemplateId(+shiftTypeTemplateIdInput);
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
+    }
+  };
+
+  const validateShiftTypesTemplateId = (numberInput: number): boolean => {
+    setIsInvalidShiftTypesTemplateId(false);
+
+    if (numberInput <= 0) {
+      setIsInvalidShiftTypesTemplateId(true);
+      return false;
+    }
+
+    return true;
+  };
+
   const isInputFieldsAreValid = (): boolean => {
     const isValidName: boolean = validateName(name);
     const isValidAbbreviation: boolean = validateAbbreviation(abbreviation);
     const isValidPriority: boolean = validatePriority(priority);
+    const isValidShiftTypesTemplateId: boolean =
+      validateShiftTypesTemplateId(shiftTypesTemplateId);
 
-    return isValidName && isValidAbbreviation && isValidPriority;
+    return (
+      isValidName &&
+      isValidAbbreviation &&
+      isValidPriority &&
+      isValidShiftTypesTemplateId
+    );
   };
 
   const setDefaultValues = () => {
     setName("");
     setAbbreviation("");
     setPriority(1);
+    setShiftTypesTemplateId(1);
     setIsButtonDisabled(true);
   };
 
@@ -109,30 +155,31 @@ export const CreatePosition = () => {
     const isValid = isInputFieldsAreValid();
     if (isValid) {
       setIsSaving(true);
-      const position: Position = {
+      const location: Location = {
         id: 0,
         name,
         abbreviation,
         priority,
+        shiftTypesTemplate: shiftTypesTemplateId,
       };
 
-      await createPosition({ position })
+      await createLocation({ location })
         .then(() => {
           setShowSuccess(true);
           setDefaultValues();
         })
         .catch((error) => {
           setShowError(true);
-          console.log(`CreatePosition not successful because: ${error}`);
+          console.log(`CreateLocation not successful because: ${error}`);
         })
         .finally(() => setIsSaving(false));
     }
   };
 
   return (
-    <Form className={styles.Form}>
-      <h1>Нова позиция</h1>
-      <Row className={styles.Row}>
+    <Form className="Form">
+      <h1>Нов обект</h1>
+      <Row>
         <Form.Group as={Col}>
           <InputField
             type="text"
@@ -147,7 +194,7 @@ export const CreatePosition = () => {
         </Form.Group>
       </Row>
 
-      <Row className={styles.Row}>
+      <Row>
         <Form.Group as={Col}>
           <InputField
             type="text"
@@ -162,6 +209,23 @@ export const CreatePosition = () => {
         </Form.Group>
       </Row>
 
+      <Row>
+        <Form.Group as={Col}>
+          <SelectField
+            label="Тип на смените"
+            ariaLabel="Изберете тип на смените:"
+            value={shiftTypesTemplateId}
+            onChange={onShiftTypesTemplateIdChange}
+            options={shiftTypesTemplate.map((shiftTypeTemplate) => ({
+              label: shiftTypeTemplate.name,
+              value: shiftTypeTemplate.id,
+            }))}
+            isInvalid={isInvalidShiftTypesTemplateId}
+            errorMessage={"Моля, изберете тип на смените"}
+          />
+        </Form.Group>
+      </Row>
+
       <Row className={styles.Row}>
         <Form.Group as={Col}>
           <InputField
@@ -172,7 +236,7 @@ export const CreatePosition = () => {
             onChange={onPriorityChange}
             hasHelpIcon={true}
             helpButtonTooltip={
-              "Приоритетът е определящ за създаването на графика."
+              "Спрямо приоритета се попълва графика. Започва се от най-високия приоритет."
             }
             isInvalid={isInvalidPriority}
             errorMessage={"Моля, въведете число по-голямо от 0"}

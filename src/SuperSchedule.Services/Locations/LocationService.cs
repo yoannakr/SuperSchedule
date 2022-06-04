@@ -17,6 +17,16 @@ namespace SuperSchedule.Services.Locations
             await locationRepository.CrateLocation(location);
         }
 
+        public async Task DeleteLocation(int locationId)
+        {
+            await locationRepository.DeleteLocation(locationId);
+        }
+
+        public IEnumerable<Location> GetAllCurrentLocations()
+        {
+            return locationRepository.GetAllCurrentLocations();
+        }
+
         public IEnumerable<Location> GetAllLocations()
         {
             return locationRepository.GetAllLocations();
@@ -25,6 +35,11 @@ namespace SuperSchedule.Services.Locations
         public Location GetLocationById(int id)
         {
             return locationRepository.GetLocationById(id);
+        }
+
+        public async Task UpdateLocation(Location location)
+        {
+            await locationRepository.UpdateLocation(location);
         }
     }
 }

@@ -13,5 +13,9 @@ namespace SuperSchedule.Startup.Models
         public int Priority { get; set; }
 
         public int ShiftTypesTemplate { get; set; }
+
+        public string? ShiftTypesTemplateName { get; set; }
+       
+        public bool IsDeleted { get; set; }
     }
 }
