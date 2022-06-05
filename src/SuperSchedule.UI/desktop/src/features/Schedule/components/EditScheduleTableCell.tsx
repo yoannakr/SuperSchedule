@@ -52,11 +52,10 @@ export const EditScheduleTableCell = (props: EditScheduleTableCellProps) => {
           onChange={onShiftTypeChange}
           options={shiftTypesEmployeeCanHave.map((shiftType) => {
             if (
-              shiftType.locationId === 0 &&
-              (shiftType.priority === 1 ||
-                shiftType.priority === 2 ||
-                shiftType.priority === 4 ||
-                shiftType.priority === 5)
+              isShiftTypeDefaultType(
+                shiftType.locationId ?? 0,
+                shiftType.priority ?? 0
+              )
             ) {
               return {
                 label: shiftType.name,

@@ -34,6 +34,8 @@ namespace SuperSchedule.Database.Models
 
         public bool IsDeleted { get; set; }
 
+        public DateTime? DateOfDeletion { get; set; }
+
         public Employee? PreviousEmployee { get; set; }
 
         public ICollection<Location> Locations { get; set; } = new HashSet<Location>();

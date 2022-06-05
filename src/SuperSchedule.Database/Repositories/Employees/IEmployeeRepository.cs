@@ -21,5 +21,7 @@ namespace SuperSchedule.Database.Repositories.Employees
         Task UpdateEmployee(Employee employee);
 
         Task UpdateEmployeeVacationDays(Employee contextEmployee, int totalNewLeaveDays);
+
+        IEnumerable<Employee> GetCurrentEmployeeByLocation(int locationId);
     }
 }

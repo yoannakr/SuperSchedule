@@ -19,7 +19,8 @@ namespace SuperSchedule.Services.Report
         public IEnumerable<Models.Report> GetReport(DateTime fromMonth, DateTime toMonth)
         {
             var report = new List<Models.Report>();
-            var employees = employeeService.GetAllEmployees();
+            var firstDayOfFromMonth = new DateTime(fromMonth.Year, fromMonth.Month, 1);
+            var employees = employeeService.GetAllEmployees().Where(e => e.IsDeleted ? e.DateOfDeletion.GetValueOrDefault().Date > firstDayOfFromMonth.Date : true);
             var reportMonths = Helper.GetMonthsBetween(fromMonth, toMonth.AddMonths(1));
 
             foreach (var employee in employees)

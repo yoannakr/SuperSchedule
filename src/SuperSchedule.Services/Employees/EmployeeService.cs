@@ -37,6 +37,11 @@ namespace SuperSchedule.Services.Employees
             return employeeRepository.GetEmployeeById(id);
         }
 
+        public IEnumerable<Employee> GetCurrentEmployeeByLocation(int locationId)
+        {
+            return employeeRepository.GetCurrentEmployeeByLocation(locationId);
+        }
+
         public IEnumerable<Employee> GetEmployeeByLocation(int locationId)
         {
             return employeeRepository.GetEmployeeByLocation(locationId);

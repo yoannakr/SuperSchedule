@@ -640,7 +640,7 @@ namespace SuperSchedule.Services.Schedules
         {
             var schedules = new List<Schedule>();
 
-            var employees = employeeService.GetEmployeeByLocation(location.Id);
+            var employees = employeeService.GetCurrentEmployeeByLocation(location.Id);
             var employeesGroupByPositionPriority = employees.OrderBy(e => e.Position.Priority).GroupBy(e => e.Position.Priority).ToList();
             var employeesWithHighestPositionPriority = employeesGroupByPositionPriority.FirstOrDefault();
             if(employeesWithHighestPositionPriority == null)
@@ -1327,6 +1327,11 @@ namespace SuperSchedule.Services.Schedules
             var resultSchedules = new List<Schedule>();
             foreach (var employee in employeesForLocation)
             {
+                if(employee.IsDeleted && employee.DateOfDeletion.GetValueOrDefault().Date < startDate.Date)
+                {
+                    continue;
+                }
+
                 var scheduleEmployee = schedulesForEmployees.FirstOrDefault(s => s.Key.Id == employee.Id);
                 resultSchedules.AddRange(GetScheduleForEmployee(scheduleEmployee, employee, startDate, endDate));
             }

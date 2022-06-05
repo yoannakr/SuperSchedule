@@ -29,6 +29,7 @@ namespace SuperSchedule.Database.Repositories.Employees
             }
 
             contextEmployee.IsDeleted = true;
+            contextEmployee.DateOfDeletion = DateTime.UtcNow;
             superScheduleDbContext.Employees.Update(contextEmployee);
 
             await superScheduleDbContext.SaveChangesAsync();
@@ -57,6 +58,16 @@ namespace SuperSchedule.Database.Repositories.Employees
                 .ToList();
         }
 
+        public IEnumerable<Employee> GetCurrentEmployeeByLocation(int locationId)
+        {
+            return superScheduleDbContext
+                .Employees
+                .Include(e => e.PreviousEmployee)
+                .Include(e => e.Locations)
+                .Include(e => e.Position)
+                .Where(e => e.Locations.Select(l => l.Id).Contains(locationId) && !e.IsDeleted);
+        }
+
         public Employee GetEmployeeById(int id)
         {
            return superScheduleDbContext
@@ -76,7 +87,8 @@ namespace SuperSchedule.Database.Repositories.Employees
                 .Include(e => e.PreviousEmployee)
                 .Include(e => e.Locations)
                 .Include(e => e.Position)
-                .Where(e => e.Locations.Select(l => l.Id).Contains(locationId) && !e.IsDeleted);
+                .Include(e => e.ShiftTypes)
+                .Where(e => e.Locations.Select(l => l.Id).Contains(locationId));
         }
 
         public IEnumerable<Employee> GetEmployeesWithLowestPositionPriority()
