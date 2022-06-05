@@ -8,6 +8,8 @@ import TableRow from "@material-ui/core/TableRow";
 import EditIcon from "@material-ui/icons/EditOutlined";
 import DoneIcon from "@material-ui/icons/DoneAllTwoTone";
 import RevertIcon from "@material-ui/icons/NotInterestedOutlined";
+import PrintIcon from "@mui/icons-material/Print";
+
 import { makeStyles } from "@material-ui/core/styles";
 
 import styles from "./Schedule.module.scss";
@@ -22,6 +24,7 @@ import { updateShiftTypeOfSchedules } from "../api/updateShiftTypeOfSchedules";
 import TableContainer from "@material-ui/core/TableContainer";
 import { getShiftTypesByLocationIncludingDefaultBreak } from "../../ShiftType/api/getShiftTypesByLocationIncludingDefaultBreak";
 import { SnackBar } from "../../../components/Snackbar";
+import { exportPDF } from "../../../utils/exportToPdf";
 
 const useStyles = makeStyles({
   tableCell: {
@@ -194,6 +197,12 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
 
   return (
     <div className={styles.LocationSchedule}>
+      <IconButton
+        aria-label="print"
+        onClick={() => exportPDF("table", monthDate)}
+      >
+        <PrintIcon />
+      </IconButton>
       <SnackBar
         isOpen={open}
         messages={errors}
@@ -217,7 +226,7 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
         </IconButton>
       )}
       <TableContainer className={`${styles.Table}`}>
-        <Table>
+        <Table id="table">
           <TableHead>
             <TableRow>
               <TableCell

@@ -8,6 +8,7 @@ import TableRow from "@material-ui/core/TableRow";
 import EditIcon from "@material-ui/icons/EditOutlined";
 import DoneIcon from "@material-ui/icons/DoneAllTwoTone";
 import RevertIcon from "@material-ui/icons/NotInterestedOutlined";
+import PrintIcon from "@mui/icons-material/Print";
 
 import styles from "./Schedule.module.scss";
 import {
@@ -22,6 +23,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { getPersonalSchedules } from "../api/getPersonalSchedules";
 import { getAllShiftTypesForEmployee } from "../../ShiftType/api/getAllShiftTypesForEmployee";
 import { updatePersonalScheduleShiftTypes } from "../api/updatePersonalScheduleShiftTypes";
+import { exportPDF } from "../../../utils/exportToPdf";
 
 const useStyles = makeStyles({
   tableCell: {
@@ -166,6 +168,12 @@ export const PersonalSchedule = (props: PersonalScheduleProps) => {
 
   return (
     <div>
+      <IconButton
+        aria-label="print"
+        onClick={() => exportPDF("table", monthDate)}
+      >
+        <PrintIcon />
+      </IconButton>
       {isEditMode && (
         <>
           <IconButton aria-label="done" onClick={onDoneEditing}>
@@ -182,7 +190,7 @@ export const PersonalSchedule = (props: PersonalScheduleProps) => {
         </IconButton>
       )}
       <TableContainer className={`${styles.Table}`}>
-        <Table>
+        <Table id="table">
           <TableHead>
             <TableRow>
               <TableCell
