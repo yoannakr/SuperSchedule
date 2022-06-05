@@ -16,6 +16,10 @@ namespace SuperSchedule.Services.Schedules
 
         IEnumerable<string> GetErrorsForMonthSchedule(DateTime firstDayOfMonth, DateTime lastDayOfMonth);
 
+        double GetOverWorkingHoursForMonth(Employee employee, DateTime startDate, DateTime endDate);
+
+        int CalculateWorkingHoursForMonth(DateTime dateTime);
+
         bool IsScheduleFilled(DateTime firstDayOfMonth, DateTime lastDayOfMonth);
     }
 }

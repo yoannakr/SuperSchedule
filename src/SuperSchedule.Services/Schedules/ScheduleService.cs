@@ -47,7 +47,11 @@ namespace SuperSchedule.Services.Schedules
 
         private void FillScheduleTwelveHoursTemplate(Location location, DateTime startDate, DateTime endDate, List<Schedule> schedules, IEnumerable<Employee> employees, List<IGrouping<int, Employee>> employeesGroupByPositionPriority, IGrouping<int, Employee> employeesWithHighestPositionPriority)
         {
-            var otherEmployeesGroup = employeesGroupByPositionPriority.First();
+            var otherEmployeesGroup = employeesGroupByPositionPriority.FirstOrDefault();
+            if(otherEmployeesGroup == null)
+            {
+                return;
+            }
             employeesGroupByPositionPriority.Remove(otherEmployeesGroup);
 
             FillScheduleWithHighestPositionPriorityEmployeesTwelveHoursTemplate(schedules, location, employeesWithHighestPositionPriority, otherEmployeesGroup, startDate, endDate);
@@ -55,6 +59,10 @@ namespace SuperSchedule.Services.Schedules
             foreach (var employee in employeesWithHighestPositionPriority)
             {
                 var countOfUnnecessaryShifts = GetCountOfUnnecessaryShifts(employee, startDate, schedules, ShiftTypesTemplate.TwelveHours);
+                if(countOfUnnecessaryShifts <= 0)
+                {
+                    continue;
+                }
 
                 RemoveUnneccessaryShiftsTwelveHours(employee, location, schedules, countOfUnnecessaryShifts, otherEmployeesGroup);
             }
@@ -596,7 +604,11 @@ namespace SuperSchedule.Services.Schedules
 
             var employees = employeeService.GetEmployeeByLocation(location.Id);
             var employeesGroupByPositionPriority = employees.OrderBy(e => e.Position.Priority).GroupBy(e => e.Position.Priority).ToList();
-            var employeesWithHighestPositionPriority = employeesGroupByPositionPriority.First();
+            var employeesWithHighestPositionPriority = employeesGroupByPositionPriority.FirstOrDefault();
+            if(employeesWithHighestPositionPriority == null)
+            {
+                return;
+            }
             employeesGroupByPositionPriority.Remove(employeesWithHighestPositionPriority);
 
             var workingHours = CalculateWorkingHoursForMonth(startDate);
@@ -712,8 +724,6 @@ namespace SuperSchedule.Services.Schedules
 
             return workingHoursForYear;
         }
-
-
 
         private bool IsWeekendDate(DateTime leaveDate)
         {
@@ -1518,6 +1528,17 @@ namespace SuperSchedule.Services.Schedules
         public bool IsScheduleFilled(DateTime firstDayOfMonth, DateTime lastDayOfMonth)
         {
             return scheduleRepository.IsScheduleFilled(firstDayOfMonth, lastDayOfMonth);
+        }
+
+        public double GetOverWorkingHoursForMonth(Employee employee, DateTime startDate, DateTime endDate)
+        {
+            var schedulesForEmployee = scheduleRepository.GetEmployeeScheduleForPeriod(startDate, endDate, employee.Id);
+
+            var totalWorkingHours = schedulesForEmployee.Sum(s => s?.ShiftType?.TotalHours ?? 0);
+            var workingHoursForMonth = CalculateWorkingHoursForMonth(startDate);
+            var overWorkingHoursForMonth = totalWorkingHours - workingHoursForMonth;
+
+            return overWorkingHoursForMonth;
         }
     }
 }

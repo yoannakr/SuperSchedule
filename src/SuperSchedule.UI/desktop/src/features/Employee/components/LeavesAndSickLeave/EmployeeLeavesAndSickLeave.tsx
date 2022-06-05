@@ -137,7 +137,6 @@ export const EmployeeLeavesAndSickLeave = (
   const onShowDeleteAlertMessage = useCallback(
     (id: GridRowId, row: LeaveRow) => () => {
       setSelectedLeave(row);
-      console.log(moment());
       setShowDeleteAlert(true);
     },
     []

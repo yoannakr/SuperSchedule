@@ -1,0 +1,45 @@
+.Report {
+  margin-left: 270px;
+  margin-right: 20px;
+  height: 100vh;
+  width: 100vw;
+}
+
+.DatesContainer {
+  display: flex;
+  justify-content: center;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+.DatePicker {
+  margin-left: 20px;
+}
+
+.Header {
+  background-color: red !important;
+}
+
+.FixedColumns {
+  position: sticky;
+  top: 0px !important;
+  z-index: 10;
+}
+
+.SecondRowFixedColumns {
+  position: sticky;
+  top: 36px !important;
+  z-index: 10;
+}
+
+.NoReports {
+  display: flex;
+  flex-direction: column;
+  height: 80%;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  font-style: italic;
+}

@@ -141,7 +141,6 @@ export const CreateLeave = (props: CreateLeaveOptions) => {
 
       await createLeave({ leave }).catch((error) => {
         if (error.response !== undefined) {
-          console.log("TEst");
           setShowErrorOnCreating(true);
           setErrorsOnCreating(error.response.data);
         } else {
