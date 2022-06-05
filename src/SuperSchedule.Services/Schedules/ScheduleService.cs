@@ -1121,7 +1121,7 @@ namespace SuperSchedule.Services.Schedules
             var shiftTypesForLocation = shiftTypeService.GetShiftTypesByLocation(location.Id).Where(s => s.TotalHours > 0).ToList();
             var shiftTypesForLocationIds = shiftTypesForLocation.Select(s => s.Id).ToList();
             var locationWorkingDays = shiftTypesForLocation.SelectMany(s => s.Days.Select(d => d.Id)).Distinct().ToList();
-            var locationScheduleByDates = GetSchedulesByLocationForPeriod(location.Id, firstDayOfMonth, lastDayOfMonth)
+            var locationScheduleByDates = scheduleRepository.GetSchedulesByLocationForPeriod(location.Id, firstDayOfMonth, lastDayOfMonth)
                                 .GroupBy(s => s.Date.Date);
 
             foreach (var locationScheduleByDate in locationScheduleByDates)
@@ -1321,12 +1321,14 @@ namespace SuperSchedule.Services.Schedules
         public IEnumerable<Schedule> GetSchedulesByLocationForPeriod(int locationId, DateTime startDate, DateTime endDate)
         {
             var monthDays = DateTime.DaysInMonth(startDate.Year, startDate.Month);
+            var employeesForLocation = employeeService.GetEmployeeByLocation(locationId);
             var schedulesForEmployees = scheduleRepository.GetSchedulesByLocationForPeriod(locationId, startDate, endDate).GroupBy(g => g.Employee).ToList();
 
             var resultSchedules = new List<Schedule>();
-            foreach (var scheduleEmployee in schedulesForEmployees)
+            foreach (var employee in employeesForLocation)
             {
-                resultSchedules.AddRange(GetScheduleForEmployee(scheduleEmployee, scheduleEmployee.Key, startDate, endDate));
+                var scheduleEmployee = schedulesForEmployees.FirstOrDefault(s => s.Key.Id == employee.Id);
+                resultSchedules.AddRange(GetScheduleForEmployee(scheduleEmployee, employee, startDate, endDate));
             }
 
             return resultSchedules.OrderBy(s => s.Date).ThenBy(s => s.Employee.Position.Priority).ToList();
@@ -1416,49 +1418,52 @@ namespace SuperSchedule.Services.Schedules
             var scheduleDates = new List<DateTime>();
 
             var resultSchedules = new List<Schedule>();
-            foreach (var schedule in schedules)
+            if (schedules != null)
             {
-                if (schedule == null)
+                foreach (var schedule in schedules)
                 {
-                    continue;
-                }
-
-                var abbreviation = string.Empty;
-
-                if (!generateAbbr
-                    || shiftTypeService.IsShiftTypeBreak(schedule.ShiftType)
-                    || shiftTypeService.IsShiftTypeLeave(schedule.ShiftType)
-                    || schedule.ShiftType.TotalHours <= 0
-                    || schedule.Location == null)
-                {
-                    resultSchedules.Add(schedule);
-                    scheduleDates.Add(schedule.Date);
-                    continue;
-                }
-                else
-                {
-                    abbreviation = $"{schedule.Location.Abbreviation}{schedule.ShiftType.Abbreviation}";
-                }
-
-                resultSchedules.Add(new Schedule
-                {
-                    Id = schedule.Id,
-                    Location = schedule.Location,
-                    Employee = employee,
-                    ShiftType = new ShiftType
+                    if (schedule == null)
                     {
-                        Id = schedule.ShiftType.Id,
-                        Name = schedule.ShiftType.Name,
-                        Abbreviation = abbreviation,
-                        Location = schedule.ShiftType.Location
-                    },
-                    RemovedShiftType = schedule.RemovedShiftType,
-                    Date = schedule.Date,
-                    LastRotationDays = schedule.LastRotationDays,
-                    DayOfWeekTemplate = schedule.DayOfWeekTemplate
-                });
+                        continue;
+                    }
 
-                scheduleDates.Add(schedule.Date);
+                    var abbreviation = string.Empty;
+
+                    if (!generateAbbr
+                        || shiftTypeService.IsShiftTypeBreak(schedule.ShiftType)
+                        || shiftTypeService.IsShiftTypeLeave(schedule.ShiftType)
+                        || schedule.ShiftType.TotalHours <= 0
+                        || schedule.Location == null)
+                    {
+                        resultSchedules.Add(schedule);
+                        scheduleDates.Add(schedule.Date);
+                        continue;
+                    }
+                    else
+                    {
+                        abbreviation = $"{schedule.Location.Abbreviation}{schedule.ShiftType.Abbreviation}";
+                    }
+
+                    resultSchedules.Add(new Schedule
+                    {
+                        Id = schedule.Id,
+                        Location = schedule.Location,
+                        Employee = employee,
+                        ShiftType = new ShiftType
+                        {
+                            Id = schedule.ShiftType.Id,
+                            Name = schedule.ShiftType.Name,
+                            Abbreviation = abbreviation,
+                            Location = schedule.ShiftType.Location
+                        },
+                        RemovedShiftType = schedule.RemovedShiftType,
+                        Date = schedule.Date,
+                        LastRotationDays = schedule.LastRotationDays,
+                        DayOfWeekTemplate = schedule.DayOfWeekTemplate
+                    });
+
+                    scheduleDates.Add(schedule.Date);
+                }
             }
 
             if (scheduleDates.Count != monthDays)
