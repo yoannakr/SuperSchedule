@@ -48,6 +48,7 @@ export type Employee = {
   isDeleted?: boolean;
   locationsIds: number[];
   shiftTypesIds: number[];
+  previousEmployeeId: number;
 };
 
 export type Schedule = {

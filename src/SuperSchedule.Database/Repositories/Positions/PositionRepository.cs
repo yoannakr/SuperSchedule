@@ -39,7 +39,7 @@ namespace SuperSchedule.Database.Repositories.Positions
 
         public Position GetPositionById(int id)
         {
-            return superScheduleDbContext.Positions.First(position => position.Id == id);
+            return superScheduleDbContext.Positions.FirstOrDefault(position => position.Id == id);
         }
 
         public async Task UpdatePosition(Position position)

@@ -236,7 +236,7 @@ export const PersonalSchedule = (props: PersonalScheduleProps) => {
               <TableCell
                 className={`${styles.FixedColumns} ${styles.TableCell} ${classes.tableCell}`}
               >
-                <div>{`${schedulesRow?.employee?.firstName} ${schedulesRow?.employee?.lastName}`}</div>
+                <div>{`${schedulesRow?.employee?.fullName}`}</div>
               </TableCell>
               {schedulesRow?.shiftTypeEditableCells !== undefined &&
                 schedulesRow.shiftTypeEditableCells.map(

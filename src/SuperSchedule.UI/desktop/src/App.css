@@ -39,6 +39,9 @@ body {
   width: max-content !important;
   margin-top: 40px !important;
   text-transform: none !important;
+  padding: 10px !important;
+  color: white !important;
+  border-radius: 2px !important;
 }
 
 .Button:disabled {
@@ -46,7 +49,7 @@ body {
 }
 
 .Button:hover {
-  background-color: #293846;
+  background-color: #293846 !important;
 }
 
 .ShowFeedback {

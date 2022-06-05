@@ -44,8 +44,14 @@ export const Dialog = (props: DialogOptions) => {
       <DialogTitle id="alert-dialog-title">{dialogTitle}</DialogTitle>
       <DialogContent>{dialogContent}</DialogContent>
       <DialogActions>
-        <Button onClick={onAccept}>{acceptMessage}</Button>
-        <Button onClick={handleClose} autoFocus>
+        <Button style={{ backgroundColor: "#2f4050" }} onClick={onAccept}>
+          {acceptMessage}
+        </Button>
+        <Button
+          style={{ backgroundColor: "#2f4050" }}
+          onClick={handleClose}
+          autoFocus
+        >
           {cancelMessage}
         </Button>
       </DialogActions>

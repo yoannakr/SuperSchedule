@@ -57,6 +57,7 @@ namespace SuperSchedule.Startup.Controllers
                         FirstName = g.Key.FirstName,
                         MiddleName = g.Key.MiddleName,
                         LastName = g.Key.LastName,
+                        FullName = g.Key.FullName,
                         ShiftTypesIds = g.Key.ShiftTypes.Select(s => s.Id).ToList()
                     },
                     ShiftTypeEditableCells = g.Select(v => new ShiftTypeEditableCellModel
@@ -90,6 +91,7 @@ namespace SuperSchedule.Startup.Controllers
                         FirstName = employee.FirstName,
                         MiddleName = employee.MiddleName,
                         LastName = employee.LastName,
+                        FullName = employee.FullName,
                         ShiftTypesIds = employee.ShiftTypes.Select(s => s.Id).ToList()
                     },
                     ShiftTypeEditableCells = schedules.Select(s => new ShiftTypeEditableCellModel

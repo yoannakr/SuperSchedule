@@ -38,6 +38,7 @@ namespace SuperSchedule.Database.Repositories.Employees
         {
             return superScheduleDbContext
                 .Employees
+                .Include(e => e.PreviousEmployee)
                 .Include(e => e.Position)
                 .Include(e => e.Locations)
                 .Include(e => e.ShiftTypes)
@@ -49,6 +50,7 @@ namespace SuperSchedule.Database.Repositories.Employees
         {
             return superScheduleDbContext
                 .Employees
+                .Include(e => e.PreviousEmployee)
                 .Include(e => e.Position)
                 .Include(e => e.Locations)
                 .Include(e => e.ShiftTypes)
@@ -59,6 +61,7 @@ namespace SuperSchedule.Database.Repositories.Employees
         {
            return superScheduleDbContext
                 .Employees
+                .Include(e => e.PreviousEmployee)
                 .Include(e => e.Position)
                 .Include(e => e.Locations)
                 .Include(e => e.ShiftTypes)
@@ -70,17 +73,20 @@ namespace SuperSchedule.Database.Repositories.Employees
         {
             return superScheduleDbContext
                 .Employees
+                .Include(e => e.PreviousEmployee)
                 .Include(e => e.Locations)
                 .Include(e => e.Position)
-                .Where(e => e.Locations.Select(l => l.Id).Contains(locationId));
+                .Where(e => e.Locations.Select(l => l.Id).Contains(locationId) && !e.IsDeleted);
         }
 
         public IEnumerable<Employee> GetEmployeesWithLowestPositionPriority()
         {
             return superScheduleDbContext
                 .Employees
+                .Include(e => e.PreviousEmployee)
                 .Include(e => e.Locations)
                 .Include(e => e.Position)
+                .Where(e => !e.IsDeleted)
                 .ToList()
                 .GroupBy(e => e.Position.Priority)
                 .LastOrDefault()

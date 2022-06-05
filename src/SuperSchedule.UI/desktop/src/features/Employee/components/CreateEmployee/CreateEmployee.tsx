@@ -17,6 +17,8 @@ import { getShiftTypes } from "../../../../api/getShiftTypes";
 import { createEmployee } from "../../api/employee/createEmployee";
 import { SnackBar } from "../../../../components/Snackbar";
 import { LoadingButton } from "../../../../components/Button";
+import { getAllCurrentEmployees } from "../../api/employee/getAllCurrentEmployees";
+import { getAllEmployees } from "../../api/employee/getAllEmployees";
 
 export const CreateEmployee = () => {
   const [firstName, setFirstName] = useState<string>("");
@@ -45,6 +47,9 @@ export const CreateEmployee = () => {
   const [selectedShiftTypes, setSelectedShiftTypes] = useState<Option[]>([]);
   const [isInvalidSelectedShiftTypes, setIsInvalidSelectedShiftTypes] =
     useState<boolean>(false);
+
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employeeId, setEmployeeId] = useState<number>(0);
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
@@ -86,9 +91,21 @@ export const CreateEmployee = () => {
         );
     };
 
+    const getDataEmployees = () => {
+      getAllEmployees()
+        .then((response) => {
+          const employees: Employee[] = response.data;
+          setEmployees(employees);
+        })
+        .catch((error) =>
+          console.log(`GetAllEmployees not successful because: ${error}`)
+        );
+    };
+
     getDataPositions();
     getDataLocations();
     getDataShiftTypes();
+    getDataEmployees();
   }, []);
 
   const onFirstNameChange = (firstName: string) => {
@@ -167,6 +184,15 @@ export const CreateEmployee = () => {
   const onRemoveShiftType = (selectedList: Option[], removedItem: Option) => {
     setSelectedShiftTypes(selectedList);
     validateSelectedShiftTypes(selectedList);
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
+    }
+  };
+
+  const onEmployeeIdChange = (employeeIdInput: string) => {
+    const employeeId: number = +employeeIdInput;
+    setEmployeeId(employeeId);
 
     if (isButtonDisabled) {
       setIsButtonDisabled(false);
@@ -294,6 +320,7 @@ export const CreateEmployee = () => {
         positionId,
         locationsIds: selectedLocations.map((location) => location.value),
         shiftTypesIds: selectedShiftTypes.map((shiftType) => shiftType.value),
+        previousEmployeeId: employeeId,
       };
 
       createEmployee({ employee })
@@ -422,6 +449,21 @@ export const CreateEmployee = () => {
             onRemove={onRemoveShiftType}
             isInvalid={isInvalidSelectedShiftTypes}
             errorMessage={"Моля, изберете смяна"}
+          />
+        </Form.Group>
+      </Row>
+
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
+          <SelectField
+            label="Заместник на:"
+            ariaLabel="Изберете служител"
+            value={employeeId}
+            onChange={onEmployeeIdChange}
+            options={employees.map((employee) => ({
+              label: employee.fullName ?? employee.firstName,
+              value: employee.id,
+            }))}
           />
         </Form.Group>
       </Row>

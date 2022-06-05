@@ -18,11 +18,18 @@ type EditEmployeeOptions = {
   locations: Location[];
   positions: Position[];
   shiftTypes: ShiftType[];
+  employees: Employee[];
 };
 
 export const EditEmployee = (props: EditEmployeeOptions) => {
-  const { employee, onSaveEditedEmployee, locations, positions, shiftTypes } =
-    props;
+  const {
+    employee,
+    onSaveEditedEmployee,
+    locations,
+    positions,
+    shiftTypes,
+    employees,
+  } = props;
 
   const [firstName, setFirstName] = useState<string>(employee?.firstName ?? "");
   const [isInvalidFirstName, setIsInvalidFirstName] = useState<boolean>(false);
@@ -72,6 +79,10 @@ export const EditEmployee = (props: EditEmployeeOptions) => {
   const [isInvalidSelectedShiftTypes, setIsInvalidSelectedShiftTypes] =
     useState<boolean>(false);
 
+  const [employeeId, setEmployeeId] = useState<number>(
+    employee?.previousEmployeeId ?? 0
+  );
+
   const [showError, setShowError] = useState<boolean>(false);
 
   useEffect(() => {
@@ -84,6 +95,7 @@ export const EditEmployee = (props: EditEmployeeOptions) => {
     positionId,
     selectedLocations,
     selectedShiftTypes,
+    employeeId,
   ]);
 
   const onFirstNameChange = (firstName: string) => {
@@ -130,6 +142,11 @@ export const EditEmployee = (props: EditEmployeeOptions) => {
   const onRemoveShiftType = (selectedList: Option[], removedItem: Option) => {
     setSelectedShiftTypes(selectedList);
     validateSelectedShiftTypes(selectedList);
+  };
+
+  const onEmployeeIdChange = (employeeIdInput: string) => {
+    const employeeId: number = +employeeIdInput;
+    setEmployeeId(employeeId);
   };
 
   const validateFirstName = (firstNameInput: string): boolean => {
@@ -246,6 +263,7 @@ export const EditEmployee = (props: EditEmployeeOptions) => {
         locationsIds:
           selectedLocations?.map((location) => location.value) ?? [],
         shiftTypesIds: selectedShiftTypes.map((shiftType) => shiftType.value),
+        previousEmployeeId: employeeId,
       };
       if (employee !== undefined) {
         employee.firstName = firstName;
@@ -261,13 +279,14 @@ export const EditEmployee = (props: EditEmployeeOptions) => {
         employee.shiftTypesIds = selectedShiftTypes.map(
           (shiftType) => shiftType.value
         );
+        employee.previousEmployeeId = employeeId;
       }
 
       updateEmployee({ employee: editedEmployee }).catch((err) => {
         setShowError(true);
         console.log(`CreateEmployee not successful because: ${err}`);
-          isValid = false;
-          //трябва да се await-ва
+        isValid = false;
+        //трябва да се await-ва
       });
     }
 
@@ -385,6 +404,21 @@ export const EditEmployee = (props: EditEmployeeOptions) => {
             onRemove={onRemoveShiftType}
             isInvalid={isInvalidSelectedShiftTypes}
             errorMessage={"Моля, изберете смяна"}
+          />
+        </Form.Group>
+      </Row>
+
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
+          <SelectField
+            label="Заместник на:"
+            ariaLabel="Изберете служител"
+            value={employeeId}
+            onChange={onEmployeeIdChange}
+            options={employees.map((employee) => ({
+              label: employee.fullName ?? employee.firstName,
+              value: employee.id,
+            }))}
           />
         </Form.Group>
       </Row>

@@ -152,6 +152,18 @@ namespace SuperSchedule.Services.Schedules
                 var (nextShiftTypeIndex, lastRotationDays) = GetNextShiftTypeForTwelveHoursTemplate(location.Id, startDate.AddDays(-1), allShiftTypes, employee);
                 currentShiftTypeIndex = nextShiftTypeIndex;
                 tempRotationDays = lastRotationDays ?? 0;
+
+                if(nextShiftTypeIndex < 0)
+                {
+                    (nextShiftTypeIndex, lastRotationDays) = GetNextShiftTypeForTwelveHoursTemplate(location.Id, startDate.AddDays(-1), allShiftTypes, employee.PreviousEmployee);
+                    currentShiftTypeIndex = nextShiftTypeIndex;
+                    tempRotationDays = lastRotationDays ?? 0;
+
+                    if(nextShiftTypeIndex < 0)
+                    {
+                        currentShiftTypeIndex = 0;
+                    }
+                }
             }
             var rotationDays = allShiftTypes[currentShiftTypeIndex].RotationDays;
 
@@ -320,7 +332,11 @@ namespace SuperSchedule.Services.Schedules
             var currentShiftTypeIndex = GetNextShiftTypeForFirstAndSecondShiftsTemplate(location.Id, firstDateOfMonth, allShiftTypes, employee);
             if (currentShiftTypeIndex == -1)
             {
-                currentShiftTypeIndex = firstShiftIndex;
+                currentShiftTypeIndex = GetNextShiftTypeForFirstAndSecondShiftsTemplate(location.Id, firstDateOfMonth, allShiftTypes, employee.PreviousEmployee);
+                if (currentShiftTypeIndex == -1)
+                {
+                    currentShiftTypeIndex = firstShiftIndex;
+                }
             }
 
             var countOfShiftTypes = allShiftTypes.Count;

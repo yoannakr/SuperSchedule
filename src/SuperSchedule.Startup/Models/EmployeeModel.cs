@@ -23,5 +23,7 @@
         public IEnumerable<int>? LocationsIds { get; set; }
 
         public IEnumerable<int>? ShiftTypesIds { get; set; }
+
+        public int PreviousEmployeeId { get; set; }
     }
 }

@@ -21,8 +21,10 @@ import { getShiftTypes } from "../../../../api/getShiftTypes";
 import { SnackBar } from "../../../../components/Snackbar";
 import { UndrawNoEmployeesSvg } from "../../../../components/Svgs";
 import { DataGrid } from "../../../../components/DataGrid";
+import { getAllEmployees } from "../../api/employee/getAllEmployees";
 
 export const EmployeeList = () => {
+  const [currentEmployees, setCurrentEmployees] = useState<Employee[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [shiftTypes, setShiftTypes] = useState<ShiftType[]>([]);
@@ -40,8 +42,19 @@ export const EmployeeList = () => {
   });
 
   useEffect(() => {
-    const getDataAllEmployees = () => {
+    const getDataAllCurrentEmployees = () => {
       getAllCurrentEmployees()
+        .then((response) => {
+          const employees: Employee[] = response.data;
+          setCurrentEmployees(employees);
+        })
+        .catch((error) =>
+          console.log(`GetAllCurrentEmployees not successful because: ${error}`)
+        );
+    };
+
+    const getDataAllEmployees = () => {
+      getAllEmployees()
         .then((response) => {
           const employees: Employee[] = response.data;
           setEmployees(employees);
@@ -87,6 +100,7 @@ export const EmployeeList = () => {
     getDataPositions();
     getDataLocations();
     getDataShiftTypes();
+    getDataAllCurrentEmployees();
     getDataAllEmployees();
   }, []);
 
@@ -111,7 +125,7 @@ export const EmployeeList = () => {
 
   const deleteDataEmployee = () => {
     deleteEmployee({ employeeId }).then(() => {});
-    setEmployees((prevEmployees) =>
+    setCurrentEmployees((prevEmployees) =>
       prevEmployees.filter((employee) => employee.id !== employeeId)
     );
     setShowDeleteAlert(false);
@@ -178,6 +192,7 @@ export const EmployeeList = () => {
             locations={locations}
             positions={positions}
             shiftTypes={shiftTypes}
+            employees={employees}
           />
         }
         setShowDialog={setShowEditDialog}
@@ -208,11 +223,11 @@ export const EmployeeList = () => {
         severity={"success"}
         alertTitle={"Успешно изтриване!"}
       />
-      {employees.length !== 0 ? (
+      {currentEmployees.length !== 0 ? (
         <DataGrid
           className={styles.DataGrid}
           columns={columns}
-          rows={employees}
+          rows={currentEmployees}
         />
       ) : (
         <div className={styles.NoEmployees}>

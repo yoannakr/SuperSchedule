@@ -34,7 +34,8 @@ namespace SuperSchedule.Startup.Controllers
                 VacationDays = employeeModel.VacationDays,
                 Position = positionService.GetPositionById(employeeModel.PositionId),
                 Locations = employeeModel.LocationsIds.Select(id => locationService.GetLocationById(id)).ToList(),
-                ShiftTypes = employeeModel.ShiftTypesIds.Select(id => shiftTypeService.GetShiftTypeById(id)).ToList()
+                ShiftTypes = employeeModel.ShiftTypesIds.Select(id => shiftTypeService.GetShiftTypeById(id)).ToList(),
+                PreviousEmployee = employeeService.GetEmployeeById(employeeModel.PreviousEmployeeId)
             });
         }
 
@@ -54,6 +55,7 @@ namespace SuperSchedule.Startup.Controllers
                     PositionName = employee.Position.Name,
                     LocationsIds = employee.Locations.Select(l => l.Id),
                     ShiftTypesIds = employee.ShiftTypes.Select(sh => sh.Id),
+                    PreviousEmployeeId = employee.PreviousEmployee?.Id ?? 0
                 });
         }
 
@@ -74,6 +76,7 @@ namespace SuperSchedule.Startup.Controllers
                     PositionName = employee.Position.Name,
                     LocationsIds = employee.Locations.Select(l => l.Id),
                     ShiftTypesIds = employee.ShiftTypes.Select(sh => sh.Id),
+                    PreviousEmployeeId = employee.PreviousEmployee?.Id ?? 0
                 });
         }
 
@@ -96,7 +99,8 @@ namespace SuperSchedule.Startup.Controllers
                 VacationDays=employee.VacationDays,
                 Position = positionService.GetPositionById(employee.PositionId),
                 Locations = employee.LocationsIds.Select(id => locationService.GetLocationById(id)).ToList(),
-                ShiftTypes = employee.ShiftTypesIds.Select(id => shiftTypeService.GetShiftTypeById(id)).ToList()
+                ShiftTypes = employee.ShiftTypesIds.Select(id => shiftTypeService.GetShiftTypeById(id)).ToList(),
+                PreviousEmployee = employeeService.GetEmployeeById(employee.PreviousEmployeeId)
             });
         }
 

@@ -272,7 +272,7 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
                 <TableCell
                   className={`${styles.FixedColumns} ${styles.TableCell} ${classes.tableCell}`}
                 >
-                  <div>{`${row.employee.firstName} ${row.employee.lastName}`}</div>
+                  <div>{`${row.employee.fullName}`}</div>
                 </TableCell>
                 {row.shiftTypeEditableCells.map((shiftType, shiftTypeId) => (
                   <EditScheduleTableCell
