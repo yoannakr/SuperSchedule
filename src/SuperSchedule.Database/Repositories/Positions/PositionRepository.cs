@@ -27,7 +27,8 @@ namespace SuperSchedule.Database.Repositories.Positions
                 return;
             }
 
-            superScheduleDbContext.Positions.Remove(contextPosition);
+            contextPosition.IsDeleted = true;
+            superScheduleDbContext.Positions.Update(contextPosition);
 
             await superScheduleDbContext.SaveChangesAsync();
         }
@@ -35,6 +36,11 @@ namespace SuperSchedule.Database.Repositories.Positions
         public IEnumerable<Position> GetAllPositions()
         {
             return superScheduleDbContext.Positions.ToList();
+        }
+
+        public IEnumerable<Position> GetAllCurrentPositions()
+        {
+            return superScheduleDbContext.Positions.Where(p => !p.IsDeleted).ToList();
         }
 
         public Position GetPositionById(int id)

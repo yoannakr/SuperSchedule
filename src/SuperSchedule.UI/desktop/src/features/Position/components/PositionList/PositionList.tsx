@@ -14,10 +14,10 @@ import { Dialog } from "../../../../components/Dialog";
 import { Position } from "../../../../types";
 import { SnackBar } from "../../../../components/Snackbar";
 import { DataGrid } from "../../../../components/DataGrid";
-import { getPositions } from "../../../../api/getPositions";
 import { EditPosition } from "../EditPosition/EditPosition";
 import { deletePosition } from "../../api/deletePosition";
 import { UndrawNoPositionsSvg } from "../../../../components/Svgs";
+import { getAllCurrentPositions } from "../../api/getAllCurrentPostions";
 
 export const PositionList = () => {
   const [positions, setPositions] = useState<Position[]>([]);
@@ -34,7 +34,7 @@ export const PositionList = () => {
   });
 
   const getDataAllPositions = () => {
-    getPositions()
+    getAllCurrentPositions()
       .then((response) => {
         const positions: Position[] = response.data;
         setPositions(positions);

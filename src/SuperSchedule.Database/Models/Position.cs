@@ -9,5 +9,7 @@
         public string Abbreviation { get; set; }
 
         public int Priority { get; set; }
+
+        public bool IsDeleted { get; set; }
     }
 }

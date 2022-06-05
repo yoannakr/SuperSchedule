@@ -20,6 +20,12 @@ namespace SuperSchedule.Startup.Controllers
             return positionService.GetAllPositions();
         }
 
+        [HttpGet]
+        public IEnumerable<Position> GetAllCurrentPositions()
+        {
+            return positionService.GetAllCurrentPositions();
+        }
+
         [HttpPost]
         public async Task CreatePosition([FromBody] PositionModel positionModel)
         {

@@ -8,6 +8,8 @@ namespace SuperSchedule.Database.Repositories.Positions
 
         IEnumerable<Position> GetAllPositions();
 
+        IEnumerable<Position> GetAllCurrentPositions();
+
         Position GetPositionById(int id);
 
         Task DeletePosition(int positionId);

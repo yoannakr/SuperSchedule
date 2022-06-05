@@ -22,6 +22,11 @@ namespace SuperSchedule.Services.Positions
             await positionRepository.DeletePosition(positionId);
         }
 
+        public IEnumerable<Position> GetAllCurrentPositions()
+        {
+            return positionRepository.GetAllCurrentPositions();
+        }
+
         public IEnumerable<Position> GetAllPositions()
         {
             return positionRepository.GetAllPositions();

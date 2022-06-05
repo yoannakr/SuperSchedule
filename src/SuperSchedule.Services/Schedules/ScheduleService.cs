@@ -155,11 +155,18 @@ namespace SuperSchedule.Services.Schedules
 
                 if(nextShiftTypeIndex < 0)
                 {
-                    (nextShiftTypeIndex, lastRotationDays) = GetNextShiftTypeForTwelveHoursTemplate(location.Id, startDate.AddDays(-1), allShiftTypes, employee.PreviousEmployee);
-                    currentShiftTypeIndex = nextShiftTypeIndex;
-                    tempRotationDays = lastRotationDays ?? 0;
+                    if (employee.PreviousEmployee != null)
+                    {
+                        (nextShiftTypeIndex, lastRotationDays) = GetNextShiftTypeForTwelveHoursTemplate(location.Id, startDate.AddDays(-1), allShiftTypes, employee.PreviousEmployee);
+                        currentShiftTypeIndex = nextShiftTypeIndex;
+                        tempRotationDays = lastRotationDays ?? 0;
 
-                    if(nextShiftTypeIndex < 0)
+                        if (nextShiftTypeIndex < 0)
+                        {
+                            currentShiftTypeIndex = 0;
+                        }
+                    }
+                    else
                     {
                         currentShiftTypeIndex = 0;
                     }
@@ -293,7 +300,11 @@ namespace SuperSchedule.Services.Schedules
             var datesGroupedByWeek = dates.GroupBy(x => CultureInfo.CurrentCulture.DateTimeFormat.Calendar.GetWeekOfYear(x, CalendarWeekRule.FirstFullWeek, DayOfWeek.Monday)).ToList();
             var allShiftTypes = shiftTypeService.GetShiftTypesByLocation(location.Id).OrderBy(s => s.Priority).ToList();
 
-            var otherEmployeesGroup = employeesGroupByPositionPriority.First();
+            var otherEmployeesGroup = employeesGroupByPositionPriority.FirstOrDefault();
+            if(otherEmployeesGroup == null)
+            {
+                return;
+            }
             employeesGroupByPositionPriority.Remove(otherEmployeesGroup);
 
             var firstShiftIndex = 0;
@@ -332,8 +343,15 @@ namespace SuperSchedule.Services.Schedules
             var currentShiftTypeIndex = GetNextShiftTypeForFirstAndSecondShiftsTemplate(location.Id, firstDateOfMonth, allShiftTypes, employee);
             if (currentShiftTypeIndex == -1)
             {
-                currentShiftTypeIndex = GetNextShiftTypeForFirstAndSecondShiftsTemplate(location.Id, firstDateOfMonth, allShiftTypes, employee.PreviousEmployee);
-                if (currentShiftTypeIndex == -1)
+                if (employee.PreviousEmployee != null)
+                {
+                    currentShiftTypeIndex = GetNextShiftTypeForFirstAndSecondShiftsTemplate(location.Id, firstDateOfMonth, allShiftTypes, employee.PreviousEmployee);
+                    if (currentShiftTypeIndex == -1)
+                    {
+                        currentShiftTypeIndex = firstShiftIndex;
+                    }
+                }
+                else
                 {
                     currentShiftTypeIndex = firstShiftIndex;
                 }
@@ -534,7 +552,11 @@ namespace SuperSchedule.Services.Schedules
                 return;
             }
 
-            var otherEmployeesGroup = employeesGroupByPositionPriority.First();
+            var otherEmployeesGroup = employeesGroupByPositionPriority.FirstOrDefault();
+            if(otherEmployeesGroup == null)
+            {
+                return;
+            }
             employeesGroupByPositionPriority.Remove(otherEmployeesGroup);
 
             foreach (var employee in employeesWithHighestPositionPriority)
