@@ -91,9 +91,10 @@ export const Schedule = () => {
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Box m={2}>
               <DatePicker
-                inputFormat="MM-yyyy"
+                inputFormat="MM.yyyy"
                 views={["year", "month"]}
                 label="Месец и Година"
+                mask="__.____"
                 minDate={new Date("2020-01-01")}
                 value={monthDate}
                 onChange={() => {}}
