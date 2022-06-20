@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-namespace SuperSchedule.Database.Enums
+namespace SuperSchedule.Database.Common
 {
     public static class EnumExtensions
     {
