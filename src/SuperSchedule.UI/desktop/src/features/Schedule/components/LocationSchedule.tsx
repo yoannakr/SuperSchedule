@@ -24,7 +24,7 @@ import { updateShiftTypeOfSchedules } from "../api/updateShiftTypeOfSchedules";
 import TableContainer from "@material-ui/core/TableContainer";
 import { getShiftTypesByLocationIncludingDefaultBreak } from "../../ShiftType/api/getShiftTypesByLocationIncludingDefaultBreak";
 import { SnackBar } from "../../../components/Snackbar";
-import { exportPDF } from "../../../utils/exportToPdf";
+import { exportPDFLocationSchedule } from "../utils/exportPDFLocationSchedule";
 
 const useStyles = makeStyles({
   tableCell: {
@@ -197,12 +197,16 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
 
   return (
     <div className={styles.LocationSchedule}>
-      <IconButton
-        aria-label="print"
-        onClick={() => exportPDF("table", monthDate)}
-      >
-        <PrintIcon />
-      </IconButton>
+      {!isEditMode && (
+        <IconButton
+          aria-label="print"
+          onClick={() =>
+            exportPDFLocationSchedule("table", monthDate, locationName)
+          }
+        >
+          <PrintIcon />
+        </IconButton>
+      )}
       <SnackBar
         isOpen={open}
         messages={errors}

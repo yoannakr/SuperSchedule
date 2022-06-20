@@ -23,7 +23,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { getPersonalSchedules } from "../api/getPersonalSchedules";
 import { getAllShiftTypesForEmployee } from "../../ShiftType/api/getAllShiftTypesForEmployee";
 import { updatePersonalScheduleShiftTypes } from "../api/updatePersonalScheduleShiftTypes";
-import { exportPDF } from "../../../utils/exportToPdf";
+import { exportPDFPersonalSchedule } from "../utils/exportPDFPersonalSchedule";
 
 const useStyles = makeStyles({
   tableCell: {
@@ -168,12 +168,20 @@ export const PersonalSchedule = (props: PersonalScheduleProps) => {
 
   return (
     <div>
-      <IconButton
-        aria-label="print"
-        onClick={() => exportPDF("table", monthDate)}
-      >
-        <PrintIcon />
-      </IconButton>
+      {!isEditMode && (
+        <IconButton
+          aria-label="print"
+          onClick={() =>
+            exportPDFPersonalSchedule(
+              "table",
+              monthDate,
+              schedulesRow?.employee?.fullName ?? ""
+            )
+          }
+        >
+          <PrintIcon />
+        </IconButton>
+      )}
       {isEditMode && (
         <>
           <IconButton aria-label="done" onClick={onDoneEditing}>

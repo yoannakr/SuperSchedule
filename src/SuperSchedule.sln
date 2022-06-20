@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperSchedule.Startup", "Su
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperSchedule.Database", "SuperSchedule.Database\SuperSchedule.Database.csproj", "{10BA8370-D45E-4DEE-AAB5-6B0665EB825B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSchedule.Services", "SuperSchedule.Services\SuperSchedule.Services.csproj", "{402AFD21-94DD-4131-9E29-246122D2E919}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperSchedule.Services", "SuperSchedule.Services\SuperSchedule.Services.csproj", "{402AFD21-94DD-4131-9E29-246122D2E919}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
