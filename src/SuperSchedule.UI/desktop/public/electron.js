@@ -9,7 +9,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    icon: "",
+    icon: path.join(__dirname, "../build/schedule.ico"),
   });
 
   mainWindow.loadURL(
