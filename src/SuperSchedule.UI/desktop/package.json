@@ -6,6 +6,7 @@
   "main": "public/electron.js",
   "description": "App for shift scheduling.",
   "build": {
+    "icon": "public/schedule.ico",
     "appId": "com.superSchedule.app",
     "productName": "Super Schedule",
     "files": [

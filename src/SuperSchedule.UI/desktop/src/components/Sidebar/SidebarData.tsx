@@ -12,7 +12,7 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 export const SidebarData = [
   {
-    title: "График",
+    title: "Графици",
     icon: <EventIcon />,
     link: "",
     isOnlyForAdmin: false,

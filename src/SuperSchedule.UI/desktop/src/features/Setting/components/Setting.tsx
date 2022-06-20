@@ -214,7 +214,7 @@ export const Setting = () => {
   return (
     <Form className={styles.Form}>
       <Form.Group as={Row} className={styles.Row}>
-        <Form.Label column>Коефицент на нощен труд:</Form.Label>
+        <Form.Label column>Коефициент на нощен труд:</Form.Label>
         <Col>
           <Form.Control
             type="text"
