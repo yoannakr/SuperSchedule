@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { Form, Row, Col } from "react-bootstrap";
-import SaveIcon from "@mui/icons-material/Save";
+import PersonIcon from "@mui/icons-material/Person";
+import LockIcon from "@mui/icons-material/Lock";
+import LoginIcon from "@mui/icons-material/Login";
 
 import "../../../App.css";
+import styles from "./Login.module.scss";
 import { InputField } from "../../../components/Form";
 import { login } from "../api/login";
 import { SnackBar } from "../../../components/Snackbar";
 import { LoadingButton } from "../../../components/Button";
+import { LoginSvg } from "./LoginSvg";
 
 type LoginOptions = {
   onSuccessfulLogin: any;
@@ -49,56 +53,64 @@ export const Login = (props: LoginOptions) => {
   };
 
   return (
-    <Form className="Login">
-      <SnackBar
-        isOpen={showErrorMessage}
-        messages={["Грешно потребителско име и/или парола!"]}
-        setIsOpen={setShowErrorMessage}
-        severity={"error"}
-        alertTitle={"Неуспешно влизане"}
-      />
-      <SnackBar
-        isOpen={showNoConnectionError}
-        messages={["Моля, проверете връзката с интернет."]}
-        setIsOpen={setShowNoConnectionError}
-        severity={"error"}
-        alertTitle={"Неуспешно влизане!"}
-      />
-      <h1>Вход</h1>
-      <Row>
-        <Form.Group as={Col}>
-          <InputField
-            type="text"
-            label="Потребителско име"
-            value={username}
-            onChange={onUsernameChange}
-            hasHelpIcon={false}
-            helpButtonTooltip={""}
-            disabled={isSaving}
-          />
-        </Form.Group>
-      </Row>
+    <Form className={styles.Login}>
+      <div className={styles.Box}>
+        <SnackBar
+          isOpen={showErrorMessage}
+          messages={["Грешно потребителско име и/или парола!"]}
+          setIsOpen={setShowErrorMessage}
+          severity={"error"}
+          alertTitle={"Неуспешно влизане"}
+        />
+        <SnackBar
+          isOpen={showNoConnectionError}
+          messages={["Моля, проверете връзката с интернет."]}
+          setIsOpen={setShowNoConnectionError}
+          severity={"error"}
+          alertTitle={"Неуспешно влизане!"}
+        />
+        <div className={styles.LoginImage}>
+          <LoginSvg />
+        </div>
+        <div className={styles.LoginForm}>
+          <Row>
+            <Form.Group as={Col}>
+              <PersonIcon className={styles.Icon} />
+              <InputField
+                type="text"
+                label="Потребителско име"
+                value={username}
+                onChange={onUsernameChange}
+                hasHelpIcon={false}
+                helpButtonTooltip={""}
+                disabled={isSaving}
+              />
+            </Form.Group>
+          </Row>
 
-      <Row>
-        <Form.Group as={Col}>
-          <InputField
-            type="password"
-            label="Парола"
-            value={password}
-            onChange={onPasswordChange}
-            hasHelpIcon={false}
-            helpButtonTooltip={""}
-            disabled={isSaving}
-          />
-        </Form.Group>
-      </Row>
+          <Row>
+            <Form.Group as={Col}>
+              <LockIcon className={styles.Icon} />
+              <InputField
+                type="password"
+                label="Парола"
+                value={password}
+                onChange={onPasswordChange}
+                hasHelpIcon={false}
+                helpButtonTooltip={""}
+                disabled={isSaving}
+              />
+            </Form.Group>
+          </Row>
 
-      <LoadingButton
-        onClick={onLogin}
-        loading={isSaving}
-        icon={<SaveIcon />}
-        content={"Вход"}
-      />
+          <LoadingButton
+            onClick={onLogin}
+            loading={isSaving}
+            icon={<LoginIcon />}
+            content={"Вход"}
+          />
+        </div>
+      </div>
     </Form>
   );
 };

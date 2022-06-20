@@ -1,0 +1,29 @@
+.Login {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: #2f4050;
+}
+
+.Box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80%;
+  width: 60%;
+  border-radius: 20px;
+  border: 1px solid green;
+  background-color: white;
+  padding: 10px;
+}
+
+.LoginForm {
+  margin-left: 50px;
+}
+
+.Icon {
+  color: #2f4050;
+}
