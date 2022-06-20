@@ -51,10 +51,10 @@ export const EmployeeLeavesAndSickLeave = (
 ) => {
   const { employeeId } = props;
   const [filterStartDate, setFilterStartDate] = useState<Date | null>(
-    new Date()
+    moment().startOf("month").toDate()
   );
   const [filterEndDate, setFilterEndDate] = useState<Date | null>(
-    moment().add(1, "days").toDate()
+    moment().endOf("month").toDate()
   );
 
   const [days, setDays] = useState<Date[]>([]);
@@ -164,12 +164,12 @@ export const EmployeeLeavesAndSickLeave = (
         width: 80,
         getActions: (params) => [
           <GridActionsCellItem
-            icon={<EditIcon />}
+            icon={<EditIcon style={{ color: "green" }} />}
             label="Редактирай"
             onClick={onShowEditDialog(params.id, params.row)}
           />,
           <GridActionsCellItem
-            icon={<DeleteIcon />}
+            icon={<DeleteIcon style={{ color: "red" }} />}
             label="Изтрий"
             onClick={onShowDeleteAlertMessage(params.id, params.row)}
           />,
