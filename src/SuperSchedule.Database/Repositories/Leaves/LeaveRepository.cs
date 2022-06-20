@@ -78,8 +78,6 @@ namespace SuperSchedule.Database.Repositories.Leaves
                 (startDate.Date <= l.ToDate.Date && endDate.Date >= l.FromDate.Date));
         }
 
-
-
         public IEnumerable<DateTime> GetLeaveDatesForEmployee(int employeeId, DateTime startDate, DateTime endDate)
         {
             var dates = new List<DateTime>();

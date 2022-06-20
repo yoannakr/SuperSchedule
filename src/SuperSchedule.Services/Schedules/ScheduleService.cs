@@ -66,8 +66,6 @@ namespace SuperSchedule.Services.Schedules
 
                 RemoveUnneccessaryShiftsTwelveHours(employee, location, schedules, countOfUnnecessaryShifts, otherEmployeesGroup);
             }
-
-            //FillAllScheduleDates(location, startDate, endDate, schedules, employees);
         }
 
         private void FillScheduleWithHighestPositionPriorityEmployeesTwelveHoursTemplate(List<Schedule> schedules, Location location, IGrouping<int, Employee>? employeesWithHighestPositionPriority, IGrouping<int, Employee> otherEmployeesGroup, DateTime startDate, DateTime endDate)
@@ -684,34 +682,6 @@ namespace SuperSchedule.Services.Schedules
                 LastRotationDays = lastRotationDays,
                 DayOfWeekTemplate = dayOfWeekTemplate
             });
-        }
-
-        private void FillAllScheduleDates(Location location, DateTime startDate, DateTime endDate, List<Schedule> schedules, IEnumerable<Employee> employees)
-        {
-            foreach (var employee in employees)
-            {
-                var schedulesForEmployee = schedules.Where(s => s.Employee?.Id == employee.Id).ToList();
-                var countOfMonthDays = (endDate.Date - startDate.Date).TotalDays + 1;
-                var countOfFilledDays = schedulesForEmployee.Count();
-
-                if (countOfFilledDays != countOfMonthDays)
-                {
-                    var filledDays = schedulesForEmployee.Select(s => s.Date.Date).ToList();
-                    var tempDate = startDate;
-                    while (tempDate.Date <= endDate.Date)
-                    {
-                        if (filledDays.Contains(tempDate.Date))
-                        {
-                            tempDate = tempDate.AddDays(1);
-                            continue;
-                        }
-
-                        FillSchedule(schedules, location, employee, tempDate);
-
-                        tempDate = tempDate.AddDays(1);
-                    }
-                }
-            }
         }
 
         private IEnumerable<DateTime> GetRangeOfDates(int start, DateTime startDate, DateTime endDate)
