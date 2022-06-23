@@ -10,6 +10,8 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableContainer from "@material-ui/core/TableContainer";
+import PrintIcon from "@mui/icons-material/Print";
+import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
 
 import styles from "./Report.module.scss";
@@ -17,6 +19,7 @@ import moment from "moment";
 import { getReport } from "../api/getReport";
 import { getReportMonths } from "../api/getReportMonths";
 import { UndrawNoReportSvg } from "../../../components/Svgs";
+import { exportPDFReport } from "../utils/exportPDFReport";
 
 const useStyles = makeStyles({
   tableHeader: {
@@ -129,11 +132,17 @@ export const Report = () => {
           />
         </Box>
       </LocalizationProvider>
+      <IconButton
+        aria-label="print"
+        onClick={() => exportPDFReport("table", filterStartDate, filterEndDate)}
+      >
+        <PrintIcon />
+      </IconButton>
       {reports.length !== 0 ? (
         <TableContainer
           className={`${styles.Table} ${classes.customTableContainer}`}
         >
-          <Table stickyHeader={true}>
+          <Table stickyHeader={true} id="table">
             <TableHead>
               <TableRow className={classes.tableHeader}>
                 <TableCell
