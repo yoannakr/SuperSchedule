@@ -10,8 +10,8 @@ namespace SuperSchedule.Database.Data
     {
         public SuperScheduleDbContext()
         {
-            var folder = Environment.SpecialFolder.LocalApplicationData;
-            var path = Environment.GetFolderPath(folder);
+            //var folder = Environment.SpecialFolder.LocalApplicationData;
+            var path = Directory.GetCurrentDirectory();
             DbPath = Path.Join(path, "superSchedule.db");
         }
 
