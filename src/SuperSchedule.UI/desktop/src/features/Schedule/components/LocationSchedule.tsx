@@ -67,6 +67,7 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
   const [days, setDays] = useState<Day[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
   useEffect(() => {
     const getDataShiftTypes = () => {
@@ -177,15 +178,17 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
 
   const onSave = async () => {
     let isSaved = true;
-    await updateShiftTypeOfSchedules({ scheduleModels: schedulesRows }).catch(
-      (error) => {
+    await updateShiftTypeOfSchedules({ scheduleModels: schedulesRows })
+      .then(() => {
+        setShowSuccess(true);
+      })
+      .catch((error) => {
         if (error.response !== undefined) {
           setOpen(true);
           setErrors(error.response.data);
           isSaved = false;
         }
-      }
-    );
+      });
 
     return isSaved;
   };
@@ -207,6 +210,13 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
           <PrintIcon />
         </IconButton>
       )}
+      <SnackBar
+        isOpen={showSuccess}
+        messages={["Успешна редакция!"]}
+        setIsOpen={setShowSuccess}
+        severity={"success"}
+        alertTitle={""}
+      />
       <SnackBar
         isOpen={open}
         messages={errors}

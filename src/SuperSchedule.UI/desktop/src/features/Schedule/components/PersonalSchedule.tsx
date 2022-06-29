@@ -23,6 +23,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { getPersonalSchedules } from "../api/getPersonalSchedules";
 import { getAllShiftTypesForEmployee } from "../../ShiftType/api/getAllShiftTypesForEmployee";
 import { updatePersonalScheduleShiftTypes } from "../api/updatePersonalScheduleShiftTypes";
+import { SnackBar } from "../../../components/Snackbar";
 import { exportPDFPersonalSchedule } from "../utils/exportPDFPersonalSchedule";
 
 const useStyles = makeStyles({
@@ -61,6 +62,8 @@ export const PersonalSchedule = (props: PersonalScheduleProps) => {
     useState<PersonalScheduleRow>();
   const [countOfDays, setCountOfDays] = useState<number>(0);
   const [days, setDays] = useState<Day[]>([]);
+
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
   useEffect(() => {
     const getDataShiftTypes = () => {
@@ -158,7 +161,11 @@ export const PersonalSchedule = (props: PersonalScheduleProps) => {
   };
 
   const onSave = async () => {
-    await updatePersonalScheduleShiftTypes({ scheduleModel: schedulesRow });
+    await updatePersonalScheduleShiftTypes({
+      scheduleModel: schedulesRow,
+    }).then(() => {
+      setShowSuccess(true);
+    });
   };
 
   const onRevert = () => {
@@ -182,6 +189,13 @@ export const PersonalSchedule = (props: PersonalScheduleProps) => {
           <PrintIcon />
         </IconButton>
       )}
+      <SnackBar
+        isOpen={showSuccess}
+        messages={["Успешна редакция!"]}
+        setIsOpen={setShowSuccess}
+        severity={"success"}
+        alertTitle={""}
+      />
       {isEditMode && (
         <>
           <IconButton aria-label="done" onClick={onDoneEditing}>

@@ -126,7 +126,7 @@ namespace SuperSchedule.Startup.Controllers
                 {
                     Id = sh.Id,
                     Name = sh.Name,
-                    Abbreviation = sh.Abbreviation,
+                    Abbreviation = sh.Location?.Abbreviation + sh.Abbreviation ?? sh.Abbreviation,
                     StartTime = new DateTime(sh.StartTime.Ticks),
                     EndTime = new DateTime(sh.EndTime.Ticks),
                     RotationDays = sh.RotationDays,
