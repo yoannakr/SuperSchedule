@@ -1019,7 +1019,7 @@ namespace SuperSchedule.Services.Schedules
 
             if (overWorkingHoursForMonth > settingsMonthHours)
             {
-                result.Add($"{employee.FullName} надвишава месечните часове с {Math.Round(overWorkingHoursForMonth, 2)} при позволени {settingsMonthHours}.");
+                result.Add($"{employee.FullName} надвишава месечните часове с {Math.Round((overWorkingHoursForMonth - settingsMonthHours), 2)}.");
             }
 
             return result;
@@ -1041,7 +1041,7 @@ namespace SuperSchedule.Services.Schedules
 
             if (overWorkingHoursForYear > settingsYearHours)
             {
-                result.Add($"{employee.FullName} надвишава годишните часове с {Math.Round(overWorkingHoursForYear, 2)} при позволени {settingsYearHours}.");
+                result.Add($"{employee.FullName} надвишава годишните часове с {Math.Round((overWorkingHoursForYear - settingsYearHours), 2)}.");
             }
 
             return result;
