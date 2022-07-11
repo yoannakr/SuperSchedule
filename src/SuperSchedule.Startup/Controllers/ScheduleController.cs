@@ -181,6 +181,12 @@ namespace SuperSchedule.Startup.Controllers
 
             await scheduleService.UpdatePersonalScheduleShiftTypes(scheduleModel.Employee.Id, schedules);
         }
+
+        [HttpGet]
+        public int GetWorkingHoursForMonth(DateTime monthDate)
+        {
+            return scheduleService.CalculateWorkingHoursForMonth(monthDate);
+        }
     }
 
 }

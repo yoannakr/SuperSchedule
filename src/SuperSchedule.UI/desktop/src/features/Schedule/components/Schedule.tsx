@@ -9,6 +9,7 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DatePicker from "@mui/lab/DatePicker";
 import Box from "@mui/material/Box";
 import moment from "moment";
+import locale from "date-fns/locale/bg";
 
 import { getLocations } from "../../../api/getLocations";
 import { Location } from "../../../types";
@@ -18,6 +19,7 @@ import { ExportExcel } from "./ExportExcel";
 import { getErrorsForMonthSchedule } from "../api/getErrorsForMonthSchedule";
 import { TabItem, TabList } from "./TabList";
 import { UndrawNoLocationsSvg } from "../../../components/Svgs";
+import { getWorkingHoursForMonth } from "../api/getWorkingHoursForMonth";
 
 export const Schedule = () => {
   const [selectedLocationId, setSelectedLocationId] = useState<string>("1");
@@ -25,6 +27,20 @@ export const Schedule = () => {
   const [locations, setLocations] = useState<Location[]>([]);
   const [monthDate, setMonthDate] = useState<Date | null>(new Date());
   const [errors, setErrors] = useState<string[]>([]);
+  const [workingHoursForMonth, setWorkingHoursForMonth] = useState<number>(0);
+
+  const getDataWorkingHoursForMonth = () => {
+    getWorkingHoursForMonth({
+      monthDate: moment(monthDate).format("YYYY-MM-DD"),
+    })
+      .then((response) => {
+        const responseWorkingHoursForMonth: number = response.data;
+        setWorkingHoursForMonth(responseWorkingHoursForMonth);
+      })
+      .catch((error) =>
+        console.log(`GetWorkingHoursForMonth not successful because: ${error}`)
+      );
+  };
 
   useEffect(() => {
     const getDataLocations = () => {
@@ -43,10 +59,12 @@ export const Schedule = () => {
     };
 
     getDataLocations();
+    getDataWorkingHoursForMonth();
   }, []);
 
   useEffect(() => {
     getDataErrors();
+    getDataWorkingHoursForMonth();
   }, [monthDate]);
 
   const getDataErrors = () => {
@@ -88,7 +106,7 @@ export const Schedule = () => {
               ))}
             </Alert>
           )}
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider dateAdapter={AdapterDateFns} locale={locale}>
             <Box m={2}>
               <DatePicker
                 inputFormat="MM.yyyy"
@@ -123,6 +141,7 @@ export const Schedule = () => {
                   locationName={location.label}
                   monthDate={monthDate}
                   onShiftTypesChange={getDataErrors}
+                  workingHoursForMonth={workingHoursForMonth}
                 />
               </TabPanel>
             ))}

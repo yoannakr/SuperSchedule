@@ -339,7 +339,6 @@ export const CreateEmployee = () => {
 
   return (
     <Form className="Form">
-      <h1>Нов служител</h1>
       <Row className={styles.Row}>
         <Form.Group as={Col}>
           <InputField

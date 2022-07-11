@@ -27,6 +27,7 @@ import { SnackBar } from "../../../components/Snackbar";
 import { exportPDFLocationSchedule } from "../utils/exportPDFLocationSchedule";
 import { getSecretaryName } from "../../Setting/api/getSecretaryName";
 import { getManagerName } from "../../Setting/api/getManagerName";
+import { getWorkingHoursForMonth } from "../api/getWorkingHoursForMonth";
 
 const useStyles = makeStyles({
   tableCell: {
@@ -47,6 +48,7 @@ type LocationScheduleProps = {
   locationName: string;
   monthDate: Date | null;
   onShiftTypesChange: any;
+  workingHoursForMonth: number;
 };
 
 type Day = {
@@ -57,7 +59,13 @@ type Day = {
 
 export const LocationSchedule = (props: LocationScheduleProps) => {
   const classes = useStyles();
-  const { locationId, locationName, monthDate, onShiftTypesChange } = props;
+  const {
+    locationId,
+    locationName,
+    monthDate,
+    onShiftTypesChange,
+    workingHoursForMonth,
+  } = props;
 
   const [shiftTypes, setShiftTypes] = useState<ShiftType[]>([]);
   const [schedulesRows, setSchedulesRows] = useState<LocationScheduleRow[]>([]);
@@ -229,22 +237,6 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
 
   return (
     <div className={styles.LocationSchedule}>
-      {!isEditMode && (
-        <IconButton
-          aria-label="print"
-          onClick={() =>
-            exportPDFLocationSchedule(
-              "table",
-              monthDate,
-              locationName,
-              secretaryName,
-              managerName
-            )
-          }
-        >
-          <PrintIcon />
-        </IconButton>
-      )}
       <SnackBar
         isOpen={showSuccess}
         messages={["Успешна редакция!"]}
@@ -259,21 +251,45 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
         severity={"error"}
         alertTitle={"Неуспешно записване!"}
       />
-      {isEditMode && (
-        <>
-          <IconButton aria-label="done" onClick={onDoneEditing}>
-            <DoneIcon className={styles.DoneButton} />
+      <div className={styles.Header}>
+        {!isEditMode && (
+          <IconButton
+            aria-label="print"
+            onClick={() =>
+              exportPDFLocationSchedule(
+                "table",
+                monthDate,
+                locationName,
+                secretaryName,
+                managerName
+              )
+            }
+          >
+            <PrintIcon />
           </IconButton>
-          <IconButton aria-label="revert" onClick={() => onRevert()}>
-            <RevertIcon className={styles.RevertButton} />
+        )}
+
+        {isEditMode && (
+          <>
+            <IconButton aria-label="done" onClick={onDoneEditing}>
+              <DoneIcon className={styles.DoneButton} />
+            </IconButton>
+            <IconButton aria-label="revert" onClick={() => onRevert()}>
+              <RevertIcon className={styles.RevertButton} />
+            </IconButton>
+          </>
+        )}
+
+        {!isEditMode && (
+          <IconButton aria-label="delete" onClick={onStartEditing}>
+            <EditIcon />
           </IconButton>
-        </>
-      )}
-      {!isEditMode && (
-        <IconButton aria-label="delete" onClick={onStartEditing}>
-          <EditIcon />
-        </IconButton>
-      )}
+        )}
+        <i style={{ textAlign: "right", width: "100%", marginRight: "20px" }}>
+          Месечни часове: {workingHoursForMonth}
+        </i>
+      </div>
+
       <TableContainer className={`${styles.Table}`}>
         <Table id="table">
           <TableHead>
