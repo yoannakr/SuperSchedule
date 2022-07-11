@@ -61,10 +61,10 @@ type Report = {
 export const Report = () => {
   const classes = useStyles();
   const [filterStartDate, setFilterStartDate] = useState<Date | null>(
-    new Date()
+    moment().add(-4, "months").toDate()
   );
   const [filterEndDate, setFilterEndDate] = useState<Date | null>(
-    moment().add(1, "days").toDate()
+    moment().toDate()
   );
 
   const [reports, setReports] = useState<Report[]>([]);
