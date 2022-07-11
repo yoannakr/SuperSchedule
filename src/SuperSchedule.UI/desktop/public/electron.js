@@ -12,6 +12,8 @@ function createWindow() {
     icon: path.join(__dirname, "../build/schedule.ico"),
   });
 
+  mainWindow.maximize();
+
   mainWindow.loadURL(
     isDev
       ? "http://localhost:3000"
