@@ -136,6 +136,8 @@ namespace SuperSchedule.Database.Data
                 MaxHoursPerWeek = 56,
                 MaxOvertimeHoursPerMonth = 30,
                 MaxOvertimeHoursPerYear = 150,
+                SecretaryName = "маг.Н.Николов",
+                ManagerName = "Петър Кюркчиев",
                 Holidays = new List<Holiday>(publicHolidaysDates)
             });
 

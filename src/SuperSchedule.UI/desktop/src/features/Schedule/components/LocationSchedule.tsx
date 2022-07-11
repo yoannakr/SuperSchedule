@@ -25,6 +25,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import { getShiftTypesByLocationIncludingDefaultBreak } from "../../ShiftType/api/getShiftTypesByLocationIncludingDefaultBreak";
 import { SnackBar } from "../../../components/Snackbar";
 import { exportPDFLocationSchedule } from "../utils/exportPDFLocationSchedule";
+import { getSecretaryName } from "../../Setting/api/getSecretaryName";
+import { getManagerName } from "../../Setting/api/getManagerName";
 
 const useStyles = makeStyles({
   tableCell: {
@@ -69,6 +71,9 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
   const [errors, setErrors] = useState<string[]>([]);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
+  const [secretaryName, setSecretaryName] = useState<string>("");
+  const [managerName, setManagerName] = useState<string>("");
+
   useEffect(() => {
     const getDataShiftTypes = () => {
       getShiftTypesByLocationIncludingDefaultBreak({ locationId })
@@ -81,7 +86,31 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
         );
     };
 
+    const getDataSecretaryName = () => {
+      getSecretaryName()
+        .then((response) => {
+          const responseSecretaryName: string = response.data;
+          setSecretaryName(responseSecretaryName);
+        })
+        .catch((error) =>
+          console.log(`GetSecretaryName not successful because: ${error}`)
+        );
+    };
+
+    const getDataManagerName = () => {
+      getManagerName()
+        .then((response) => {
+          const responseManagerName: string = response.data;
+          setManagerName(responseManagerName);
+        })
+        .catch((error) =>
+          console.log(`GetManagerName not successful because: ${error}`)
+        );
+    };
+
     getDataShiftTypes();
+    getDataSecretaryName();
+    getDataManagerName();
   }, []);
 
   useEffect(() => {
@@ -204,7 +233,13 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
         <IconButton
           aria-label="print"
           onClick={() =>
-            exportPDFLocationSchedule("table", monthDate, locationName)
+            exportPDFLocationSchedule(
+              "table",
+              monthDate,
+              locationName,
+              secretaryName,
+              managerName
+            )
           }
         >
           <PrintIcon />

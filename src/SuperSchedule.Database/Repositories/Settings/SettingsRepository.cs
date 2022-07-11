@@ -16,7 +16,7 @@ namespace SuperSchedule.Database.Repositories.Settings
 
         public Setting GetSettings()
         {
-            return superScheduleDbContext.Settings.Include(s => s.Holidays).First();
+            return superScheduleDbContext.Settings.Include(s => s.Holidays).FirstOrDefault();
         }
 
         public async Task UpdateSettings(Setting setting)

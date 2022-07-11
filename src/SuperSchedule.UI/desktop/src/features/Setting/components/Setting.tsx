@@ -24,6 +24,8 @@ export type Setting = {
   maxHoursPerWeek: number;
   maxOvertimeHoursPerMonth: number;
   maxOvertimeHoursPerYear: number;
+  secretaryName: string;
+  managerName: string;
   holidays: Holiday[];
 };
 
@@ -40,6 +42,8 @@ export const Setting = () => {
     maxHoursPerWeek: 0,
     maxOvertimeHoursPerMonth: 0,
     maxOvertimeHoursPerYear: 0,
+    secretaryName: "",
+    managerName: "",
     holidays: [
       {
         id: 0,
@@ -193,6 +197,36 @@ export const Setting = () => {
     }
   };
 
+  const onSecretaryNameChange = (secretaryName: string) => {
+    const newSetting = setting;
+    if (newSetting !== undefined) {
+      newSetting.secretaryName = secretaryName;
+      setSetting({
+        ...newSetting,
+        [secretaryName]: secretaryName,
+      });
+    }
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
+    }
+  };
+
+  const onManagerNameChange = (managerName: string) => {
+    const newSetting = setting;
+    if (newSetting !== undefined) {
+      newSetting.managerName = managerName;
+      setSetting({
+        ...newSetting,
+        [managerName]: managerName,
+      });
+    }
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
+    }
+  };
+
   const save = async () => {
     setIsSaving(true);
     if (setting !== undefined) {
@@ -264,6 +298,32 @@ export const Setting = () => {
             value={setting?.maxOvertimeHoursPerYear}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               onMaxOvertimeHoursPerYearChange(e.currentTarget.value)
+            }
+          />
+        </Col>
+      </Form.Group>
+
+      <Form.Group as={Row} className={styles.Row}>
+        <Form.Label column>Главен секретар:</Form.Label>
+        <Col>
+          <Form.Control
+            type="text"
+            value={setting?.secretaryName}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onSecretaryNameChange(e.currentTarget.value)
+            }
+          />
+        </Col>
+      </Form.Group>
+
+      <Form.Group as={Row} className={styles.Row}>
+        <Form.Label column>Ръководител отдел "Без. и орхана":</Form.Label>
+        <Col>
+          <Form.Control
+            type="text"
+            value={setting?.managerName}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onManagerNameChange(e.currentTarget.value)
             }
           />
         </Col>

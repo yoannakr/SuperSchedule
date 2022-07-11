@@ -25,6 +25,8 @@ namespace SuperSchedule.Startup.Controllers
                 MaxHoursPerWeek = settings.MaxHoursPerWeek,
                 MaxOvertimeHoursPerMonth = settings.MaxOvertimeHoursPerMonth,
                 MaxOvertimeHoursPerYear = settings.MaxOvertimeHoursPerYear,
+                SecretaryName = settings.SecretaryName,
+                ManagerName = settings.ManagerName,
                 Holidays = settings.Holidays.Select(h => new HolidayModel
                 {
                     Id = h.Id,
@@ -32,6 +34,22 @@ namespace SuperSchedule.Startup.Controllers
                     Date = h.Date
                 }),
             };
+        }
+
+        [HttpGet]
+        public string GetSecretaryName()
+        {
+            var settings = settingsService.GetSettings();
+
+            return settings.SecretaryName;
+        }
+
+        [HttpGet]
+        public string GetManagerName()
+        {
+            var settings = settingsService.GetSettings();
+
+            return settings.ManagerName;
         }
 
         [HttpPost]
@@ -44,6 +62,8 @@ namespace SuperSchedule.Startup.Controllers
                 MaxHoursPerWeek = setting.MaxHoursPerWeek,
                 MaxOvertimeHoursPerMonth = setting.MaxOvertimeHoursPerMonth,
                 MaxOvertimeHoursPerYear = setting.MaxOvertimeHoursPerYear,
+                SecretaryName = setting.SecretaryName,
+                ManagerName = setting.ManagerName,
                 Holidays = setting.Holidays.Select(h => new Holiday
                 {
                     Id = h.Id,

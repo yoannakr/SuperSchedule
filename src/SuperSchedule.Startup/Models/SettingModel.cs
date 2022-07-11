@@ -12,6 +12,10 @@
 
         public int MaxOvertimeHoursPerYear { get; set; }
 
+        public string SecretaryName { get; set; }
+
+        public string ManagerName { get; set; }
+
         public IEnumerable<HolidayModel> Holidays { get; set; }
     }
 }
