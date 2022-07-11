@@ -125,6 +125,8 @@ namespace SuperSchedule.Database.Repositories.Leaves
             var leaveDates = Helper.GetRangeOfDates(0, leave.FromDate.Date, leave.ToDate.Date);
             var allLeaveDates = superScheduleDbContext
                 .Leaves
+                .Include(l => l.Employee)
+                .Where(l => l.Employee.Id == leave.Employee.Id)
                 .ToList()
                 .SelectMany(l => Helper.GetRangeOfDates(0, l.FromDate.Date, l.ToDate.Date));
 

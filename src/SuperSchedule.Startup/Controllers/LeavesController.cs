@@ -27,6 +27,14 @@ namespace SuperSchedule.Startup.Controllers
                 return new OkResult();
             }
 
+            if(leaveModel.FromDate.Date > leaveModel.ToDate.Date)
+            {
+                return new BadRequestObjectResult(new List<string>
+                {
+                    "Датата в полето \"От дата\" трябва да бъде по-малка от \"До дата\""
+                });
+            }
+
             var (hasErrors,errorMessages) = await leaveService.CreateLeave(new Leave
             {
                 FromDate = leaveModel.FromDate,
