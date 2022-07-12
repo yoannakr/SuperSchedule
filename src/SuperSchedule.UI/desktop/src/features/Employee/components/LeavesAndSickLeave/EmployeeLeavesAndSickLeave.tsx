@@ -17,6 +17,7 @@ import Box from "@mui/material/Box";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import locale from "date-fns/locale/bg";
 
 import styles from "./LeavesAndSickLeave.module.scss";
 import moment from "moment";
@@ -185,7 +186,7 @@ export const EmployeeLeavesAndSickLeave = (
 
   return (
     <div>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <LocalizationProvider dateAdapter={AdapterDateFns} locale={locale}>
         <Box className={styles.DatesContainer}>
           <DatePicker
             inputFormat="dd.MM.yyyy"
@@ -226,7 +227,7 @@ export const EmployeeLeavesAndSickLeave = (
       </div>
 
       <div className={styles.LeavesContainer}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} locale={locale}>
           <StaticDatePicker
             className={styles.StaticDatePicker}
             inputFormat="dd.MM.yyyy"

@@ -8,6 +8,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import Box from "@mui/material/Box";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import TextField from "@mui/material/TextField";
+import locale from "date-fns/locale/bg";
 
 import "../../../App.css";
 import styles from "./Setting.module.scss";
@@ -358,7 +359,10 @@ export const Setting = () => {
                     />
                   </td>
                   <td>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <LocalizationProvider
+                      dateAdapter={AdapterDateFns}
+                      locale={locale}
+                    >
                       <Box>
                         <DatePicker
                           inputFormat="dd.MM.yyyy"

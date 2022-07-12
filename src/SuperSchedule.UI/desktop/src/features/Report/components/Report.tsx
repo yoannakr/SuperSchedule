@@ -13,6 +13,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import PrintIcon from "@mui/icons-material/Print";
 import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
+import locale from "date-fns/locale/bg";
 
 import styles from "./Report.module.scss";
 import moment from "moment";
@@ -100,7 +101,7 @@ export const Report = () => {
 
   return (
     <div className={styles.Report}>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <LocalizationProvider dateAdapter={AdapterDateFns} locale={locale}>
         <Box className={styles.DatesContainer}>
           <DatePicker
             inputFormat="MM.yyyy"

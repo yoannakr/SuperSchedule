@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import SaveIcon from "@mui/icons-material/Save";
+import locale from "date-fns/locale/bg";
 
 import "../../../App.css";
 import TextField from "@mui/material/TextField";
@@ -71,7 +72,7 @@ export const CreateSchedule = () => {
   return (
     <Form className="Form">
       <h1>Нов график</h1>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <LocalizationProvider dateAdapter={AdapterDateFns} locale={locale}>
         <Box m={2}>
           <DatePicker
             inputFormat="MM.yyyy"

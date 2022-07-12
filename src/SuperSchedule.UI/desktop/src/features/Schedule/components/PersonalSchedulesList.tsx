@@ -7,6 +7,7 @@ import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DatePicker from "@mui/lab/DatePicker";
 import Box from "@mui/material/Box";
+import locale from "date-fns/locale/bg";
 
 import styles from "./Schedule.module.scss";
 import { getAllEmployees } from "../../Employee/api/employee/getAllEmployees";
@@ -53,7 +54,7 @@ export const PersonalSchedulesList = () => {
     <div className={styles.Schedule}>
       {employeeTabItems.length !== 0 ? (
         <>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider dateAdapter={AdapterDateFns} locale={locale}>
             <Box m={2}>
               <DatePicker
                 inputFormat="MM.yyyy"

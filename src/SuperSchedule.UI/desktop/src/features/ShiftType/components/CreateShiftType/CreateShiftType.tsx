@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import moment from "moment";
 import SaveIcon from "@mui/icons-material/Save";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import TextField from "@mui/material/TextField";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import locale from "date-fns/locale/bg";
 
 import "../../../../App.css";
 import styles from "./CreateShiftType.module.scss";
@@ -27,12 +32,14 @@ export const CreateShiftType = () => {
   const [isInvalidAbbreviation, setIsInvalidAbbreviation] =
     useState<boolean>(false);
 
-  const [startTime, setStartTime] = useState<string>(
-    moment().format(timeFormat)
+  const [startTime, setStartTime] = useState<Date | null>(
+    moment().hour(7).minute(0).toDate()
   );
   const [isInvalidStartTime, setIsInvalidStartTime] = useState<boolean>(false);
 
-  const [endTime, setEndTime] = useState<string>(moment().format(timeFormat));
+  const [endTime, setEndTime] = useState<Date | null>(
+    moment().hour(19).minute(0).toDate()
+  );
   const [isInvalidEndTime, setIsInvalidEndTime] = useState<boolean>(false);
 
   const [rotationDays, setRotationDays] = useState<number>(1);
@@ -132,16 +139,6 @@ export const CreateShiftType = () => {
     return true;
   };
 
-  const onStartTimeChange = (startTime: string) => {
-    setStartTime(startTime);
-
-    validateStartTime(startTime);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
-  };
-
   const validateStartTime = (startTimeInput: string): boolean => {
     setIsInvalidStartTime(false);
 
@@ -151,16 +148,6 @@ export const CreateShiftType = () => {
     }
 
     return true;
-  };
-
-  const onEndTimeChange = (endTime: string) => {
-    setEndTime(endTime);
-
-    validateEndTime(endTime);
-
-    if (isButtonDisabled) {
-      setIsButtonDisabled(false);
-    }
   };
 
   const validateEndTime = (endTimeInput: string): boolean => {
@@ -296,8 +283,12 @@ export const CreateShiftType = () => {
   const isInputFieldsAreValid = (): boolean => {
     const isValidName: boolean = validateName(name);
     const isValidAbbreviation: boolean = validateAbbreviation(abbreviation);
-    const isValidStartTime: boolean = validateStartTime(startTime);
-    const isValidEndTime: boolean = validateEndTime(endTime);
+    const isValidStartTime: boolean = validateStartTime(
+      moment(startTime).format(timeFormat)
+    );
+    const isValidEndTime: boolean = validateEndTime(
+      moment(endTime).format(timeFormat)
+    );
     const isValidRotationDays: boolean = validateRotationDays(rotationDays);
     const isValidPriority: boolean = validatePriority(priority);
     const isValidSelectedLocationId: boolean =
@@ -322,8 +313,8 @@ export const CreateShiftType = () => {
   const setDefaultValues = () => {
     setName("");
     setAbbreviation("");
-    setStartTime(moment().format(timeFormat));
-    setEndTime(moment().format(timeFormat));
+    setStartTime(moment().hour(7).minute(0).toDate());
+    setEndTime(moment().hour(19).minute(0).toDate());
     setRotationDays(0);
     setPriority(1);
     setSelectedLocationId(0);
@@ -365,7 +356,6 @@ export const CreateShiftType = () => {
 
   return (
     <Form className="Form">
-      <h1>Нова смяна</h1>
       <Row className={styles.Row}>
         <Form.Group as={Col}>
           <InputField
@@ -396,34 +386,42 @@ export const CreateShiftType = () => {
         </Form.Group>
       </Row>
 
-      <Row className={styles.Row}>
-        <Form.Group as={Col}>
-          <InputField
-            type="time"
+      <Row className={`${styles.Row} ${styles.TimePicker}`}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} locale={locale}>
+          <TimePicker
             label="Начало"
             value={startTime}
-            onChange={onStartTimeChange}
-            hasHelpIcon={false}
-            helpButtonTooltip={""}
-            isInvalid={isInvalidStartTime}
-            errorMessage={"Моля, въведете начален час"}
+            onChange={setStartTime}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                helperText={
+                  isInvalidStartTime ? "Моля, въведете начален час" : null
+                }
+                error={isInvalidStartTime}
+              />
+            )}
           />
-        </Form.Group>
+        </LocalizationProvider>
       </Row>
 
-      <Row className={styles.Row}>
-        <Form.Group as={Col}>
-          <InputField
-            type="time"
+      <Row className={`${styles.Row} ${styles.TimePicker}`}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} locale={locale}>
+          <TimePicker
             label="Край"
             value={endTime}
-            onChange={onEndTimeChange}
-            hasHelpIcon={false}
-            helpButtonTooltip={""}
-            isInvalid={isInvalidEndTime}
-            errorMessage={"Моля, въведете краен час"}
+            onChange={setEndTime}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                helperText={
+                  isInvalidEndTime ? "Моля, въведете краен час" : null
+                }
+                error={isInvalidEndTime}
+              />
+            )}
           />
-        </Form.Group>
+        </LocalizationProvider>
       </Row>
 
       <Row className={styles.Row}>

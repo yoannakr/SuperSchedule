@@ -7,6 +7,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Box from "@mui/material/Box";
 import SaveIcon from "@mui/icons-material/Save";
+import locale from "date-fns/locale/bg";
 
 import styles from "./LeavesAndSickLeave.module.scss";
 import moment from "moment";
@@ -157,7 +158,7 @@ export const CreateLeave = (props: CreateLeaveOptions) => {
 
   return (
     <div>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <LocalizationProvider dateAdapter={AdapterDateFns} locale={locale}>
         <Box className={styles.DatesContainer}>
           <DatePicker
             inputFormat="dd.MM.yyyy"

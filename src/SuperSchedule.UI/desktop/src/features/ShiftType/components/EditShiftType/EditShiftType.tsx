@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Form, Row, Col } from "react-bootstrap";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import TextField from "@mui/material/TextField";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import locale from "date-fns/locale/bg";
 
 import styles from "./EditShiftType.module.scss";
 import {
@@ -33,15 +38,13 @@ export const EditShiftType = (props: EditShiftTypeOptions) => {
   const [isInvalidAbbreviation, setIsInvalidAbbreviation] =
     useState<boolean>(false);
 
-  const [startTime, setStartTime] = useState<string>(
-    moment(shiftType?.startTime)?.format(timeFormat) ??
-      moment().format(timeFormat)
+  const [startTime, setStartTime] = useState<Date | null>(
+    moment(shiftType?.startTime)?.toDate() ?? moment().toDate()
   );
   const [isInvalidStartTime, setIsInvalidStartTime] = useState<boolean>(false);
 
-  const [endTime, setEndTime] = useState<string>(
-    moment(shiftType?.endTime)?.format(timeFormat) ??
-      moment().format(timeFormat)
+  const [endTime, setEndTime] = useState<Date | null>(
+    moment(shiftType?.endTime)?.toDate() ?? moment().toDate()
   );
   const [isInvalidEndTime, setIsInvalidEndTime] = useState<boolean>(false);
 
@@ -124,11 +127,6 @@ export const EditShiftType = (props: EditShiftTypeOptions) => {
     return true;
   };
 
-  const onStartTimeChange = (startTime: string) => {
-    setStartTime(startTime);
-    validateStartTime(startTime);
-  };
-
   const validateStartTime = (startTimeInput: string): boolean => {
     setIsInvalidStartTime(false);
 
@@ -138,11 +136,6 @@ export const EditShiftType = (props: EditShiftTypeOptions) => {
     }
 
     return true;
-  };
-
-  const onEndTimeChange = (endTime: string) => {
-    setEndTime(endTime);
-    validateEndTime(endTime);
   };
 
   const validateEndTime = (endTimeInput: string): boolean => {
@@ -257,8 +250,12 @@ export const EditShiftType = (props: EditShiftTypeOptions) => {
   const isInputFieldsAreValid = (): boolean => {
     const isValidName: boolean = validateName(name);
     const isValidAbbreviation: boolean = validateAbbreviation(abbreviation);
-    const isValidStartTime: boolean = validateStartTime(startTime);
-    const isValidEndTime: boolean = validateEndTime(endTime);
+    const isValidStartTime: boolean = validateStartTime(
+      moment(startTime).format(timeFormat)
+    );
+    const isValidEndTime: boolean = validateEndTime(
+      moment(endTime).format(timeFormat)
+    );
     const isValidRotationDays: boolean = validateRotationDays(rotationDays);
     const isValidPriority: boolean = validatePriority(priority);
     const isValidSelectedLocationId: boolean =
@@ -280,18 +277,6 @@ export const EditShiftType = (props: EditShiftTypeOptions) => {
     );
   };
 
-  const setDefaultValues = () => {
-    setName("");
-    setAbbreviation("");
-    setStartTime(moment().format(timeFormat));
-    setEndTime(moment().format(timeFormat));
-    setRotationDays(0);
-    setPriority(1);
-    setSelectedLocationId(0);
-    setNightHours(0);
-    setSelectedDaysId([]);
-  };
-
   const save = async (): Promise<boolean> => {
     let isValid = isInputFieldsAreValid();
     if (isValid) {
@@ -307,6 +292,9 @@ export const EditShiftType = (props: EditShiftTypeOptions) => {
         nightHours,
         daysIds: selectedDaysIds,
       };
+
+      console.log(moment(startTime).format(timeFormat));
+      console.log(editedShiftType.startTime);
 
       if (shiftType !== undefined) {
         shiftType.name = name;
@@ -362,34 +350,42 @@ export const EditShiftType = (props: EditShiftTypeOptions) => {
         </Form.Group>
       </Row>
 
-      <Row className={styles.Row}>
-        <Form.Group as={Col}>
-          <InputField
-            type="time"
+      <Row className={`${styles.Row} ${styles.TimePicker}`}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} locale={locale}>
+          <TimePicker
             label="Начало"
             value={startTime}
-            onChange={onStartTimeChange}
-            hasHelpIcon={false}
-            helpButtonTooltip={""}
-            isInvalid={isInvalidStartTime}
-            errorMessage={"Моля, въведете начален час"}
+            onChange={setStartTime}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                helperText={
+                  isInvalidStartTime ? "Моля, въведете начален час" : null
+                }
+                error={isInvalidStartTime}
+              />
+            )}
           />
-        </Form.Group>
+        </LocalizationProvider>
       </Row>
 
-      <Row className={styles.Row}>
-        <Form.Group as={Col}>
-          <InputField
-            type="time"
+      <Row className={`${styles.Row} ${styles.TimePicker}`}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} locale={locale}>
+          <TimePicker
             label="Край"
             value={endTime}
-            onChange={onEndTimeChange}
-            hasHelpIcon={false}
-            helpButtonTooltip={""}
-            isInvalid={isInvalidEndTime}
-            errorMessage={"Моля, въведете краен час"}
+            onChange={setEndTime}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                helperText={
+                  isInvalidEndTime ? "Моля, въведете краен час" : null
+                }
+                error={isInvalidEndTime}
+              />
+            )}
           />
-        </Form.Group>
+        </LocalizationProvider>
       </Row>
 
       <Row className={styles.Row}>
