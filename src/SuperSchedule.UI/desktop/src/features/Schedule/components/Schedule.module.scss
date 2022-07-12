@@ -18,6 +18,7 @@
 .Schedule {
   width: 100vw;
   margin-left: 250px;
+  overflow-x: hidden;
 }
 
 .LocationSchedule,
@@ -64,4 +65,9 @@
   text-align: center;
   justify-content: center;
   font-style: italic;
+}
+
+.Header {
+  display: flex;
+  flex-direction: row;
 }
