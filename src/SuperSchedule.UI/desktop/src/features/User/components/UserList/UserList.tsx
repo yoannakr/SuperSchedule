@@ -103,12 +103,12 @@ export const UserList = () => {
         width: 80,
         getActions: (params) => [
           <GridActionsCellItem
-            icon={<EditIcon />}
+            icon={<EditIcon style={{ color: "green" }} />}
             label="Редактирай"
             onClick={onShowEditDialog(params.id, params.row)}
           />,
           <GridActionsCellItem
-            icon={<DeleteIcon />}
+            icon={<DeleteIcon style={{ color: "red" }} />}
             label="Изтрий"
             onClick={onShowDeleteAlertMessage(params.id, params.row)}
             disabled={users.length <= 1}
