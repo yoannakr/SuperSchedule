@@ -5,12 +5,14 @@ import moment from "moment";
 export const exportPDFPersonalSchedule = (
   tableId: string,
   monthDate: Date | null,
-  employeeName: string
+  employeeName: string,
+  secretaryName: string,
+  managerName: string
 ) => {
   const marginLeft = 40;
   const doc = createPdfFile();
   const title = "УТВЪРЖДАВАМ";
-  const name = "Гл.Секретар: маг.Н.Николов";
+  const name = `Гл.Секретар: ${secretaryName}`;
 
   const schedule = "ГРАФИК";
   const desription = "за дежурствата на охранителите";
@@ -18,7 +20,10 @@ export const exportPDFPersonalSchedule = (
     (monthDate?.getMonth() ?? 0) + 1
   }. ${monthDate?.getFullYear()}г`;
 
-  const footer = "гх графикът се коригира при необходимост";
+  const scheduleCanBeEditedfooter = "гх графикът се коригира при необходимост";
+  const madeByFirstRowFooter = "Изготвил:";
+  const madeBySecondRowFooter = 'Р-л отдел "Без. и охрана"';
+  const madeByThirdRowFooter = `/${managerName}/`;
 
   doc.text(title, marginLeft, 40);
   doc.text(name, marginLeft, 60);
@@ -28,7 +33,10 @@ export const exportPDFPersonalSchedule = (
   doc.text(desription, width / 2, 100, { align: "center" });
   doc.text(month, width / 2, 120, { align: "center" });
 
-  doc.text(footer, marginLeft, height - 20);
+  doc.text(scheduleCanBeEditedfooter, marginLeft, height - 300);
+  doc.text(madeByFirstRowFooter, marginLeft + 580, height - 300);
+  doc.text(madeBySecondRowFooter, marginLeft + 580, height - 280);
+  doc.text(madeByThirdRowFooter, marginLeft + 610, height - 260);
 
   autoTable(doc, {
     theme: "plain",
@@ -37,12 +45,12 @@ export const exportPDFPersonalSchedule = (
       halign: "center",
       valign: "middle",
       lineWidth: 0.25,
-      lineColor: 200,
+      lineColor: [0, 0, 0],
     },
     bodyStyles: {
       halign: "center",
       lineWidth: 0.25,
-      lineColor: 200,
+      lineColor: [0, 0, 0],
     },
     margin: {
       top: 140,

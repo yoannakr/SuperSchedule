@@ -144,15 +144,15 @@ namespace SuperSchedule.Startup.Controllers
         }
 
         [HttpPost]
-        public async Task UpdateShiftType(ShiftTypeModel shiftTypeInputModel)
+        public async Task UpdateShiftType([FromBody] ShiftTypeModel shiftTypeInputModel)
         {
             await shiftTypeService.UpdateShiftType(new ShiftType
             {
                 Id = shiftTypeInputModel.Id,
                 Name = shiftTypeInputModel.Name,
                 Abbreviation = shiftTypeInputModel.Abbreviation,
-                StartTime = TimeOnly.FromDateTime(shiftTypeInputModel.StartTime.ToLocalTime()),
-                EndTime = TimeOnly.FromDateTime(shiftTypeInputModel.EndTime.ToLocalTime()),
+                StartTime = TimeOnly.FromDateTime(shiftTypeInputModel.StartTime),
+                EndTime = TimeOnly.FromDateTime(shiftTypeInputModel.EndTime),
                 RotationDays = shiftTypeInputModel.RotationDays,
                 Priority = shiftTypeInputModel.Priority,
                 IsDeleted = false,

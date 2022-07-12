@@ -45,12 +45,12 @@ export const exportPDFLocationSchedule = (
       halign: "center",
       valign: "middle",
       lineWidth: 0.25,
-      lineColor: 200,
+      lineColor: [0, 0, 0],
     },
     bodyStyles: {
       halign: "center",
       lineWidth: 0.25,
-      lineColor: 200,
+      lineColor: [0, 0, 0],
     },
     margin: {
       top: 140,
