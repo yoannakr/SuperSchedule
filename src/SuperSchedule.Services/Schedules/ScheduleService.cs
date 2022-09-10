@@ -299,10 +299,6 @@ namespace SuperSchedule.Services.Schedules
             var allShiftTypes = shiftTypeService.GetShiftTypesByLocation(location.Id).OrderBy(s => s.Priority).ToList();
 
             var otherEmployeesGroup = employeesGroupByPositionPriority.FirstOrDefault();
-            if(otherEmployeesGroup == null)
-            {
-                return;
-            }
             employeesGroupByPositionPriority.Remove(otherEmployeesGroup);
 
             var firstShiftIndex = 0;
@@ -311,12 +307,18 @@ namespace SuperSchedule.Services.Schedules
                 FillScheduleHighestEmployeesFirstAndSecondShiftsTemplate(schedules, location, datesGroupedByWeek, allShiftTypes, employee, firstShiftIndex);
                 if (leaveService.IsEmployeeHasLeavesForPeriod(employee.Id, startDate, endDate))
                 {
-                    ManageLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
+                    if (otherEmployeesGroup != null)
+                    {
+                        ManageLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
+                    }
                 }
 
                 if (leaveService.IsEmployeeHasSickLeavesForPeriod(employee.Id, startDate, endDate))
                 {
-                    ManageSickLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
+                    if (otherEmployeesGroup != null)
+                    {
+                        ManageSickLeaves(schedules, location, otherEmployeesGroup, startDate, endDate, employee);
+                    }
                 }
 
                 firstShiftIndex++;
@@ -330,7 +332,11 @@ namespace SuperSchedule.Services.Schedules
             {
                 var countOfUnnecessaryShifts = GetCountOfUnnecessaryShifts(employee, startDate, schedules, ShiftTypesTemplate.FirstAndSecondShifts);
 
-                RemoveUnneccessaryFirstAndSecondShiftsTemplate(employee, location, schedules, countOfUnnecessaryShifts, otherEmployeesGroup, datesGroupedByWeek, allShiftTypes);
+                if (otherEmployeesGroup != null)
+                {
+                    RemoveUnneccessaryFirstAndSecondShiftsTemplate(employee, location, schedules, countOfUnnecessaryShifts, otherEmployeesGroup, datesGroupedByWeek, allShiftTypes);
+
+                }
             }
         }
 

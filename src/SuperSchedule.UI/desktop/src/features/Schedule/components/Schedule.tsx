@@ -10,6 +10,11 @@ import DatePicker from "@mui/lab/DatePicker";
 import Box from "@mui/material/Box";
 import moment from "moment";
 import locale from "date-fns/locale/bg";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { getLocations } from "../../../api/getLocations";
 import { Location } from "../../../types";
@@ -20,6 +25,7 @@ import { getErrorsForMonthSchedule } from "../api/getErrorsForMonthSchedule";
 import { TabItem, TabList } from "./TabList";
 import { UndrawNoLocationsSvg } from "../../../components/Svgs";
 import { getWorkingHoursForMonth } from "../api/getWorkingHoursForMonth";
+import Collapse from "@material-ui/core/Collapse";
 
 export const Schedule = () => {
   const [selectedLocationId, setSelectedLocationId] = useState<string>("1");
@@ -99,12 +105,20 @@ export const Schedule = () => {
       {locations.length !== 0 ? (
         <>
           {errors.length !== 0 && (
-            <Alert severity="error">
-              <AlertTitle>Моля, проверете следните грешки:</AlertTitle>
-              {errors.map((error, key) => (
-                <p key={key}>{error}</p>
-              ))}
-            </Alert>
+            <Accordion className={styles.AccordionErrors}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography className={styles.ErrorsTitle}>
+                  Моля, проверете следните грешки
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Alert severity="error">
+                  {errors.map((error, key) => (
+                    <p key={key}>{error}</p>
+                  ))}
+                </Alert>
+              </AccordionDetails>
+            </Accordion>
           )}
           <LocalizationProvider dateAdapter={AdapterDateFns} locale={locale}>
             <Box m={2}>
