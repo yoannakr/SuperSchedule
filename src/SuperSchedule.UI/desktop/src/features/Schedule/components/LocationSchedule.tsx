@@ -27,7 +27,6 @@ import { SnackBar } from "../../../components/Snackbar";
 import { exportPDFLocationSchedule } from "../utils/exportPDFLocationSchedule";
 import { getSecretaryName } from "../../Setting/api/getSecretaryName";
 import { getManagerName } from "../../Setting/api/getManagerName";
-import { getWorkingHoursForMonth } from "../api/getWorkingHoursForMonth";
 
 const useStyles = makeStyles({
   tableCell: {
@@ -81,6 +80,13 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
 
   const [secretaryName, setSecretaryName] = useState<string>("");
   const [managerName, setManagerName] = useState<string>("");
+  const [scheduleTitle, setScheduleTitle] = useState<string>("");
+
+  const scheduleText = "График".toUpperCase();
+  const reportText = "Отчет".toUpperCase();
+  const schedueTitle =
+    moment().month <= moment(monthDate).month ? scheduleText : reportText;
+  const scheduleMonthTitle = `месец ${moment(monthDate).format("MM.YYYY")}г`;
 
   useEffect(() => {
     const getDataShiftTypes = () => {
@@ -119,6 +125,10 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
     getDataShiftTypes();
     getDataSecretaryName();
     getDataManagerName();
+
+    const currentScheduleTitle =
+      moment().month() <= moment(monthDate).month() ? scheduleText : reportText;
+    setScheduleTitle(currentScheduleTitle);
   }, []);
 
   useEffect(() => {
@@ -171,6 +181,11 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
           )
         );
     };
+
+    const currentScheduleTitle =
+      moment().month() <= moment(monthDate).month() ? scheduleText : reportText;
+    setScheduleTitle(currentScheduleTitle);
+
     if (!isEditMode) {
       getDataSchedules();
       onShiftTypesChange();
@@ -290,6 +305,11 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
         </i>
       </div>
 
+      <div className={styles.Title}>
+        <p>{scheduleTitle}</p>
+        <p>за дежурствата на охранителите</p>
+        <p>{scheduleMonthTitle}</p>
+      </div>
       <TableContainer className={`${styles.Table}`}>
         <Table id="table">
           <TableHead>
