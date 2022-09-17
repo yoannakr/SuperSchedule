@@ -296,7 +296,7 @@ namespace SuperSchedule.Services.Schedules
             var dates = GetRangeOfDates(0, startDate, endDate);
 
             var datesGroupedByWeek = dates.GroupBy(x => CultureInfo.CurrentCulture.DateTimeFormat.Calendar.GetWeekOfYear(x, CalendarWeekRule.FirstFullWeek, DayOfWeek.Monday)).ToList();
-            var allShiftTypes = shiftTypeService.GetShiftTypesByLocation(location.Id).OrderBy(s => s.Priority).ToList();
+            var allShiftTypes = shiftTypeService.GetShiftTypesByLocation(location.Id).OrderBy(s => s.Priority).Take(2).ToList();
 
             var otherEmployeesGroup = employeesGroupByPositionPriority.FirstOrDefault();
             employeesGroupByPositionPriority.Remove(otherEmployeesGroup);
@@ -332,7 +332,7 @@ namespace SuperSchedule.Services.Schedules
             {
                 var countOfUnnecessaryShifts = GetCountOfUnnecessaryShifts(employee, startDate, schedules, ShiftTypesTemplate.FirstAndSecondShifts);
 
-                if (otherEmployeesGroup != null)
+                if (otherEmployeesGroup != null && countOfUnnecessaryShifts > 0)
                 {
                     RemoveUnneccessaryFirstAndSecondShiftsTemplate(employee, location, schedules, countOfUnnecessaryShifts, otherEmployeesGroup, datesGroupedByWeek, allShiftTypes);
 
