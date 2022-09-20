@@ -60,22 +60,28 @@ export const ShiftTypeList = () => {
   const getDataAllShiftTypes = () => {
     getAllCurrentShiftTypes()
       .then((response) => {
-        const shiftTypes: ShiftType[] = response.data;
-        const shiftTypeRows: ShiftTypeRow[] = shiftTypes.map((shiftType) => ({
-          id: shiftType.id,
-          name: shiftType.name,
-          abbreviation: shiftType.abbreviation,
-          startTime: shiftType.startTime,
-          startTimeFormatted:
-            moment(shiftType.startTime)?.format(timeFormat) ?? "",
-          endTime: shiftType.endTime,
-          endTimeFormatted: moment(shiftType.endTime)?.format(timeFormat) ?? "",
-          rotationDays: shiftType.rotationDays,
-          priority: shiftType.priority,
-          locationId: shiftType.locationId,
-          nightHours: shiftType.nightHours,
-          daysIds: shiftType.daysIds,
-        }));
+        const allShiftTypes: ShiftType[] = response.data;
+        const shiftTypesWithoutDefault = allShiftTypes.filter(
+          (s) => !isShiftTypeDefaultType(s?.locationId ?? 0, s?.priority ?? 0)
+        );
+        const shiftTypeRows: ShiftTypeRow[] = shiftTypesWithoutDefault.map(
+          (shiftType) => ({
+            id: shiftType.id,
+            name: shiftType.name,
+            abbreviation: shiftType.abbreviation,
+            startTime: shiftType.startTime,
+            startTimeFormatted:
+              moment(shiftType.startTime)?.format(timeFormat) ?? "",
+            endTime: shiftType.endTime,
+            endTimeFormatted:
+              moment(shiftType.endTime)?.format(timeFormat) ?? "",
+            rotationDays: shiftType.rotationDays,
+            priority: shiftType.priority,
+            locationId: shiftType.locationId,
+            nightHours: shiftType.nightHours,
+            daysIds: shiftType.daysIds,
+          })
+        );
         setShiftTypes(shiftTypeRows);
       })
       .catch((error) =>

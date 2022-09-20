@@ -17,8 +17,8 @@ import { getShiftTypes } from "../../../../api/getShiftTypes";
 import { createEmployee } from "../../api/employee/createEmployee";
 import { SnackBar } from "../../../../components/Snackbar";
 import { LoadingButton } from "../../../../components/Button";
-import { getAllCurrentEmployees } from "../../api/employee/getAllCurrentEmployees";
 import { getAllEmployees } from "../../api/employee/getAllEmployees";
+import { isShiftTypeDefaultType } from "../../../../utils";
 
 export const CreateEmployee = () => {
   const [firstName, setFirstName] = useState<string>("");
@@ -84,7 +84,10 @@ export const CreateEmployee = () => {
       getShiftTypes()
         .then((response) => {
           const shiftTypes: ShiftType[] = response.data;
-          setShiftTypes(shiftTypes);
+          const shiftTypesWithoutDefault = shiftTypes.filter(
+            (s) => !isShiftTypeDefaultType(s?.locationId ?? 0, s?.priority ?? 0)
+          );
+          setShiftTypes(shiftTypesWithoutDefault);
         })
         .catch((error) =>
           console.log(`GetAllShiftTypes not successful because: ${error}`)
