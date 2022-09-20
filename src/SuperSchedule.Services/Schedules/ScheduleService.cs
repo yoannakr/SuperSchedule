@@ -1129,6 +1129,17 @@ namespace SuperSchedule.Services.Schedules
                             continue;
                         }
                     }
+
+                    if(location.ShiftTypesTemplate == ShiftTypesTemplate.FirstAndSecondShifts && shiftTypeIds.Count >=2)
+                    {
+                        continue;
+                    }
+
+                    if (location.ShiftTypesTemplate == ShiftTypesTemplate.OneShift && shiftTypeIds.Count >= 1)
+                    {
+                        continue;
+                    }
+
                     result.Add($"{location.Name} има невзети смени за {locationScheduleByDate.Key.ToString("dd.MM.yyyy")}.");
                 }
             }
