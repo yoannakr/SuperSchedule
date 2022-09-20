@@ -60,6 +60,26 @@ namespace SuperSchedule.Startup.Controllers
         }
 
         [HttpGet]
+        public IEnumerable<EmployeeModel> GetAllReservesEmployees()
+        {
+            return employeeService.GetAllEmployees().Where(e => e.Position.Priority != 1).Select(employee =>
+                new EmployeeModel
+                {
+                    Id = employee.Id,
+                    FirstName = employee.FirstName,
+                    MiddleName = employee.MiddleName,
+                    LastName = employee.LastName,
+                    FullName = employee.FullName,
+                    VacationDays = employee.VacationDays,
+                    PositionId = employee.Position.Id,
+                    PositionName = employee.Position.Name,
+                    LocationsIds = employee.Locations.Select(l => l.Id),
+                    ShiftTypesIds = employee.ShiftTypes.Select(sh => sh.Id),
+                    PreviousEmployeeId = employee.PreviousEmployee?.Id ?? 0
+                });
+        }
+
+        [HttpGet]
         public IEnumerable<EmployeeModel> GetAllCurrentEmployees()
         {
             return employeeService.GetAllCurrentEmployees().Select(employee =>

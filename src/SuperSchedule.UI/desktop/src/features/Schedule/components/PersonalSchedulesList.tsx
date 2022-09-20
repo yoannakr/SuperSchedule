@@ -10,7 +10,7 @@ import Box from "@mui/material/Box";
 import locale from "date-fns/locale/bg";
 
 import styles from "./Schedule.module.scss";
-import { getAllEmployees } from "../../Employee/api/employee/getAllEmployees";
+import { getAllReservesEmployees } from "../../Employee/api/employee/getAllReservesEmployees";
 import { PersonalSchedule } from "./PersonalSchedule";
 import { TabItem, TabList } from "./TabList";
 import { UndrawNoEmployeesSvg } from "../../../components/Svgs";
@@ -22,12 +22,13 @@ export const PersonalSchedulesList = () => {
 
   useEffect(() => {
     const getDataEmployees = () => {
-      getAllEmployees()
+      getAllReservesEmployees()
         .then((response) => {
           const employees: Employee[] = response.data;
           const tabItems: TabItem[] = employees.map((employee) =>
             createTabItem(employee)
           );
+          setSelectedEmployeeId(employees[0].id.toString());
           setEmployeeTabItems(tabItems);
         })
         .catch((error) =>
