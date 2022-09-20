@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Form, Row, Col } from "react-bootstrap";
 
 import styles from "./EditLocation.module.scss";
-import { InputField, SelectField } from "../../../../components/Form";
+import {
+  CheckboxField,
+  InputField,
+  SelectField,
+} from "../../../../components/Form";
 import { Location } from "../../../../types";
 import { SnackBar } from "../../../../components/Snackbar";
 import { updateLocation } from "../../api/updateLocation";
@@ -46,6 +50,10 @@ export const EditLocation = (props: EditLocationOptions) => {
   );
   const [isInvalidShiftTypesTemplateId, setIsInvalidShiftTypesTemplateId] =
     useState<boolean>(false);
+
+  const [isAutomationFill, setIsAutomationFill] = useState<boolean>(
+    location?.isAutomationFill ?? true
+  );
 
   const [showError, setShowError] = useState<boolean>(false);
 
@@ -145,6 +153,7 @@ export const EditLocation = (props: EditLocationOptions) => {
         abbreviation,
         priority,
         shiftTypesTemplate: shiftTypesTemplateId,
+        isAutomationFill: isAutomationFill,
       };
 
       if (location !== undefined) {
@@ -227,6 +236,17 @@ export const EditLocation = (props: EditLocationOptions) => {
             }
             isInvalid={isInvalidPriority}
             errorMessage={"Моля, въведете число по-голямо от 0"}
+          />
+        </Form.Group>
+      </Row>
+
+      <Row className={styles.Row}>
+        <Form.Group as={Col} controlId="formBasicCheckbox">
+          <CheckboxField
+            label="Автоматично попълване"
+            value={1}
+            isChecked={isAutomationFill}
+            onChange={() => setIsAutomationFill(!isAutomationFill)}
           />
         </Form.Group>
       </Row>

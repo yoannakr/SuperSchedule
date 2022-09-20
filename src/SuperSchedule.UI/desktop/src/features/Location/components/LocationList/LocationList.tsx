@@ -27,6 +27,7 @@ type LocationRow = {
   priority?: number;
   shiftTypesTemplate: number;
   shiftTypesTemplateName?: string;
+  isAutomationFill: boolean;
   isDeleted?: boolean;
 };
 
@@ -56,6 +57,7 @@ export const LocationList = () => {
             priority: location.priority,
             shiftTypesTemplate: location.shiftTypesTemplate,
             shiftTypesTemplateName: location.shiftTypesTemplateName,
+            isAutomationFill: location.isAutomationFill,
           }));
           setLocations(locationsRows);
         })
@@ -167,6 +169,7 @@ export const LocationList = () => {
               abbreviation: selectedLocation?.abbreviation ?? "",
               shiftTypesTemplate: selectedLocation?.shiftTypesTemplate ?? 1,
               priority: selectedLocation?.priority ?? 1,
+              isAutomationFill: selectedLocation?.isAutomationFill ?? true,
             }}
             onSaveEditedLocation={onSaveEditedLocation}
           />

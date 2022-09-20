@@ -55,7 +55,9 @@ export const CreateShiftType = () => {
     useState<boolean>(false);
 
   const [days, setDays] = useState<Day[]>([]);
-  const [selectedDaysIds, setSelectedDaysId] = useState<number[]>([]);
+  const [selectedDaysIds, setSelectedDaysId] = useState<number[]>([
+    1, 2, 3, 4, 5, 6, 7,
+  ]);
   const [isInvalidSelectedDaysIds, setIsInvalidSelectedDaysIds] =
     useState<boolean>(false);
 
@@ -315,11 +317,11 @@ export const CreateShiftType = () => {
     setAbbreviation("");
     setStartTime(moment().hour(7).minute(0).toDate());
     setEndTime(moment().hour(19).minute(0).toDate());
-    setRotationDays(0);
+    setRotationDays(1);
     setPriority(1);
     setSelectedLocationId(0);
     setNightHours(0);
-    setSelectedDaysId([]);
+    setSelectedDaysId([1, 2, 3, 4, 5, 6, 7]);
     setIsButtonDisabled(true);
   };
 

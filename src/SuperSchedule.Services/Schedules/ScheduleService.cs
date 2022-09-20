@@ -39,6 +39,11 @@ namespace SuperSchedule.Services.Schedules
 
             foreach (var location in allLocations)
             {
+                if (!location.IsAutomationFill)
+                {
+                    continue;
+                }
+                
                 await FillScheduleForLocation(location, startDate, endDate);
             }
         }
@@ -1539,6 +1544,11 @@ namespace SuperSchedule.Services.Schedules
 
             foreach (var location in locations)
             {
+                if (!location.IsAutomationFill)
+                {
+                    continue;
+                }
+
                 var errorsFromLocationForRepeatedShiftTypes = CheckLocationForRepeatedShiftTypes(firstDayOfMonth, lastDayOfMonth, location);
                 var errorsFromLocationForMissedShiftTypes = CheckLocationForMissedShiftTypes(firstDayOfMonth, lastDayOfMonth, location);
 

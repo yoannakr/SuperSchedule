@@ -21,6 +21,7 @@ export type Location = {
   priority: number;
   shiftTypesTemplate: number;
   shiftTypesTemplateName?: string;
+  isAutomationFill: boolean;
   isDeleted?: boolean;
 };
 

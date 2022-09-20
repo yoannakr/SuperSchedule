@@ -26,7 +26,8 @@ namespace SuperSchedule.Startup.Controllers
                 Abbreviation = l.Abbreviation,
                 Priority = l.Priority,
                 ShiftTypesTemplate = (int)l.ShiftTypesTemplate,
-                ShiftTypesTemplateName = l.ShiftTypesTemplate.GetDisplayName()
+                ShiftTypesTemplateName = l.ShiftTypesTemplate.GetDisplayName(),
+                IsAutomationFill = l.IsAutomationFill,
             }).OrderBy(l => l.Priority);
         }
 
@@ -40,7 +41,8 @@ namespace SuperSchedule.Startup.Controllers
                 Abbreviation = l.Abbreviation,
                 Priority = l.Priority,
                 ShiftTypesTemplate = (int)l.ShiftTypesTemplate,
-                ShiftTypesTemplateName = l.ShiftTypesTemplate.GetDisplayName()
+                ShiftTypesTemplateName = l.ShiftTypesTemplate.GetDisplayName(),
+                IsAutomationFill = l.IsAutomationFill,
             }).OrderBy(l => l.Priority);
         }
 
@@ -53,6 +55,7 @@ namespace SuperSchedule.Startup.Controllers
                 Abbreviation = locationInputModel.Abbreviation,
                 Priority = locationInputModel.Priority,
                 ShiftTypesTemplate = (ShiftTypesTemplate)locationInputModel.ShiftTypesTemplate,
+                IsAutomationFill = locationInputModel.IsAutomationFill,
             });
         }
 
@@ -72,6 +75,7 @@ namespace SuperSchedule.Startup.Controllers
                 Abbreviation = locationModel.Abbreviation,
                 Priority = locationModel.Priority,
                 ShiftTypesTemplate = (ShiftTypesTemplate)locationModel.ShiftTypesTemplate,
+                IsAutomationFill = locationModel.IsAutomationFill,
             });
         }
     }

@@ -4,7 +4,11 @@ import SaveIcon from "@mui/icons-material/Save";
 
 import "../../../../App.css";
 import styles from "./CreateLocation.module.scss";
-import { InputField, SelectField } from "../../../../components/Form";
+import {
+  CheckboxField,
+  InputField,
+  SelectField,
+} from "../../../../components/Form";
 import { Location } from "../../../../types";
 import { createLocation } from "../../api/createLocation";
 import { SnackBar } from "../../../../components/Snackbar";
@@ -38,6 +42,8 @@ export const CreateLocation = () => {
   const [shiftTypesTemplateId, setShiftTypesTemplateId] = useState<number>(1);
   const [isInvalidShiftTypesTemplateId, setIsInvalidShiftTypesTemplateId] =
     useState<boolean>(false);
+
+  const [isAutomationFill, setIsAutomationFill] = useState<boolean>(true);
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
@@ -148,6 +154,7 @@ export const CreateLocation = () => {
     setAbbreviation("");
     setPriority(1);
     setShiftTypesTemplateId(1);
+    setIsAutomationFill(true);
     setIsButtonDisabled(true);
   };
 
@@ -161,6 +168,7 @@ export const CreateLocation = () => {
         abbreviation,
         priority,
         shiftTypesTemplate: shiftTypesTemplateId,
+        isAutomationFill: isAutomationFill,
       };
 
       await createLocation({ location })
@@ -240,6 +248,17 @@ export const CreateLocation = () => {
             }
             isInvalid={isInvalidPriority}
             errorMessage={"Моля, въведете число по-голямо от 0"}
+          />
+        </Form.Group>
+      </Row>
+
+      <Row className={styles.Row}>
+        <Form.Group as={Col} controlId="formBasicCheckbox">
+          <CheckboxField
+            label="Автоматично попълване"
+            value={1}
+            isChecked={isAutomationFill}
+            onChange={() => setIsAutomationFill(!isAutomationFill)}
           />
         </Form.Group>
       </Row>

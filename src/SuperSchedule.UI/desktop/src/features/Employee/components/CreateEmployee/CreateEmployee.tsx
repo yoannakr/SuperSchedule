@@ -301,7 +301,7 @@ export const CreateEmployee = () => {
     setMiddleName("");
     setLastName("");
     setVacationDays(20);
-    setPositionId(0);
+    setPositionId(1);
     setSelectedLocations([]);
     setSelectedShiftTypes([]);
     setIsButtonDisabled(true);
