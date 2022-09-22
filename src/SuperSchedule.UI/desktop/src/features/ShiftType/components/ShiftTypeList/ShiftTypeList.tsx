@@ -27,6 +27,7 @@ type ShiftTypeRow = {
   id: number;
   name: string;
   abbreviation: string;
+  abbreviationByPassed: string;
   startTime?: moment.Moment;
   startTimeFormatted: string;
   endTime?: moment.Moment;
@@ -69,6 +70,7 @@ export const ShiftTypeList = () => {
             id: shiftType.id,
             name: shiftType.name,
             abbreviation: shiftType.abbreviation,
+            abbreviationByPassed: shiftType.abbreviationByPassed,
             startTime: shiftType.startTime,
             startTimeFormatted:
               moment(shiftType.startTime)?.format(timeFormat) ?? "",
@@ -158,6 +160,12 @@ export const ShiftTypeList = () => {
         field: "abbreviation",
         type: "string",
         headerName: "Абревиатура",
+        flex: 1,
+      },
+      {
+        field: "abbreviationByPassed",
+        type: "string",
+        headerName: "Абревиатура за обходни/лични графици",
         flex: 1,
       },
       {
@@ -262,6 +270,8 @@ export const ShiftTypeList = () => {
               id: selectedShiftType?.id ?? 0,
               name: selectedShiftType?.name ?? "",
               abbreviation: selectedShiftType?.abbreviation ?? "",
+              abbreviationByPassed:
+                selectedShiftType?.abbreviationByPassed ?? "",
               startTime: selectedShiftType?.startTime ?? moment(),
               endTime: selectedShiftType?.endTime ?? moment(),
               rotationDays: selectedShiftType?.rotationDays ?? 1,

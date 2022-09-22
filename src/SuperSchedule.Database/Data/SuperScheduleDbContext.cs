@@ -78,6 +78,7 @@ namespace SuperSchedule.Database.Data
                 {
                     Name = "отпуска - работен ден",
                     Abbreviation = "О",
+                    AbbreviationByPassed = "О",
                     StartTime = new TimeOnly(6, 0),
                     EndTime = new TimeOnly(14, 0),
                     RotationDays = 0,
@@ -88,6 +89,7 @@ namespace SuperSchedule.Database.Data
                 {
                     Name = "отпуска - почивен ден",
                     Abbreviation = "О",
+                    AbbreviationByPassed = "О",
                     StartTime = new TimeOnly(0, 0),
                     EndTime = new TimeOnly(0, 0),
                     RotationDays = 0,
@@ -98,6 +100,7 @@ namespace SuperSchedule.Database.Data
                 {
                     Name = "почивка",
                     Abbreviation = "П",
+                    AbbreviationByPassed = "П",
                     StartTime = new TimeOnly(0, 0),
                     EndTime = new TimeOnly(0, 0),
                     RotationDays = 0,
@@ -109,6 +112,7 @@ namespace SuperSchedule.Database.Data
                  {
                      Name = "болничен - работен ден",
                      Abbreviation = "Б",
+                     AbbreviationByPassed = "Б",
                      StartTime = new TimeOnly(6, 0),
                      EndTime = new TimeOnly(14, 0),
                      RotationDays = 0,
@@ -119,6 +123,7 @@ namespace SuperSchedule.Database.Data
                   {
                       Name = "болничен - почивен ден",
                       Abbreviation = "Б",
+                      AbbreviationByPassed = "Б",
                       StartTime = new TimeOnly(0, 0),
                       EndTime = new TimeOnly(0, 0),
                       RotationDays = 0,

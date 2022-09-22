@@ -4,6 +4,7 @@ export type ShiftType = {
   id: number;
   name: string;
   abbreviation: string;
+  abbreviationByPassed: string;
   startTime?: moment.Moment;
   endTime?: moment.Moment;
   rotationDays?: number;

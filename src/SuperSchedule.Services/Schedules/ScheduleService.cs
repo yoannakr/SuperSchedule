@@ -1438,6 +1438,7 @@ namespace SuperSchedule.Services.Schedules
                     }
                     else
                     {
+                        // Abbrevation byPassed
                         abbreviation = $"{schedule.Location.Abbreviation}{schedule.ShiftType.Abbreviation}";
                     }
 
@@ -1450,7 +1451,8 @@ namespace SuperSchedule.Services.Schedules
                         {
                             Id = schedule.ShiftType.Id,
                             Name = schedule.ShiftType.Name,
-                            Abbreviation = abbreviation,
+                            Abbreviation = schedule.ShiftType.Abbreviation,
+                            AbbreviationByPassed = schedule.ShiftType.AbbreviationByPassed,
                             Location = schedule.ShiftType.Location
                         },
                         RemovedShiftType = schedule.RemovedShiftType,

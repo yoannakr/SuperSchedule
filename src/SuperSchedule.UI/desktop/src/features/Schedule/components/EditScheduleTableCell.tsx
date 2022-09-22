@@ -18,10 +18,18 @@ type EditScheduleTableCellProps = {
   row: ShiftTypeEditableCell;
   employee?: Employee;
   isEditMode: boolean;
+  showAbbreviationByPassed: boolean;
 };
 
 export const EditScheduleTableCell = (props: EditScheduleTableCellProps) => {
-  const { className, shiftTypes, row, employee, isEditMode } = props;
+  const {
+    className,
+    shiftTypes,
+    row,
+    employee,
+    isEditMode,
+    showAbbreviationByPassed,
+  } = props;
 
   const [currentShiftTypeId, setCurrentShiftTypeId] = useState<number>(
     row.shiftType.id
@@ -63,11 +71,15 @@ export const EditScheduleTableCell = (props: EditScheduleTableCellProps) => {
               };
             }
             return {
-              label: shiftType.abbreviation,
+              label: showAbbreviationByPassed
+                ? shiftType.abbreviationByPassed
+                : shiftType.abbreviation,
               value: shiftType.id,
             };
           })}
         />
+      ) : showAbbreviationByPassed ? (
+        row.shiftType.abbreviationByPassed
       ) : (
         row.shiftType.abbreviation
       )}

@@ -10,6 +10,8 @@ namespace SuperSchedule.Database.Models
 
         public string Abbreviation { get; set; }
 
+        public string? AbbreviationByPassed { get; set; }
+
         public TimeOnly StartTime { get; set; }
 
         public TimeOnly EndTime { get; set; }

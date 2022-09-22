@@ -140,6 +140,7 @@ namespace SuperSchedule.Database.Repositories.ShiftTypes
 
             contextShiftType.Name = shiftType.Name;
             contextShiftType.Abbreviation = shiftType.Abbreviation;
+            contextShiftType.AbbreviationByPassed = shiftType.AbbreviationByPassed;
             contextShiftType.StartTime = shiftType.StartTime;
             contextShiftType.EndTime = shiftType.EndTime;
             contextShiftType.RotationDays = shiftType.RotationDays;

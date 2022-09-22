@@ -13,6 +13,7 @@ export const updateShiftType = async ({
     id: shiftType.id,
     name: shiftType.name,
     abbreviation: shiftType.abbreviation,
+    abbreviationByPassed: shiftType.abbreviationByPassed,
     startTime: `2022-01-01T${shiftType.startTime?.format("HH:mm")}:00.000Z`,
     endTime: `2022-01-01T${shiftType.endTime?.format("HH:mm")}:00.000Z`,
     rotationDays: shiftType.rotationDays,

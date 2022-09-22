@@ -220,6 +220,8 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
                   id: shiftTypeEditableCell.shiftType.id,
                   name: shiftTypeEditableCell.shiftType.name,
                   abbreviation: shiftTypeEditableCell.shiftType.abbreviation,
+                  abbreviationByPassed:
+                    shiftTypeEditableCell.shiftType.abbreviationByPassed,
                 },
               };
             }
@@ -378,6 +380,7 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
                     employee={row.employee}
                     shiftTypes={shiftTypes}
                     isEditMode={isEditMode}
+                    showAbbreviationByPassed={false}
                   />
                 ))}
               </TableRow>

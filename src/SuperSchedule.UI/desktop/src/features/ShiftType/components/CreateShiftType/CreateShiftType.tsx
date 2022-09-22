@@ -32,6 +32,10 @@ export const CreateShiftType = () => {
   const [isInvalidAbbreviation, setIsInvalidAbbreviation] =
     useState<boolean>(false);
 
+  const [abbreviationByPassed, setAbbreviationByPassed] = useState<string>("");
+  const [isInvalidAbbreviationByPassed, setIsInvalidAbbreviationByPassed] =
+    useState<boolean>(false);
+
   const [startTime, setStartTime] = useState<Date | null>(
     moment().hour(7).minute(0).toDate()
   );
@@ -135,6 +139,29 @@ export const CreateShiftType = () => {
 
     if (abbreviationWithoutNamespaces.length === 0) {
       setIsInvalidAbbreviation(true);
+      return false;
+    }
+
+    return true;
+  };
+
+  const onAbbreviationByPassedChange = (abbreviation: string) => {
+    setAbbreviationByPassed(abbreviation);
+    validateAbbreviationByPassed(abbreviation);
+
+    if (isButtonDisabled) {
+      setIsButtonDisabled(false);
+    }
+  };
+
+  const validateAbbreviationByPassed = (abbreviationInput: string): boolean => {
+    setIsInvalidAbbreviationByPassed(false);
+    const abbreviationWithoutNamespaces: string = abbreviationInput
+      .trimEnd()
+      .trimStart();
+
+    if (abbreviationWithoutNamespaces.length === 0) {
+      setIsInvalidAbbreviationByPassed(true);
       return false;
     }
 
@@ -285,6 +312,8 @@ export const CreateShiftType = () => {
   const isInputFieldsAreValid = (): boolean => {
     const isValidName: boolean = validateName(name);
     const isValidAbbreviation: boolean = validateAbbreviation(abbreviation);
+    const isValidAbbreviationByPassed: boolean =
+      validateAbbreviationByPassed(abbreviationByPassed);
     const isValidStartTime: boolean = validateStartTime(
       moment(startTime).format(timeFormat)
     );
@@ -302,6 +331,7 @@ export const CreateShiftType = () => {
     return (
       isValidName &&
       isValidAbbreviation &&
+      isValidAbbreviationByPassed &&
       isValidStartTime &&
       isValidEndTime &&
       isValidRotationDays &&
@@ -315,6 +345,7 @@ export const CreateShiftType = () => {
   const setDefaultValues = () => {
     setName("");
     setAbbreviation("");
+    setAbbreviationByPassed("");
     setStartTime(moment().hour(7).minute(0).toDate());
     setEndTime(moment().hour(19).minute(0).toDate());
     setRotationDays(1);
@@ -333,6 +364,7 @@ export const CreateShiftType = () => {
         id: 0,
         name,
         abbreviation,
+        abbreviationByPassed,
         startTime: moment(startTime, timeFormat),
         endTime: moment(endTime, timeFormat),
         rotationDays,
@@ -357,7 +389,7 @@ export const CreateShiftType = () => {
   };
 
   return (
-    <Form className="Form">
+    <Form className={styles.Form}>
       <Row className={styles.Row}>
         <Form.Group as={Col}>
           <InputField
@@ -384,6 +416,21 @@ export const CreateShiftType = () => {
             helpButtonTooltip={""}
             isInvalid={isInvalidAbbreviation}
             errorMessage={"Моля, въведете абревиатура"}
+          />
+        </Form.Group>
+      </Row>
+
+      <Row className={styles.Row}>
+        <Form.Group as={Col}>
+          <InputField
+            type="text"
+            label="Абревиатура за обходни/лични графици"
+            value={abbreviationByPassed}
+            onChange={onAbbreviationByPassedChange}
+            hasHelpIcon={false}
+            helpButtonTooltip={""}
+            isInvalid={isInvalidAbbreviationByPassed}
+            errorMessage={"Моля, въведете абревиатура обходни/лични графици"}
           />
         </Form.Group>
       </Row>

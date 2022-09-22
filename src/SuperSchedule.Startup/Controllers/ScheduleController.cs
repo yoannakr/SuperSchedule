@@ -67,7 +67,8 @@ namespace SuperSchedule.Startup.Controllers
                         {
                             Id = v.ShiftType?.Id ?? 0,
                             Name = v.ShiftType?.Name ?? "",
-                            Abbreviation = v.ShiftType?.Abbreviation ?? ""
+                            Abbreviation = v.ShiftType?.Abbreviation ?? "",
+                            AbbreviationByPassed = v.ShiftType?.AbbreviationByPassed ?? ""
                         },
                         Date = v.Date,
                         LocationId = locationId
@@ -102,6 +103,7 @@ namespace SuperSchedule.Startup.Controllers
                             Id = s.ShiftType?.Id ?? 0,
                             Name = s.ShiftType?.Name ?? "",
                             Abbreviation = s.ShiftType?.Abbreviation ?? "",
+                            AbbreviationByPassed = s.ShiftType?.AbbreviationByPassed ?? "",
                             LocationId = s.ShiftType?.Location?.Id ?? 0
                         },
                         Date = s.Date

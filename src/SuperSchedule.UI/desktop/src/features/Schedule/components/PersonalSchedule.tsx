@@ -181,6 +181,8 @@ export const PersonalSchedule = (props: PersonalScheduleProps) => {
               id: shiftTypeEditableCell.shiftType.id,
               name: shiftTypeEditableCell.shiftType.name,
               abbreviation: shiftTypeEditableCell.shiftType.abbreviation,
+              abbreviationByPassed:
+                shiftTypeEditableCell.shiftType.abbreviationByPassed,
             },
           };
         }
@@ -309,6 +311,7 @@ export const PersonalSchedule = (props: PersonalScheduleProps) => {
                       employee={schedulesRow.employee}
                       shiftTypes={shiftTypes}
                       isEditMode={isEditMode}
+                      showAbbreviationByPassed={true}
                     />
                   )
                 )}
