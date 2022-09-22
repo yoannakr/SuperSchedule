@@ -21,5 +21,7 @@ namespace SuperSchedule.Services.Schedules
         int CalculateWorkingHoursForMonth(DateTime dateTime);
 
         bool IsScheduleFilled(DateTime firstDayOfMonth, DateTime lastDayOfMonth);
+
+        Task CreateManualSchedule(Schedule schedule);
     }
 }

@@ -1,5 +1,8 @@
 import React from "react";
 import { Form } from "react-bootstrap";
+import IconButton from "@material-ui/core/IconButton";
+import Tooltip from "@material-ui/core/Tooltip";
+import HelpIcon from "@mui/icons-material/Help";
 
 type Option = {
   label: string;
@@ -15,6 +18,8 @@ type SelectFieldProps = {
   options: Option[];
   isInvalid?: boolean;
   errorMessage?: string;
+  hasHelpIcon?: boolean;
+  helpButtonTooltip?: string;
 };
 
 export const SelectField = (props: SelectFieldProps) => {
@@ -27,11 +32,24 @@ export const SelectField = (props: SelectFieldProps) => {
     options,
     isInvalid,
     errorMessage,
+    hasHelpIcon,
+    helpButtonTooltip,
   } = props;
 
   return (
     <>
-      {label != null && <Form.Label>{label}</Form.Label>}
+      {label != null && (
+        <Form.Label>
+          {label}
+          {hasHelpIcon && (
+            <Tooltip title={helpButtonTooltip ?? ""} arrow>
+              <IconButton>
+                <HelpIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Form.Label>
+      )}
       <Form.Select
         className={className}
         aria-label={ariaLabel}

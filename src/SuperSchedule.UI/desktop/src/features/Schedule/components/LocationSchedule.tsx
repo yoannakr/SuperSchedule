@@ -48,6 +48,7 @@ type LocationScheduleProps = {
   monthDate: Date | null;
   onShiftTypesChange: any;
   workingHoursForMonth: number;
+  isManualScheduleChange: boolean;
 };
 
 type Day = {
@@ -64,6 +65,7 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
     monthDate,
     onShiftTypesChange,
     workingHoursForMonth,
+    isManualScheduleChange,
   } = props;
 
   const [shiftTypes, setShiftTypes] = useState<ShiftType[]>([]);
@@ -190,7 +192,7 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
       getDataSchedules();
       onShiftTypesChange();
     }
-  }, [isEditMode, monthDate]);
+  }, [isEditMode, monthDate, isManualScheduleChange]);
 
   const createScheduleRow = (schedule: ScheduleModel): LocationScheduleRow => ({
     employee: schedule.employee,

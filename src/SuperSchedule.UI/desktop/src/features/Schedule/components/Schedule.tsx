@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import TabPanel from "@mui/lab/TabPanel";
 import TabContext from "@mui/lab/TabContext";
 import Alert from "@mui/material/Alert";
@@ -15,7 +15,9 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import IconButton from "@material-ui/core/IconButton";
 
+import { Dialog } from "../../../components/Dialog";
 import { getLocations } from "../../../api/getLocations";
 import { Location } from "../../../types";
 import { LocationSchedule } from "./LocationSchedule";
@@ -25,7 +27,8 @@ import { getErrorsForMonthSchedule } from "../api/getErrorsForMonthSchedule";
 import { TabItem, TabList } from "./TabList";
 import { UndrawNoLocationsSvg } from "../../../components/Svgs";
 import { getWorkingHoursForMonth } from "../api/getWorkingHoursForMonth";
-import Collapse from "@material-ui/core/Collapse";
+import ConstructionIcon from "@mui/icons-material/Construction";
+import { CreateManualSchedule } from "./CreateManualSchedule";
 
 export const Schedule = () => {
   const [selectedLocationId, setSelectedLocationId] = useState<string>("1");
@@ -34,6 +37,13 @@ export const Schedule = () => {
   const [monthDate, setMonthDate] = useState<Date | null>(new Date());
   const [errors, setErrors] = useState<string[]>([]);
   const [workingHoursForMonth, setWorkingHoursForMonth] = useState<number>(0);
+
+  const [showManualScheduleDialog, setShowManualScheduleDialog] =
+    useState<boolean>(false);
+
+  const onSaveManualSchedule = useRef(async (): Promise<boolean> => {
+    return false;
+  });
 
   const getDataWorkingHoursForMonth = () => {
     getWorkingHoursForMonth({
@@ -100,6 +110,10 @@ export const Schedule = () => {
     setSelectedLocationId(newValue.toString());
   };
 
+  const onManualScheduling = () => {
+    setShowManualScheduleDialog(!showManualScheduleDialog);
+  };
+
   return (
     <div className={styles.Schedule}>
       {locations.length !== 0 ? (
@@ -136,6 +150,10 @@ export const Schedule = () => {
                 )}
               />
               {/* <ExportExcel csvData={schedules} fileName={"test"} /> */}
+
+              <IconButton aria-label="fix" onClick={onManualScheduling}>
+                <ConstructionIcon />
+              </IconButton>
             </Box>
           </LocalizationProvider>
           <TabContext value={selectedLocationId}>
@@ -156,6 +174,7 @@ export const Schedule = () => {
                   monthDate={monthDate}
                   onShiftTypesChange={getDataErrors}
                   workingHoursForMonth={workingHoursForMonth}
+                  isManualScheduleChange={showManualScheduleDialog}
                 />
               </TabPanel>
             ))}
@@ -167,6 +186,27 @@ export const Schedule = () => {
           <h4>Няма налични обекти</h4>
         </div>
       )}
+
+      <Dialog
+        className="MuiDialog-paper"
+        showDialog={showManualScheduleDialog}
+        dialogContent={
+          <CreateManualSchedule
+            locations={locations}
+            onSaveManualSchedule={onSaveManualSchedule}
+          />
+        }
+        setShowDialog={setShowManualScheduleDialog}
+        dialogTitle={"Ръчно въвеждане на график"}
+        onAccept={async () => {
+          const isValid: boolean = await onSaveManualSchedule.current();
+          if (isValid) {
+            setShowManualScheduleDialog(false);
+          }
+        }}
+        acceptMessage={"Запис"}
+        cancelMessage={"Отказ"}
+      />
     </div>
   );
 };

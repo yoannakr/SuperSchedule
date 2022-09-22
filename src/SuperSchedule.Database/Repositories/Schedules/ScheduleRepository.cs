@@ -154,5 +154,33 @@ namespace SuperSchedule.Database.Repositories.Schedules
             superScheduleDbContext.Schedules.RemoveRange(schedules);
             await superScheduleDbContext.SaveChangesAsync();
         }
+
+        public bool IsScheduleExist(int employeeId, int locationId, DateTime date)
+        {
+            var contextSchedules = superScheduleDbContext
+                .Schedules
+                .Where(s => s.Date.Date == date.Date &&
+                            s.Employee.Id == employeeId &&
+                            s.Location.Id == locationId).ToList();
+
+            return contextSchedules.Any();
+        }
+
+        public async Task UpdateSchedule(Schedule schedule)
+        {
+            var contextSchedule = superScheduleDbContext
+                .Schedules
+                .FirstOrDefault(s => s.Date.Date == schedule.Date.Date &&
+                            s.Employee.Id == schedule.Employee.Id &&
+                            s.Location.Id == schedule.Location.Id);
+
+            contextSchedule.ShiftType = schedule.ShiftType;
+            contextSchedule.RemovedShiftType = schedule.RemovedShiftType;
+            contextSchedule.LastRotationDays = schedule.LastRotationDays;
+            contextSchedule.DayOfWeekTemplate = schedule.DayOfWeekTemplate;
+
+            superScheduleDbContext.Schedules.Update(contextSchedule);
+            await superScheduleDbContext.SaveChangesAsync();
+        }
     }
 }

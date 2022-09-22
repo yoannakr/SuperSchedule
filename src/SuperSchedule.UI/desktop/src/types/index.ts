@@ -78,3 +78,13 @@ export type User = {
   role: number;
   roleName?: string;
 };
+
+export type ManualSchedule = {
+  locationId: number;
+  employeeId: number;
+  shiftTypeId: number;
+  removedShiftTypeId: number;
+  date: moment.Moment;
+  lastRotationDays: number;
+  dayOfWeekTemplate: number;
+};

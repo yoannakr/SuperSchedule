@@ -187,6 +187,21 @@ namespace SuperSchedule.Startup.Controllers
         {
             return scheduleService.CalculateWorkingHoursForMonth(monthDate);
         }
+
+        [HttpPost]
+        public async Task CreateManualSchedule([FromBody] ManualScheduleModel manualScheduleModel)
+        {
+            await scheduleService.CreateManualSchedule(new Schedule
+            {
+                Location = new Location { Id = manualScheduleModel.LocationId },
+                Employee = new Employee { Id = manualScheduleModel.EmployeeId },
+                ShiftType = new ShiftType { Id = manualScheduleModel.ShiftTypeId },
+                RemovedShiftType = new ShiftType { Id = manualScheduleModel.RemovedShiftTypeId },
+                Date = manualScheduleModel.Date.Date,
+                LastRotationDays = manualScheduleModel.LastRotationDays <= 0 ? null : manualScheduleModel.LastRotationDays,
+                DayOfWeekTemplate = manualScheduleModel.DayOfWeekTemplate <= 0 ? null : (Database.Enums.DayOfWeekTemplate)manualScheduleModel.DayOfWeekTemplate
+            });
+        }
     }
 
 }

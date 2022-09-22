@@ -43,7 +43,7 @@ namespace SuperSchedule.Services.Schedules
                 {
                     continue;
                 }
-                
+
                 await FillScheduleForLocation(location, startDate, endDate);
             }
         }
@@ -53,7 +53,7 @@ namespace SuperSchedule.Services.Schedules
         private void FillScheduleTwelveHoursTemplate(Location location, DateTime startDate, DateTime endDate, List<Schedule> schedules, IEnumerable<Employee> employees, List<IGrouping<int, Employee>> employeesGroupByPositionPriority, IGrouping<int, Employee> employeesWithHighestPositionPriority)
         {
             var otherEmployeesGroup = employeesGroupByPositionPriority.FirstOrDefault();
-            if(otherEmployeesGroup == null)
+            if (otherEmployeesGroup == null)
             {
                 return;
             }
@@ -64,7 +64,7 @@ namespace SuperSchedule.Services.Schedules
             foreach (var employee in employeesWithHighestPositionPriority)
             {
                 var countOfUnnecessaryShifts = GetCountOfUnnecessaryShifts(employee, startDate, schedules, ShiftTypesTemplate.TwelveHours);
-                if(countOfUnnecessaryShifts <= 0)
+                if (countOfUnnecessaryShifts <= 0)
                 {
                     continue;
                 }
@@ -75,7 +75,7 @@ namespace SuperSchedule.Services.Schedules
 
         private void FillScheduleWithHighestPositionPriorityEmployeesTwelveHoursTemplate(List<Schedule> schedules, Location location, IGrouping<int, Employee>? employeesWithHighestPositionPriority, IGrouping<int, Employee> otherEmployeesGroup, DateTime startDate, DateTime endDate)
         {
-            var previousMonth = startDate.AddMonths(-1);
+            var previousMonth = endDate.AddMonths(-1);
             var isScheduleFilledForPreviousMonth = scheduleRepository.IsScheduleFilledForPreviousMonth(location.Id, previousMonth);
 
             var countOfMissedDays = 0;
@@ -156,7 +156,7 @@ namespace SuperSchedule.Services.Schedules
                 currentShiftTypeIndex = nextShiftTypeIndex;
                 tempRotationDays = lastRotationDays ?? 0;
 
-                if(nextShiftTypeIndex < 0)
+                if (nextShiftTypeIndex < 0)
                 {
                     if (employee.PreviousEmployee != null)
                     {
@@ -525,7 +525,7 @@ namespace SuperSchedule.Services.Schedules
             }
 
             var shiftTypeId = lastMondaySchedule.ShiftType?.Id;
-            while (shiftTypeId == 1)
+            while (!allShiftTypes.Any(s => s.Id == shiftTypeId))
             {
                 lastMonday = lastMonday.AddDays(1);
                 lastMondaySchedule = scheduleRepository.GetEmployeeScheduleByLocationForDate(locationId, lastMonday, employee);
@@ -562,7 +562,7 @@ namespace SuperSchedule.Services.Schedules
             }
 
             var otherEmployeesGroup = employeesGroupByPositionPriority.FirstOrDefault();
-            if(otherEmployeesGroup == null)
+            if (otherEmployeesGroup == null)
             {
                 return;
             }
@@ -652,7 +652,7 @@ namespace SuperSchedule.Services.Schedules
             var employees = employeeService.GetCurrentEmployeeByLocation(location.Id);
             var employeesGroupByPositionPriority = employees.OrderBy(e => e.Position.Priority).GroupBy(e => e.Position.Priority).ToList();
             var employeesWithHighestPositionPriority = employeesGroupByPositionPriority.FirstOrDefault();
-            if(employeesWithHighestPositionPriority == null)
+            if (employeesWithHighestPositionPriority == null)
             {
                 return;
             }
@@ -1130,7 +1130,7 @@ namespace SuperSchedule.Services.Schedules
                         }
                     }
 
-                    if(location.ShiftTypesTemplate == ShiftTypesTemplate.FirstAndSecondShifts && shiftTypeIds.Count >=2)
+                    if (location.ShiftTypesTemplate == ShiftTypesTemplate.FirstAndSecondShifts && shiftTypeIds.Count >= 2)
                     {
                         continue;
                     }
@@ -1319,7 +1319,7 @@ namespace SuperSchedule.Services.Schedules
             var resultSchedules = new List<Schedule>();
             foreach (var employee in employeesForLocation)
             {
-                if(employee.IsDeleted && employee.DateOfDeletion.GetValueOrDefault().Date < startDate.Date)
+                if (employee.IsDeleted && employee.DateOfDeletion.GetValueOrDefault().Date < startDate.Date)
                 {
                     continue;
                 }
@@ -1584,6 +1584,34 @@ namespace SuperSchedule.Services.Schedules
             var overWorkingHoursForMonth = totalWorkingHours - workingHoursForMonth;
 
             return overWorkingHoursForMonth;
+        }
+
+        public async Task CreateManualSchedule(Schedule schedule)
+        {
+
+            var contextShiftType = shiftTypeService.GetShiftTypeById(schedule?.ShiftType?.Id ?? 0);
+            var contextRemovedShiftType = shiftTypeService.GetShiftTypeById(schedule?.RemovedShiftType?.Id ?? 0);
+            var contextEmployee = employeeService.GetEmployeeById(schedule?.Employee?.Id ?? 0);
+            var contextLocation = locationService.GetLocationById(schedule?.Location?.Id ?? 0);
+            if (contextShiftType == null || contextEmployee == null)
+            {
+                return;
+            }
+
+            schedule.ShiftType = contextShiftType;
+            schedule.RemovedShiftType = contextRemovedShiftType;
+            schedule.Employee = contextEmployee;
+            schedule.Location = contextLocation;
+
+            var isScheduleExist = scheduleRepository.IsScheduleExist(schedule.Employee.Id, schedule.Location.Id, schedule.Date);
+            if (isScheduleExist)
+            {
+                await scheduleRepository.UpdateSchedule(schedule);
+            }
+            else
+            {
+                await scheduleRepository.CreateSchedule(schedule);
+            }
         }
     }
 }

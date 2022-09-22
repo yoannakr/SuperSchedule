@@ -30,5 +30,9 @@ namespace SuperSchedule.Database.Repositories.Schedules
         bool IsScheduleFilled(DateTime firstDayOfMonth, DateTime lastDayOfMonth);
        
         Task RemoveSchedulesForPeriod(DateTime startDate, DateTime endDate);
+
+        bool IsScheduleExist(int employeeId, int locationId, DateTime date);
+
+        Task UpdateSchedule(Schedule schedule);
     }
 }
