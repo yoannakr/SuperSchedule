@@ -1,8 +1,12 @@
-﻿namespace SuperSchedule.Database.Enums
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SuperSchedule.Database.Enums
 {
     public enum DayOfWeekTemplate
     {
-        MondayAndTuesday = 0,
-        FridayAndSaturday = 1
+        [Display(Name = "Понеделник и Вторник")]
+        MondayAndTuesday = 1,
+        [Display(Name = "Петък и Събота")]
+        FridayAndSaturday = 2
     }
 }
