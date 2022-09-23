@@ -73,6 +73,8 @@ export const CreateShiftType = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [showError, setShowError] = useState<boolean>(false);
+  const [showErrorShiftTypePriority, setShowErrorShiftTypePriority] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const getDataLocations = () => {
@@ -357,6 +359,11 @@ export const CreateShiftType = () => {
   };
 
   const save = async () => {
+    if (priority < 6 && selectedLocationId === 0) {
+      setShowErrorShiftTypePriority(true);
+      return;
+    }
+
     const isValid = isInputFieldsAreValid();
     if (isValid) {
       setIsSaving(true);
@@ -576,6 +583,14 @@ export const CreateShiftType = () => {
         isOpen={showError}
         messages={["Моля, проверете връзката с интернет."]}
         setIsOpen={setShowError}
+        severity={"error"}
+        alertTitle={"Неуспешно създаване!"}
+      />
+
+      <SnackBar
+        isOpen={showErrorShiftTypePriority}
+        messages={["Моля, въведете приоритет по-голям от 5 за смяната."]}
+        setIsOpen={setShowErrorShiftTypePriority}
         severity={"error"}
         alertTitle={"Неуспешно създаване!"}
       />
