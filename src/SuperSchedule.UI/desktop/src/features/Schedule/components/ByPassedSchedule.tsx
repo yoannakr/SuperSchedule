@@ -301,7 +301,7 @@ export const ByPassedSchedule = (props: ByPassedScheduleProps) => {
 
       <div className={styles.Title}>
         <p>{scheduleTitle}</p>
-        <p>за дежурствата на обходните охранителите</p>
+        <p>за дежурствата на обходните охранители</p>
         <p>{scheduleMonthTitle}</p>
       </div>
       <TableContainer className={`${styles.Table}`}>
