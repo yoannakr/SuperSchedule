@@ -1351,9 +1351,15 @@ namespace SuperSchedule.Services.Schedules
                     var contextShiftType = shiftTypeService.GetShiftTypeById(schedule.ShiftType.Id);
                     var contextEmployee = employeeService.GetEmployeeById(schedule.Employee.Id);
                     var contextLocation = locationService.GetLocationById(schedule.Location.Id);
+                    
                     if (contextShiftType == null || contextEmployee == null)
                     {
                         continue;
+                    }
+
+                    if(contextLocation == null)
+                    {
+                        contextLocation = locationService.GetLocationById(contextShiftType.Location.Id);
                     }
 
                     var schedulesEmployeeForDate = scheduleRepository.GetEmployeeSchedulesForDate(schedule.Date, contextEmployee);
