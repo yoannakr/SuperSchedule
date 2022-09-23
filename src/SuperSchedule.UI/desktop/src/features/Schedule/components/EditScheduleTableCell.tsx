@@ -72,7 +72,7 @@ export const EditScheduleTableCell = (props: EditScheduleTableCellProps) => {
             }
             return {
               label: showAbbreviationByPassed
-                ? shiftType.abbreviationByPassed
+                ? shiftType.name
                 : shiftType.abbreviation,
               value: shiftType.id,
             };

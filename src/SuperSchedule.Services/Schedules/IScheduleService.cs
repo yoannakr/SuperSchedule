@@ -23,5 +23,7 @@ namespace SuperSchedule.Services.Schedules
         bool IsScheduleFilled(DateTime firstDayOfMonth, DateTime lastDayOfMonth);
 
         Task CreateManualSchedule(Schedule schedule);
+
+        IEnumerable<Schedule> GetByPassedSchedules(DateTime firstDayOfMonth, DateTime lastDayOfMonth);
     }
 }

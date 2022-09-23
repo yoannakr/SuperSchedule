@@ -29,6 +29,10 @@ export const SidebarData = [
         title: "Лични графици",
         link: "/personalSchedules",
       },
+      {
+        title: "Обходен график",
+        link: "/byPassedSchedule",
+      },
     ],
   },
   {

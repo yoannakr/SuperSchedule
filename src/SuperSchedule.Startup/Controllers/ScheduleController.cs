@@ -204,6 +204,41 @@ namespace SuperSchedule.Startup.Controllers
                 DayOfWeekTemplate = manualScheduleModel.DayOfWeekTemplate <= 0 ? null : (Database.Enums.DayOfWeekTemplate)manualScheduleModel.DayOfWeekTemplate
             });
         }
+
+        [HttpGet]
+        public IEnumerable<ScheduleModel> GetByPassedSchedules(DateTime monthDate)
+        {
+            var firstDayOfMonth = new DateTime(monthDate.Year, monthDate.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+            return scheduleService
+               .GetByPassedSchedules(firstDayOfMonth, lastDayOfMonth)
+               .GroupBy(g => g.Employee)
+               .Select(g => new ScheduleModel
+               {
+                   Employee = new EmployeeModel
+                   {
+                       Id = g.Key.Id,
+                       FirstName = g.Key.FirstName,
+                       MiddleName = g.Key.MiddleName,
+                       LastName = g.Key.LastName,
+                       FullName = g.Key.FullName,
+                       ShiftTypesIds = g.Key.ShiftTypes.Select(s => s.Id).ToList()
+                   },
+                   ShiftTypeEditableCells = g.Select(v => new ShiftTypeEditableCellModel
+                   {
+                       ScheduleId = v.Id,
+                       ShiftType = new ShiftTypeModel
+                       {
+                           Id = v.ShiftType?.Id ?? 0,
+                           Name = v.ShiftType?.Name ?? "",
+                           Abbreviation = v.ShiftType?.Abbreviation ?? "",
+                           AbbreviationByPassed = v.ShiftType?.AbbreviationByPassed ?? ""
+                       },
+                       Date = v.Date
+                   }),
+               });
+        }
     }
 
 }

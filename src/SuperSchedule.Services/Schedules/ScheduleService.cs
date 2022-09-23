@@ -1615,5 +1615,29 @@ namespace SuperSchedule.Services.Schedules
                 await scheduleRepository.CreateSchedule(schedule);
             }
         }
+
+        public IEnumerable<Schedule> GetByPassedSchedules(DateTime firstDayOfMonth, DateTime lastDayOfMonth)
+        {
+            var monthDays = DateTime.DaysInMonth(firstDayOfMonth.Year, lastDayOfMonth.Month);
+            var employees = employeeService.GetEmployeesWithLowestPositionPriority();
+            var resultSchedules = new List<Schedule>();
+
+            foreach (var employee in employees)
+            {
+                if (employee.IsDeleted && employee.DateOfDeletion.GetValueOrDefault().Date < firstDayOfMonth.Date)
+                {
+                    continue;
+                }
+
+                var scheduleEmployee = scheduleRepository
+                    .GetEmployeeScheduleForPeriod(firstDayOfMonth, lastDayOfMonth, employee.Id)
+                    .Where(s => s.ShiftType != null)
+                    .ToList();
+                    
+                resultSchedules.AddRange(GetScheduleForEmployee(scheduleEmployee, employee, firstDayOfMonth, lastDayOfMonth));
+            }
+
+            return resultSchedules.OrderBy(s => s.Date).ThenBy(s => s.Employee.Position.Priority).ToList();
+        }
     }
 }

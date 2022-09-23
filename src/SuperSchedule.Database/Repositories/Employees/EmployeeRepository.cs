@@ -98,6 +98,7 @@ namespace SuperSchedule.Database.Repositories.Employees
                 .Include(e => e.PreviousEmployee)
                 .Include(e => e.Locations)
                 .Include(e => e.Position)
+                .Include(e => e.ShiftTypes)
                 .Where(e => !e.IsDeleted)
                 .ToList()
                 .GroupBy(e => e.Position.Priority)
