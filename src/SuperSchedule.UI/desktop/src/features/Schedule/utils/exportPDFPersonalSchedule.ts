@@ -10,7 +10,7 @@ export const exportPDFPersonalSchedule = (
   managerName: string
 ) => {
   const marginLeft = 40;
-  const doc = createPdfFile();
+  const doc = createPdfFile("landscape", "A4");
   const title = "УТВЪРЖДАВАМ";
   const name = `Гл.Секретар: ${secretaryName}`;
 
@@ -33,10 +33,12 @@ export const exportPDFPersonalSchedule = (
   doc.text(desription, width / 2, 100, { align: "center" });
   doc.text(month, width / 2, 120, { align: "center" });
 
-  doc.text(scheduleCanBeEditedfooter, marginLeft, height - 300);
-  doc.text(madeByFirstRowFooter, marginLeft + 580, height - 300);
-  doc.text(madeBySecondRowFooter, marginLeft + 580, height - 280);
-  doc.text(madeByThirdRowFooter, marginLeft + 610, height - 260);
+  // doc.text(scheduleCanBeEditedfooter, marginLeft, height - 300);
+  // doc.text(madeByFirstRowFooter, marginLeft + 580, height - 300);
+  // doc.text(madeBySecondRowFooter, marginLeft + 580, height - 280);
+  // doc.text(madeByThirdRowFooter, marginLeft + 610, height - 260);
+
+  let tableMeta: any = null;
 
   autoTable(doc, {
     theme: "plain",
@@ -58,7 +60,15 @@ export const exportPDFPersonalSchedule = (
     styles: {
       font: "PTSans-Regular",
     },
+    didDrawPage: (data) => {
+      tableMeta = data.table;
+    },
   });
+
+  doc.text(scheduleCanBeEditedfooter, marginLeft, tableMeta.finalY + 40);
+  doc.text(madeByFirstRowFooter, marginLeft + 580, tableMeta.finalY + 40);
+  doc.text(madeBySecondRowFooter, marginLeft + 580, tableMeta.finalY + 60);
+  doc.text(madeByThirdRowFooter, marginLeft + 610, tableMeta.finalY + 80);
 
   doc.save(`${employeeName} - ${moment(monthDate).format("MM.yyyy")}.pdf`);
 };

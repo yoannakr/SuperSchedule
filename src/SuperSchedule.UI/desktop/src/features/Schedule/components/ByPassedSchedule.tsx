@@ -18,17 +18,15 @@ import {
   ShiftTypeEditableCell,
 } from "./EditScheduleTableCell";
 import { Employee, Schedule as ScheduleModel, ShiftType } from "../../../types";
-import { getSchedulesByLocationForPeriod } from "../api/getSchedulesByLocationForPeriod";
 import IconButton from "@material-ui/core/IconButton";
 import { updateShiftTypeOfSchedules } from "../api/updateShiftTypeOfSchedules";
 import TableContainer from "@material-ui/core/TableContainer";
-import { getShiftTypesByLocationIncludingDefaultBreak } from "../../ShiftType/api/getShiftTypesByLocationIncludingDefaultBreak";
 import { SnackBar } from "../../../components/Snackbar";
-import { exportPDFLocationSchedule } from "../utils/exportPDFLocationSchedule";
 import { getSecretaryName } from "../../Setting/api/getSecretaryName";
 import { getManagerName } from "../../Setting/api/getManagerName";
 import { getAllCurrentShiftTypes } from "../../ShiftType/api/getAllCurrentShiftTypes";
 import { getByPassedSchedules } from "../api/getByPassedSchedules";
+import { exportPDFByPassedSchedule } from "../utils/exportPDFByPassedSchedule";
 
 const useStyles = makeStyles({
   tableCell: {
@@ -265,7 +263,7 @@ export const ByPassedSchedule = (props: ByPassedScheduleProps) => {
           <IconButton
             aria-label="print"
             onClick={() =>
-              exportPDFLocationSchedule(
+              exportPDFByPassedSchedule(
                 "table",
                 monthDate,
                 "Обходен график",

@@ -8,7 +8,7 @@ export const exportPDFReport = (
   firstMonth: Date | null,
   lastMonth: Date | null
 ) => {
-  const doc = createPdfFile();
+  const doc = createPdfFile("landscape", "A4");
   const months = getArrayInRange(
     firstMonth?.getMonth() ?? 0,
     lastMonth?.getMonth() ?? 0

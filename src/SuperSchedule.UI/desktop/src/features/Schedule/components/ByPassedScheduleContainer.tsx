@@ -7,12 +7,7 @@ import Box from "@mui/material/Box";
 import moment from "moment";
 import locale from "date-fns/locale/bg";
 
-import { getLocations } from "../../../api/getLocations";
-import { Location } from "../../../types";
 import styles from "./Schedule.module.scss";
-import { getErrorsForMonthSchedule } from "../api/getErrorsForMonthSchedule";
-import { TabItem } from "./TabList";
-import { UndrawNoLocationsSvg } from "../../../components/Svgs";
 import { getWorkingHoursForMonth } from "../api/getWorkingHoursForMonth";
 import { ByPassedSchedule } from "./ByPassedSchedule";
 
