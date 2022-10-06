@@ -110,7 +110,15 @@ export const Report = () => {
             mask="__.____"
             minDate={new Date("2020-01-01")}
             value={filterStartDate}
-            onChange={setFilterStartDate}
+            onMonthChange={(newValue) => {
+              const currentEndDate = moment(filterEndDate).startOf("day");
+              const newStartDate = moment(newValue).startOf("day");
+              if (newStartDate.isAfter(currentEndDate)) {
+                setFilterEndDate(newStartDate.toDate());
+              }
+              setFilterStartDate(newValue);
+            }}
+            onChange={(newValue) => {}}
             renderInput={(params) => (
               <TextField {...params} helperText={null} />
             )}
@@ -122,7 +130,15 @@ export const Report = () => {
             mask="__.____"
             minDate={new Date("2020-01-01")}
             value={filterEndDate}
-            onChange={setFilterEndDate}
+            onMonthChange={(newValue) => {
+              const currentStartDate = moment(filterStartDate).startOf("day");
+              const newEndDate = moment(newValue).startOf("day");
+              if (newEndDate.isBefore(currentStartDate)) {
+                setFilterStartDate(newEndDate.toDate());
+              }
+              setFilterEndDate(newValue);
+            }}
+            onChange={(newValue) => {}}
             renderInput={(params) => (
               <TextField
                 {...params}
