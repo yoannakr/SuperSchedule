@@ -75,8 +75,6 @@ export const ByPassedSchedule = (props: ByPassedScheduleProps) => {
 
   const scheduleText = "График".toUpperCase();
   const reportText = "Отчет".toUpperCase();
-  const schedueTitle =
-    moment().month <= moment(monthDate).month ? scheduleText : reportText;
   const scheduleMonthTitle = `месец ${moment(monthDate).format("MM.YYYY")}г`;
 
   useEffect(() => {
@@ -119,9 +117,7 @@ export const ByPassedSchedule = (props: ByPassedScheduleProps) => {
     getDataSecretaryName();
     getDataManagerName();
 
-    const currentScheduleTitle =
-      moment().month() <= moment(monthDate).month() ? scheduleText : reportText;
-    setScheduleTitle(currentScheduleTitle);
+    setScheduleTitle(getScheduleTitle());
   }, []);
 
   useEffect(() => {
@@ -171,16 +167,18 @@ export const ByPassedSchedule = (props: ByPassedScheduleProps) => {
           )
         );
     };
-
-    const currentScheduleTitle =
-      moment().month() <= moment(monthDate).month() ? scheduleText : reportText;
-    setScheduleTitle(currentScheduleTitle);
+    setScheduleTitle(getScheduleTitle());
 
     if (!isEditMode) {
       getDataSchedules();
       //onShiftTypesChange();
     }
   }, [isEditMode, monthDate]);
+
+  const getScheduleTitle = (): string =>
+    moment(monthDate).startOf("day").isSameOrAfter(moment().startOf("day"))
+      ? scheduleText
+      : reportText;
 
   const createScheduleRow = (schedule: ScheduleModel): LocationScheduleRow => ({
     employee: schedule.employee,

@@ -86,8 +86,6 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
 
   const scheduleText = "График".toUpperCase();
   const reportText = "Отчет".toUpperCase();
-  const schedueTitle =
-    moment().month <= moment(monthDate).month ? scheduleText : reportText;
   const scheduleMonthTitle = `месец ${moment(monthDate).format("MM.YYYY")}г`;
 
   useEffect(() => {
