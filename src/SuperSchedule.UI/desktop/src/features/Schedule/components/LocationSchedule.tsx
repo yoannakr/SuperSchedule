@@ -128,9 +128,7 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
     getDataSecretaryName();
     getDataManagerName();
 
-    const currentScheduleTitle =
-      moment().month() <= moment(monthDate).month() ? scheduleText : reportText;
-    setScheduleTitle(currentScheduleTitle);
+    setScheduleTitle(getScheduleTitle());
   }, []);
 
   useEffect(() => {
@@ -184,15 +182,18 @@ export const LocationSchedule = (props: LocationScheduleProps) => {
         );
     };
 
-    const currentScheduleTitle =
-      moment().month() <= moment(monthDate).month() ? scheduleText : reportText;
-    setScheduleTitle(currentScheduleTitle);
+    setScheduleTitle(getScheduleTitle());
 
     if (!isEditMode) {
       getDataSchedules();
       onShiftTypesChange();
     }
   }, [isEditMode, monthDate, isManualScheduleChange]);
+
+  const getScheduleTitle = (): string =>
+    moment(monthDate).startOf("day").isSameOrAfter(moment().startOf("day"))
+      ? scheduleText
+      : reportText;
 
   const createScheduleRow = (schedule: ScheduleModel): LocationScheduleRow => ({
     employee: schedule.employee,
