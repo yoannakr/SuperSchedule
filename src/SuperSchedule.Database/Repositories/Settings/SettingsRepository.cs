@@ -32,17 +32,11 @@ namespace SuperSchedule.Database.Repositories.Settings
         public async Task FillPublicHolidaysForYear(int year)
         {
             var settings = GetSettings();
-            var publicHolidaysDates = DateSystem.GetPublicHolidays(year, CountryCode.BG).Select(h => h.Date);
-            var previousPubllicHolidaysDates = settings.Holidays.Select(h => h.Date).ToList();
-            if (previousPubllicHolidaysDates != null)
-            {
-                publicHolidaysDates = publicHolidaysDates.Where(date => !previousPubllicHolidaysDates.Contains(date)).ToList();
-            }
+            var publicHolidaysDates = DateSystem.GetPublicHolidays(year, CountryCode.BG)
+               .Select(h => new Holiday { Date = h.Date, Name = h.LocalName }).ToList();
 
-            var holidays = publicHolidaysDates.Select(h => new Holiday { Date = h.Date });
-            var newHolidays = settings.Holidays.ToList();
-            newHolidays.AddRange(holidays);
-            settings.Holidays = newHolidays;
+            settings.Holidays.Clear();
+            settings.Holidays = publicHolidaysDates;
 
             await UpdateSettings(settings);
         }

@@ -55,7 +55,7 @@ try
     }
 
     var settingsRepository = app.Services.GetService(typeof(ISettingsRepository)) as SettingsRepository;
-    var isNewYear = settingsRepository?.GetLastPublicHolidayYear() != DateTime.UtcNow.Year;
+    var isNewYear = settingsRepository?.GetLastPublicHolidayYear() < DateTime.UtcNow.Year;
 
     if (isNewYear)
     {
