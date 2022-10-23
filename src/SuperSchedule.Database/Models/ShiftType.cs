@@ -17,7 +17,7 @@ namespace SuperSchedule.Database.Models
         public TimeOnly EndTime { get; set; }
 
         [NotMapped]
-        public double TotalHours => Math.Abs(EndTime.Hour - StartTime.Hour) + (((NightHours * 1.143) - NightHours) ?? 0);
+        public double TotalHours => Math.Abs((EndTime - StartTime).TotalHours) + (((NightHours * 1.143) - NightHours) ?? 0);
 
         public int RotationDays { get; set; }
 
