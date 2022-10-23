@@ -306,6 +306,18 @@ namespace SuperSchedule.Services.Schedules
             var otherEmployeesGroup = employeesGroupByPositionPriority.FirstOrDefault();
             employeesGroupByPositionPriority.Remove(otherEmployeesGroup);
 
+            if(employees.Where(e => e.IsDeleted ? e.DateOfDeletion.GetValueOrDefault().Date > startDate.Date : true).Count() == 1)
+            {
+                allShiftTypes = shiftTypeService.GetShiftTypesByLocation(location.Id).OrderBy(s => s.Priority).ToList();
+                if (!allShiftTypes.Any())
+                {
+                    return;
+                }
+
+                FillScheduleHighestEmployeesOneShiftTemplate(schedules, location, startDate, endDate, allShiftTypes, employees.FirstOrDefault());
+                return;
+            }
+
             var firstShiftIndex = 0;
             foreach (var employee in employeesWithHighestPositionPriority)
             {
@@ -1104,6 +1116,7 @@ namespace SuperSchedule.Services.Schedules
             var locationWorkingDays = shiftTypesForLocation.SelectMany(s => s.Days.Select(d => d.Id)).Distinct().ToList();
             var locationScheduleByDates = scheduleRepository.GetSchedulesByLocationForPeriod(location.Id, firstDayOfMonth, lastDayOfMonth)
                                 .GroupBy(s => s.Date.Date);
+            var locationCountOfEmployees = location.Employees.Where(e => !e.IsDeleted).Count();
 
             foreach (var locationScheduleByDate in locationScheduleByDates)
             {
@@ -1130,7 +1143,7 @@ namespace SuperSchedule.Services.Schedules
                         }
                     }
 
-                    if (location.ShiftTypesTemplate == ShiftTypesTemplate.FirstAndSecondShifts && shiftTypeIds.Count >= 2)
+                    if (location.ShiftTypesTemplate == ShiftTypesTemplate.FirstAndSecondShifts && (shiftTypeIds.Count >= 2 || locationCountOfEmployees < 2 || shiftTypesForLocation.Count > 2))
                     {
                         continue;
                     }
@@ -1155,7 +1168,7 @@ namespace SuperSchedule.Services.Schedules
 
             foreach (var locationScheduleByDate in locationScheduleByDates)
             {
-                var shiftTypeIds = locationScheduleByDate.Where(s => s.ShiftType != null).Select(s => s.ShiftType).GroupBy(s => s.Id).ToList();
+                var shiftTypeIds = locationScheduleByDate.Where(s => s.ShiftType != null && !s.Employee.IsDeleted).Select(s => s.ShiftType).GroupBy(s => s.Id).ToList();
                 foreach (var shiftTypeId in shiftTypeIds)
                 {
                     if (shiftTypeId.Count() > 1)
@@ -1325,6 +1338,11 @@ namespace SuperSchedule.Services.Schedules
                 }
 
                 var scheduleEmployee = schedulesForEmployees.FirstOrDefault(s => s.Key.Id == employee.Id);
+                if(scheduleEmployee == null && !employee.Locations.Select(l => l.Id).Contains(locationId))
+                {
+                    continue;
+                }
+
                 resultSchedules.AddRange(GetScheduleForEmployee(scheduleEmployee, employee, startDate, endDate));
             }
 

@@ -107,7 +107,7 @@ namespace SuperSchedule.Database.Repositories.Schedules
                 .Include(s => s.Employee)
                 .Include(s => s.ShiftType)
                 .Include(s => s.Location)
-                .FirstOrDefault(s => s.Location != null && s.Location.Id == locationId && s.Employee.Id == employee.Id && s.Date.Date >= firstDayOfMonth.Date && s.Date.Date <= lastDayOfMonth.Date && s.DayOfWeekTemplate != null)?
+                .FirstOrDefault(s => s.ShiftType != null && s.Location != null && s.Location.Id == locationId && s.Employee.Id == employee.Id && s.Date.Date >= firstDayOfMonth.Date && s.Date.Date <= lastDayOfMonth.Date && s.DayOfWeekTemplate != null)?
                 .DayOfWeekTemplate;
         }
 
